@@ -1,0 +1,37 @@
+# Input Emulab definitions
+source tb_compat.tcl
+
+# Create the simulator object
+set ns [new Simulator]
+
+set max_node 2
+for {set i 0} {$i < $max_node} {incr i} {
+    # Create the node
+    set client($i) [$ns node]
+
+    # Set hardware and OS
+    tb-set-hardware $client($i) pc3000
+    tb-set-node-os $client($i) UBUNTU12-64-STD
+
+    # Add to client LAN string
+    append lanstr "$client($i) "
+
+    tb-set-node-startup $client($i) "/users/halkaff/tomography/init.sh"
+
+    # equivalent to "mkextrafs /mnt/extra" on node i.
+    set bs($i) [$ns blockstore]
+    $bs($i) set-class "local"
+    $bs($i) set-size "100GB"
+    $bs($i) set-placement "nonsysvol"
+    $bs($i) set-mount-point "/mnt/extra"
+    $bs($i) set-node $client($i)
+}
+
+
+set lan0 [$ns make-lan "$lanstr" 1Gb 0ms]
+
+# Use static IP routing
+$ns rtproto Static
+
+# Run
+$ns run
