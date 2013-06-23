@@ -16,15 +16,15 @@ for {set i 0} {$i < $max_node} {incr i} {
     # Add to client LAN string
     append lanstr "$client($i) "
 
-    tb-set-node-startup $client($i) "/users/halkaff/tomography/init.sh"
+    tb-set-node-startup $client($i) "/proj/uiucnet/exp/tomography/src/init.sh"
 
     # equivalent to "mkextrafs /mnt/extra" on node i.
-    set bs($i) [$ns blockstore]
-    $bs($i) set-class "local"
-    $bs($i) set-size "100GB"
-    $bs($i) set-placement "nonsysvol"
-    $bs($i) set-mount-point "/mnt/extra"
-    $bs($i) set-node $client($i)
+    # set bs($i) [$ns blockstore]
+    # $bs($i) set-class "local"
+    # $bs($i) set-size "100GB"
+    # $bs($i) set-placement "nonsysvol"
+    # $bs($i) set-mount-point "/mnt/extra"
+    # $bs($i) set-node $client($i)
 }
 
 
