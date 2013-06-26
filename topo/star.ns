@@ -1,0 +1,15 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+set numnodes 10
+
+for {set i 1} {$i < $numnodes} {incr i} {
+    set client($i) [$ns node]
+    append lanstr "$client($i) "
+    tb-set-hardware $client($i) pc3000
+    tb-set-node-os $client($i) UBUNTU12-64-STD
+}
+
+set lan0 [$ns make-lan "$lanstr" 1Gb 0ms]
+$ns rtproto Static
+$ns run
