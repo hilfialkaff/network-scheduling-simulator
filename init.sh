@@ -1,10 +1,12 @@
 #!/bin/bash
 
-sudo apt-get update
-sudo apt-get install -y openjdk-6-jre openjdk-6-jdk
+source env.sh
 
-cp conf .. -r
-sudo cp hosts /etc/hosts
+echo -e "10.1.1.2\tmaster" | sudo tee -a /etc/hosts
+echo "master" > conf/slaves
+cat /etc/hosts | awk '{print $4}' | grep client >> conf/slaves
+cp conf $HADOOP_HOME -r
 
-cd ~/dotfiles/
-./setup.sh
+hadoop namenode -format
+start-dfs.sh
+start-mapred.sh

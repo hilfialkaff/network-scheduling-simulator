@@ -1,6 +1,7 @@
 #!/bin/bash
 
-HADOOP_HOME="$HOME/files/research/tomography/hadoop-1.1.2"
+source env.sh
+
 SRC_DIR=`pwd`
 LOG_DIR=$SRC_DIR/logs
 
@@ -11,7 +12,7 @@ function run_dfsio_bm {
     do
         for j in {10..20..10}
         do
-            echo $i $j >> $LOG_DIR/dfs_io.log
+            echo -e "\n"$i $j >> $LOG_DIR/dfs_io.log
             (time hadoop jar hadoop-*test*.jar TestDFSIO -write -nrFiles $i -fileSize $j &> $LOG_DIR/hadoop.log) >> $LOG_DIR/dfs_io.log 2>&1
             (time hadoop jar hadoop-*test*.jar TestDFSIO -read -nrFiles $i -fileSize $j &> $LOG_DIR/hadoop.log) >> $LOG_DIR/dfs_io.log 2>&1
             hadoop jar hadoop-*test*.jar TestDFSIO -clean &> /dev/null
@@ -28,7 +29,7 @@ function run_terasort_bm {
         hadoop jar hadoop-*examples*.jar teragen $i /data/input &> /dev/null
         for j in {1..2..1}
         do
-            echo $i $j >> $LOG_DIR/terasort.log
+            echo -e "\n"$i $j >> $LOG_DIR/terasort.log
             (time hadoop jar hadoop-*examples*.jar terasort /data/input /data/output &> $LOG_DIR/hadoop.log) >> $LOG_DIR/terasort.log 2>&1
             hadoop dfs -rmr /data/output &> /dev/null
         done

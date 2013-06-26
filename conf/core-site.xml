@@ -7,7 +7,7 @@
 <!-- Added: Hilfi -->
 <property>
   <name>hadoop.tmp.dir</name>
-  <value>/mnt/extra/hdfs</value>
+  <value>/users/halkaff/hdfs/</value>
   <description>A base for other temporary directories.</description>
 </property>
 
