@@ -1,1 +1,3 @@
 conf/slaves
+*.class
+*.jar
