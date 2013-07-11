@@ -1,0 +1,2559 @@
+jf 40 2
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 10 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 11 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 119 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  120.0
+No failure total time: 31 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  120.0
+No failure total time: 145 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 18 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 18 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 1 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 115 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 8 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  110.0
+Recovering 10% failure total time: 21 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 112 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 12 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 21 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 7 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 99 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 14 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 42 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 146 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 18 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 116 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 11 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 24 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 18 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 104 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 21 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  100.0
+No failure total time: 14 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  100.0
+No failure total time: 104 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+jf 40 4
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 23 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 5 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 160 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 10 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  310.0
+No failure total time: 30 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  255.0
+Recovering 10% failure total time: 33 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 223 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 18 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 21 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 5 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 162 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 10 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  310.0
+No failure total time: 32 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  255.0
+Recovering 10% failure total time: 30 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 231 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 18 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 21 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 5 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 161 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 11 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  310.0
+No failure total time: 30 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  255.0
+Recovering 10% failure total time: 30 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 224 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 18 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 21 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 7 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 162 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 10 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  310.0
+No failure total time: 30 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  255.0
+Recovering 10% failure total time: 31 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 231 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 20 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 21 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 5 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 160 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 10 ms
+
+jf 40 6
+
+Finding optimal graph with k=1
+Max Graph Utilization:  420.0
+No failure total time: 68 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  265.0
+Recovering 10% failure total time: 35 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  420.0
+No failure total time: 424 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  325.0
+Recovering 10% failure total time: 34 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 27 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 4 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 320 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 2 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  410.0
+No failure total time: 35 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 15 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  410.0
+No failure total time: 363 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 6 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  275.0
+No failure total time: 37 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  365.0
+Recovering 10% failure total time: 7 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  275.0
+No failure total time: 324 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  220.0
+Recovering 10% failure total time: 3 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  410.0
+No failure total time: 34 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  370.0
+Recovering 10% failure total time: 10 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  455.0
+No failure total time: 359 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  355.0
+Recovering 10% failure total time: 38 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 47 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 26 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 416 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  530.0
+Recovering 10% failure total time: 7 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  460.0
+No failure total time: 39 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  480.0
+No failure total time: 347 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  330.0
+Recovering 10% failure total time: 27 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 28 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  255.0
+Recovering 10% failure total time: 19 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 375 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 3 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  510.0
+No failure total time: 39 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 376 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+jf 40 8
+
+Finding optimal graph with k=1
+Max Graph Utilization:  383.333333333
+No failure total time: 89 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  353.333333333
+Recovering 10% failure total time: 38 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  415.0
+No failure total time: 3204 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  330.0
+Recovering 10% failure total time: 67 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  630.0
+No failure total time: 64 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  475.0
+Recovering 10% failure total time: 49 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  630.0
+No failure total time: 3349 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  455.0
+Recovering 10% failure total time: 39 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 55 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 15 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3132 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 46 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 54 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 14 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3099 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 43 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 53 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 15 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3143 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 42 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 56 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 14 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3119 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 47 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 55 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 16 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3150 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 43 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 53 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 14 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3119 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 41 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 55 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 14 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 3107 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 41 ms
+
+jf 80 2
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 68 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 933 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 233 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 29 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1404 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 204 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 173 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 102 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1122 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 181 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 90 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1236 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 10 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 187 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1052 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 102 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 99 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1176 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 46 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 215 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1262 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 75 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 52 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 1246 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 13 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 209 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 35 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 936 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+jf 80 4
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 323 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 35 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 1878 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 317 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 181 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 181 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 1708 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 188 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  270.0
+No failure total time: 437 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  170.0
+Recovering 10% failure total time: 58 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 1992 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 14 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 195 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 29 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 1875 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 214 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 48 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 2076 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 93 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 2 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 1126 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 55 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 361 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 1624 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 84 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  410.0
+No failure total time: 247 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 222 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  410.0
+No failure total time: 1884 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 41 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 213 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 48 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 2032 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+jf 80 6
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 158 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 115 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 1552 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 19 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  610.0
+No failure total time: 262 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  610.0
+Recovering 10% failure total time: 90 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  610.0
+No failure total time: 2942 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 228 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 265 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 463 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 2898 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  480.0
+Recovering 10% failure total time: 486 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 501 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 448 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 2715 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 24 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 152 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 112 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 1573 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 23 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  610.0
+No failure total time: 265 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  610.0
+Recovering 10% failure total time: 88 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  610.0
+No failure total time: 2986 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 230 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 269 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 441 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 2892 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  480.0
+Recovering 10% failure total time: 493 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 505 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 437 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 2711 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 24 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 164 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 107 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 1531 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 20 ms
+
+jf 80 8
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 301 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  675.0
+Recovering 10% failure total time: 178 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 6233 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  585.0
+Recovering 10% failure total time: 589 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  620.0
+No failure total time: 780 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  620.0
+Recovering 10% failure total time: 285 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  620.0
+No failure total time: 6130 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  415.0
+Recovering 10% failure total time: 468 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 516 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 505 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 5672 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  565.0
+Recovering 10% failure total time: 367 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 741 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  450.0
+Recovering 10% failure total time: 191 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 5585 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  250.0
+Recovering 10% failure total time: 409 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 203 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 4742 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  630.0
+No failure total time: 532 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  530.0
+Recovering 10% failure total time: 180 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  630.0
+No failure total time: 5034 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  596.666666667
+Recovering 10% failure total time: 302 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 623 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  740.0
+Recovering 10% failure total time: 165 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 6281 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  620.0
+Recovering 10% failure total time: 318 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  620.0
+No failure total time: 452 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 24 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  620.0
+No failure total time: 5345 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  620.0
+Recovering 10% failure total time: 10 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 245 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  740.0
+Recovering 10% failure total time: 314 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 5136 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 150 ms
+
+jf 120 2
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 447 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 11 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 5746 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 239 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 634 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 734 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 5842 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 61 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1260 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 4588 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 949 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 807 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 151 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 6270 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 431 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 3830 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 238 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1079 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 1234 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 6116 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 217 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1317 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 402 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 5242 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  0
+Recovering 10% failure total time: 1121 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 748 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 613 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 4457 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 16 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 875 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 5918 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  0
+Recovering 10% failure total time: 1639 ms
+
+jf 120 4
+
+Finding optimal graph with k=1
+Max Graph Utilization:  310.0
+No failure total time: 1803 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 700 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 8642 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  155.0
+Recovering 10% failure total time: 1781 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 1316 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 34 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 6161 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 28 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  300.0
+No failure total time: 2247 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 1322 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  300.0
+No failure total time: 8057 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  150.0
+Recovering 10% failure total time: 1258 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 745 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 7596 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 1545 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 171 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 8033 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 2706 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 250 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 9587 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 131 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 1160 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 718 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 6929 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 680 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 679 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 999 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 6974 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 148 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 683 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 997 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 6989 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 140 ms
+
+jf 120 6
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 868 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 862 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 9302 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 796 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 3282 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 1027 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 10999 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  610.0
+Recovering 10% failure total time: 206 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 1272 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 725 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 9117 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 416 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 2373 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 395 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 11007 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 75 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 2617 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 1243 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 11102 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 2565 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 1878 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 1444 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 9439 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  460.0
+Recovering 10% failure total time: 610 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 3730 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 892 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 10545 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 1268 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 3722 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 930 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 10593 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 1272 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 3762 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 914 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 10694 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 1261 ms
+
+jf 120 8
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 3885 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  700.0
+Recovering 10% failure total time: 121 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 16368 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 816 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 3281 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 1972 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 17143 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 622 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 2859 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 16339 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  630.0
+Recovering 10% failure total time: 825 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 3138 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 2764 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 15566 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  700.0
+Recovering 10% failure total time: 150 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  630.0
+No failure total time: 1598 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  730.0
+Recovering 10% failure total time: 95 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  630.0
+No failure total time: 13405 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  680.0
+Recovering 10% failure total time: 906 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 3661 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 284 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 18182 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 213 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  700.0
+No failure total time: 2194 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 234 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  700.0
+No failure total time: 14377 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  610.0
+Recovering 10% failure total time: 136 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  630.0
+No failure total time: 1976 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  640.0
+Recovering 10% failure total time: 130 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  630.0
+No failure total time: 18468 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  440.0
+Recovering 10% failure total time: 1653 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 3812 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  820.0
+Recovering 10% failure total time: 185 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 15683 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 1554 ms
+
+jf 160 2
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1816 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 14187 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  110.0
+Recovering 10% failure total time: 1903 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 958 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 13495 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 2134 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 15 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 13768 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1941 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 727 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 14897 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1584 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 15177 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 967 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 12860 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 843 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 1865 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 14278 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  110.0
+Recovering 10% failure total time: 1940 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 979 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 13557 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 2125 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 15 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 13907 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+jf 160 4
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 2876 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 21639 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 59 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  310.0
+No failure total time: 2873 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  265.0
+Recovering 10% failure total time: 991 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  310.0
+No failure total time: 21833 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 157 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 4169 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 1158 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 19568 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 1801 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 783 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 20180 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 1324 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 2182 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 2298 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 19933 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 2123 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 1201 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 20206 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 812 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 2901 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  430.0
+Recovering 10% failure total time: 1243 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 22840 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 3117 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  410.0
+No failure total time: 4348 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 229 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  410.0
+No failure total time: 20596 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 4274 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 3678 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 21570 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 4703 ms
+
+jf 160 6
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 2935 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 2302 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 28352 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 3452 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 3085 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  600.0
+Recovering 10% failure total time: 1682 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 21054 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 701 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 6198 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 1108 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 28823 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  450.0
+Recovering 10% failure total time: 633 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 5244 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 304 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 33612 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  450.0
+Recovering 10% failure total time: 4543 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 3546 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 701 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 23806 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 2793 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 6948 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 5398 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 29447 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 4044 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  510.0
+No failure total time: 5680 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  520.0
+Recovering 10% failure total time: 462 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  510.0
+No failure total time: 26992 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 763 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  500.0
+No failure total time: 5237 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 321 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  500.0
+No failure total time: 33471 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  450.0
+Recovering 10% failure total time: 4710 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  520.0
+No failure total time: 3579 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  420.0
+Recovering 10% failure total time: 746 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  520.0
+No failure total time: 23897 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  320.0
+Recovering 10% failure total time: 2671 ms
+
+jf 160 8
+
+Finding optimal graph with k=1
+Max Graph Utilization:  700.0
+No failure total time: 8900 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 4677 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  700.0
+No failure total time: 37683 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 1525 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 9186 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  730.0
+Recovering 10% failure total time: 6989 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 35770 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  700.0
+Recovering 10% failure total time: 568 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 7220 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 4897 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 34986 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 7594 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  610.0
+Recovering 10% failure total time: 2715 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 39689 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  610.0
+Recovering 10% failure total time: 5073 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  700.0
+No failure total time: 9170 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 2429 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  700.0
+No failure total time: 34884 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  600.0
+Recovering 10% failure total time: 389 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  810.0
+No failure total time: 3857 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 849 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  810.0
+No failure total time: 33063 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  820.0
+Recovering 10% failure total time: 353 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  730.0
+No failure total time: 5674 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  695.0
+Recovering 10% failure total time: 1465 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  730.0
+No failure total time: 30146 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  630.0
+Recovering 10% failure total time: 711 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  710.0
+No failure total time: 8409 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 4102 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  710.0
+No failure total time: 38407 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  555.0
+Recovering 10% failure total time: 3777 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  665.0
+No failure total time: 8208 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  565.0
+Recovering 10% failure total time: 1356 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  665.0
+No failure total time: 36411 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  685.0
+Recovering 10% failure total time: 1425 ms
+
+jf 200 2
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 4865 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 2811 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 36678 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 7923 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 3601 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 3422 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 24858 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  0
+Recovering 10% failure total time: 1909 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 4213 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 3183 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 37022 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 2660 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 30161 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 2553 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 196 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 32926 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 6875 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 1311 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 30550 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 1495 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 3586 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 743 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 31918 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 1227 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 3707 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  110.0
+Recovering 10% failure total time: 3233 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 32905 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  200.0
+No failure total time: 4802 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  100.0
+Recovering 10% failure total time: 3233 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  200.0
+No failure total time: 35705 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+jf 200 4
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 9617 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 1745 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 50354 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 5605 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 8765 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 5129 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 49028 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 522 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 7300 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 897 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 41267 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  200.0
+Recovering 10% failure total time: 1895 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 7654 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 601 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 40861 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  310.0
+Recovering 10% failure total time: 1872 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 6817 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 3545 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 43262 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 8083 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 5075 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 827 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 40530 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  400.0
+Recovering 10% failure total time: 360 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 6355 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 48902 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  300.0
+Recovering 10% failure total time: 3559 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  410.0
+No failure total time: 13700 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  430.0
+Recovering 10% failure total time: 6675 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  410.0
+No failure total time: 49710 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  210.0
+Recovering 10% failure total time: 3588 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  400.0
+No failure total time: 7675 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 5590 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  400.0
+No failure total time: 46114 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 3205 ms
+
+jf 200 6
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 18102 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 1955 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 67079 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 1602 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 12206 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 6532 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 57848 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 5512 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 8580 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 4559 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 46268 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 6264 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 4560 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 48258 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 540 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 7108 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  600.0
+Recovering 10% failure total time: 3598 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 56612 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  410.0
+Recovering 10% failure total time: 14117 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 14441 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 4027 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 63353 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  600.0
+Recovering 10% failure total time: 297 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 8580 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 53994 ms
+Simulating 10% link failures
+No flows are affected.
+Recovering 10% failure total time: 0 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  610.0
+No failure total time: 9660 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  530.0
+Recovering 10% failure total time: 6849 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  610.0
+No failure total time: 55514 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  510.0
+Recovering 10% failure total time: 7975 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  600.0
+No failure total time: 7708 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  600.0
+Recovering 10% failure total time: 1933 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  600.0
+No failure total time: 52384 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 2045 ms
+
+jf 200 8
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 14459 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  830.0
+Recovering 10% failure total time: 2458 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 62240 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 2367 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 17126 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  500.0
+Recovering 10% failure total time: 8823 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 75256 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  800.0
+Recovering 10% failure total time: 264 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  630.0
+No failure total time: 18962 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  570.0
+Recovering 10% failure total time: 7075 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  630.0
+No failure total time: 81369 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  530.0
+Recovering 10% failure total time: 588 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 10604 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  700.0
+Recovering 10% failure total time: 3926 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 72011 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 6391 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 11870 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  640.0
+Recovering 10% failure total time: 6453 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 63211 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 6014 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  665.0
+No failure total time: 14028 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  620.0
+Recovering 10% failure total time: 9700 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  665.0
+No failure total time: 75897 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  575.0
+Recovering 10% failure total time: 5988 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  800.0
+No failure total time: 10772 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  700.0
+Recovering 10% failure total time: 3763 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  800.0
+No failure total time: 70779 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  710.0
+Recovering 10% failure total time: 6336 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  720.0
+No failure total time: 11724 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  640.0
+Recovering 10% failure total time: 6571 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  720.0
+No failure total time: 63166 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  720.0
+Recovering 10% failure total time: 6026 ms
+
+Finding optimal graph with k=1
+Max Graph Utilization:  665.0
+No failure total time: 13759 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  620.0
+Recovering 10% failure total time: 10159 ms
+
+Finding optimal graph with k=4
+Max Graph Utilization:  665.0
+No failure total time: 75511 ms
+Simulating 10% link failures
+Fixed Graph Utilization:  575.0
+Recovering 10% failure total time: 5893 ms

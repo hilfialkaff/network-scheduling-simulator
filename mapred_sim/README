@@ -1,0 +1,6 @@
+The graphs are being drawn using NetworkX and Matplotlib. To visualize the graphs,
+run the following commands to install the required components
+
+sudo easy_install networkx
+sudo apt-get install python-matplotlib
+
