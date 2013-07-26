@@ -1,4 +1,3 @@
-#from drawgraph import drawGraph
 from random import randrange, choice, seed
 from pprint import pprint
 from graph import Graph
@@ -9,27 +8,18 @@ class Topology(object):
         self.graph = None
         self.bandwidth = None
     
-    def generateGraph(self):
+    def generate_graph(self):
         raise NotImplementedError('Method is unimplemented in abstract class!')
     
-    def getGraph(self):
+    def get_graph(self):
         if self.graph is None:
-            self.graph = self.generateGraph()
+            self.graph = self.generate_graph()
     
         return self.graph
     
-    def getBandwidth(self):
+    def get_bandwidth(self):
         return self.bandwidth
     
-    def writeToFile(self):
-        # TODO: Implement this
-        pass
-    
-    def showGraph(self):
-        raise NotImplementedError('Method no longer supported!')
-        #assert(self.graph is not None)
-        #drawGraph(self.graph, self.graph_type, self.graph_args)
-
 class JellyfishTopology(Topology):
     def __init__(self, bandwidth = 100, nHosts = 16, nSwitches = 20, nPorts = 4):
         super(JellyfishTopology, self).__init__()
@@ -38,7 +28,7 @@ class JellyfishTopology(Topology):
         self.nSwitches = nSwitches
         self.nPorts = nPorts
     
-    def generateGraph(self):
+    def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
         @param nHosts number of hosts
         @param nSwitches number of switches
@@ -145,10 +135,10 @@ class JellyfishTopology(Topology):
 class FatTreeTopology(Topology):
     def __init__(self, bandwidth = 100, nPorts = 4):
         super(FatTreeTopology, self).__init__()
-        self.bandwidth = 100
+        self.bandwidth = bandwidth
         self.nPorts = nPorts
 
-    def generateGraph(self):
+    def generate_graph(self):
         ''' Generate a Fat Tree topology-like graph
         @param nPorts number of ports in each switch
         @return dictionary of nodes and edges representing the topology

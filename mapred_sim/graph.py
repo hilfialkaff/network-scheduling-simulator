@@ -1,8 +1,10 @@
-from flow import *
-from link import *
+from flow import Flow
+from link import Link
+from node import Node
 from copy import deepcopy
 from random import choice, sample
-from nodes import *
+import matplotlib.pyplot as plt
+import networkx as nx
 
 class Graph(object):
     def __init__(self, g={}, commPattern=[]):
@@ -12,6 +14,8 @@ class Graph(object):
         self.links = None
         self.hosts = None
         self.switches = None
+        self.num_mappers = 1
+        self.num_reducers = 1
 
         self.build()
 
@@ -19,6 +23,11 @@ class Graph(object):
         del self.g
         del self.links
         del self.flows
+
+    # TODO: Make this heterogeneous?
+    def set_mappers_reducers(self, num_mappers, num_reducers):
+        self.num_mappers = num_mappers
+        self.num_reducers = num_reducers
 
     def clone(self):
         return Graph(deepcopy(self.g), deepcopy(self.commPattern))
@@ -29,16 +38,21 @@ class Graph(object):
 
         for nodeId in self.g:
           if nodeId.startswith("h"):
-            hosts.append(PhysicalMachine(nodeId))
+            hosts.append(Node(nodeId, self.num_mappers, self.num_reducers))
           elif nodeId.startswith("s"):
             switches.append(nodeId)
 
         self.hosts = hosts
         self.switches = switches
-        self.setLink()
+        self.set_link()
 
+    def get_total_mappers(self):
+        return sum([h.get_available_mappers() for h in hosts])
 
-    def setLink(self):
+    def get_total_reducers(self):
+        return sum([h.get_available_reducers() for h in hosts])
+
+    def set_link(self):
         self.links = {}
         for n1 in self.g.keys():
             for n2 in self.g[n1]:
@@ -46,32 +60,29 @@ class Graph(object):
                     l = Link(n1, n2, self.g[n1][n2])
                     self.links[l.getEndPoints()] = l
 
-    def getFlatGraph(self):
+    def get_flat_graph(self):
         return self.g
 
-    def setFlatGraph(self, g={}):
-        self.__init__(g, self.commPattern)
-
-    def getLinks(self):
+    def get_links(self):
         return self.links
 
-    def getHosts(self):
+    def get_hosts(self):
         return self.hosts
 
-    def getSwitches(self):
+    def get_switches(self):
         return self.switches
 
-    def setCommPattern(self, commPattern=[]):
+    def set_comm_pattern(self, commPattern=[]):
         self.commPattern = commPattern
         self.flows = None
 
-    def getCommPattern(self):
+    def get_comm_pattern(self):
         return self.commPattern
 
-    def getFlows(self):
+    def get_flows(self):
         return self.flows
 
-    def addFlow(self, src, dst, bw, path):
+    def add_flow(self, src, dst, bw, path):
         fl = Flow(src, dst, bw)
 
         linkList = []
@@ -83,11 +94,11 @@ class Graph(object):
         self.flows[fl.getEndPoints()] = fl
         return fl
 
-    def removeFlow(self, flow):
+    def remove_flow(self, flow):
         flow.setPath(None)
         self.flows.pop(flow.getEndPoints())
 
-    def setFlow(self, chosen_paths):
+    def set_flow(self, chosen_paths):
         self.flows = {}
 
         # Create Flow Objects
@@ -106,14 +117,13 @@ class Graph(object):
             fl = self.flows[Flow.getFlowId(path[0], path[-1])]
             fl.setPath(linkList)
 
-        # for f in flows.keys():
-        #     bottleneck = flows[f].getBottleneckLink()
+        # for f in self.flows.keys():
+        #     bottleneck = self.flows[f].getBottleneckLink()
         #     print "bw: ", bottleneck.getLinkBandwidth()
         #     print "links: ", [f.getEndPoints() for f in bottleneck.getFlows()]
+        #     print "Flow%s Effective Bandwidth: %f" % (str(self.flows[f].getEndPoints()), self.flows[f].getEffectiveBandwidth())
 
-            # print "Flow%s Effective Bandwidth: %f" % (str(flows[f].getEndPoints()), flows[f].getEffectiveBandwidth())
-
-    def computeUtilization(self):
+    def compute_utilization(self):
         util = sum([self.flows[fl].getEffectiveBandwidth() + self.flows[fl].getRequestedBandwidth() for fl in self.flows.keys()])
         return util
 
@@ -136,7 +146,7 @@ class Graph(object):
 
         return linkId
 
-    def getEdgeLinkForHost(self, hostId):
+    def get_edge_link_for_host(self, hostId):
         adjLinkIds = self.g[hostId].keys()
 
         # No edge switches found for this host
@@ -146,5 +156,38 @@ class Graph(object):
         switchId = adjLinkIds[0]
         return self.links[Link.getLinkId(hostId, switchId)]
 
-    def getFlowAllocation(self, link):
+    def get_flow_allocation(self, link):
         return self.links[link].getFlowAllocation()
+
+    def plot(self, graph_type):
+        G = self.generate_graph()
+        hosts = [(u) for (u, v) in G.nodes(data = True) if v["type"] == "host"]
+        switches = [(u) for (u, v) in G.nodes(data = True) if v["type"] == "switch"]
+
+        pos = nx.graphviz_layout(G)
+
+        # draw graph
+        nx.draw_networkx_nodes(G, pos, nodelist=switches, node_size=100, label="x")
+        nx.draw_networkx_nodes(G, pos, nodelist=hosts, node_size=50, node_color='b')
+        nx.draw_networkx_edges(G, pos)
+
+        plt.savefig("graphs/" + graph_type + '.png')
+        plt.clf()
+
+    def generate_graph(self):
+        graph = self.g
+        nx_graph = nx.Graph()
+
+        for node in graph:
+            if node.startswith("h"):
+                type = "host"
+            else:
+                type = "switch"
+            nx_graph.add_node(node, type = type)
+
+        for node in graph:
+            for adjNode in graph[node]:
+                weight = graph[node][adjNode]
+                nx_graph.add_edge(node, adjNode, weight = weight)
+
+        return nx_graph

@@ -1,3 +1,5 @@
 conf/slaves
 *.class
 *.jar
+*.pyc
+*.png
