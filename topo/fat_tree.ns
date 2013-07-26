@@ -7,21 +7,23 @@ set ns [new Simulator]
 array set nodes {}
 array set links {}
 set link_counter 0
-set ports 3
+set ports 4
 
 set core_sws_min 1
 set core_sws_max [expr $ports/2 + 1]
 set agg_sws_min [expr $ports/2]
 set agg_sws_max [expr $ports]
 set edge_sws_min 0
-set edge_sws_max [expr $ports/2]
+# set edge_sws_max [expr $ports/2]
+set edge_sws_max [expr $ports/2 - 1]
 set host_min 2
 set host_max [expr $ports/2 + 2]
 
 proc setup_node {node_id} {
     tb-set-hardware $node_id pc3000
-    tb-set-node-os $node_id UBUNTU12-64-STD
-    tb-set-node-startup $node_id "/users/halkaff/tomography/init.sh"
+    # UBUNTU12-64-STD
+    tb-set-node-os $node_id UBUNTU10-STD
+    tb-set-node-startup $node_id "/proj/uiucnet/exp/tomography/src/_init.sh"
 
     # equivalent to "mkextrafs /mnt/extra" on node i.
     # set bs($p) [$ns blockstore]
@@ -33,6 +35,10 @@ proc setup_node {node_id} {
 
 }
 
+proc setup_router {node_id} {
+    tb-set-hardware $node_id pc850
+}
+
 for {set p 0} {$p < $ports} {incr p} {
     for {set e $edge_sws_min} {$e < $edge_sws_max} {incr e} {
         set edge_id "se"
@@ -42,7 +48,6 @@ for {set p 0} {$p < $ports} {incr p} {
 
         if {![info exist nodes($edge_id)]} {
             set nodes($edge_id) [$ns node]
-            setup_node $nodes($edge_id)
         }
 
         for {set h $host_min} {$h < $host_max} {incr h} {
@@ -67,7 +72,6 @@ for {set p 0} {$p < $ports} {incr p} {
 
             if {![info exist nodes($agg_id)]} {
                 set nodes($agg_id) [$ns node]
-                setup_node $nodes($agg_id)
             }
             set links($link_counter) [$ns duplex-link $nodes($agg_id) $nodes($edge_id) 1Gb 0ms DropTail]
             incr link_counter
@@ -90,7 +94,6 @@ for {set p 0} {$p < $ports} {incr p} {
 
             if {![info exist nodes($core_id)]} {
                 set nodes($core_id) [$ns node]
-                setup_node $nodes($core_id)
             }
             set links($link_counter) [$ns duplex-link $nodes($agg_id) $nodes($core_id) 1Gb 0ms DropTail]
             incr link_counter

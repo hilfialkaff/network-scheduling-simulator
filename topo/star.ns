@@ -8,7 +8,7 @@ for {set i 1} {$i < $numnodes} {incr i} {
     append lanstr "$client($i) "
     tb-set-hardware $client($i) pc3000
     tb-set-node-os $client($i) UBUNTU12-64-STD
-    tb-set-node-startup $client($i) "/proj/uiucnet/exp/tomo2/src/install_dependencies.sh && /proj/uiucnet/exp/tomo2/src/init.sh"
+    tb-set-node-startup $client($i) "/proj/uiucnet/exp/tomography/src/_init.sh"
 }
 
 set lan0 [$ns make-lan "$lanstr" 1Gb 0ms]
