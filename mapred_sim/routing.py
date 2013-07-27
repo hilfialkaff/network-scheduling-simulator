@@ -11,12 +11,16 @@ from graph import *
 from guppy import hpy
 
 class KShortestPathBWAllocation:
-    def __init__(self, k = 1, numAltPaths = 2, maxIntersections = 0.5):
+    def __init__(self, k=1, graph=None, bandwidth=100, numAltPaths=10, maxIntersections=0.5, num_mappers=2, num_reducers=2):
         self.k = k # Parameter for k-shortest path
-        self.numAltPaths = 10 # Number of alternative paths to cache
-        self.maxIntersections = 0.5 # Fraction of intersections tolerable between the paths
+        self.numAltPaths = numAltPaths # Number of alternative paths to cache
+        self.maxIntersections = maxIntersections # Fraction of intersections tolerable between the paths
+        self.num_mappers = num_mappers
+        self.num_reducers = num_reducers
+        self.bandwidth = bandwidth
 
-        self.graph = None
+        self.graph = graph
+        self._graph = None
         self.valid_paths = {}
         self.chosen_graphs = []
         self.chosen_paths = []
@@ -24,39 +28,85 @@ class KShortestPathBWAllocation:
         self.h = hpy()
 
     def clean_up(self):
-        del self.graph
         del self.valid_paths
+        del self.chosen_paths
+        del self.chosen_graphs
+        del self._chosen_graphs
 
-        for _ in self.chosen_graphs:
-            del _
-        for _ in self.chosen_paths:
-            del _
-        for _ in self._chosen_graphs:
-            del _
+        self.valid_paths = {}
+        self.chosen_paths = []
+        self.chosen_graphs = []
+        self._chosen_graphs = []
 
-    def getNextAvailableHostId(self, hostList, curHostId):
-        "Return a host ID whose edge switch is not down"
-        hostId = curHostId
+    def construct_flows(self, nodes):
+        ids = [node.get_id() for node in nodes]
+        mappers = ids[:len(ids)/2]
+        reducers = ids[len(ids)/2:]
 
-        if hostId == "":
-            hostId = sample(hostList, 1)[0]
-            hostList.remove(hostId)
+        flows = []
+        bw = self.bandwidth
 
-        while len(hostList) > 0:
-            link = self.graph.getEdgeLinkForHost(hostId)
+        for m in mappers:
+            for r in reducers:
+                flow = (m, r, bw / 10)
+                flows.append(flow)
 
-            if (link is not None) and link.isActive():
-                return hostId
+        return flows
 
-            hostId = sample(hostList, 1)[0]
-            hostList.remove(hostId)
+    def _permute(self, index, num_chosen, hosts, num_mr):
+        ret = []
 
-        return None # Should not hit here...
+        if index == len(hosts) or num_chosen == num_mr:
+            return ret
 
-    def compute(self, g, b):
-        self.graph = g
-        self.flows = g.get_comm_pattern()
-        self.bandwidth = b
+        ret.append([hosts[index]])
+
+        _ret1 = self._permute(index + 1, num_chosen + 1, hosts, num_mr)
+        _ret2 = self._permute(index + 1, num_chosen, hosts, num_mr)
+
+        for _ in _ret1:
+            if type(_) == list:
+                ret.append([hosts[index]] + _)
+            else:
+                ret.append([hosts[index], _])
+        for _ in _ret2:
+            ret.append(_)
+
+        return ret
+
+    def _generate_permutations(self, hosts, num_mr):
+        # print "hosts: ", hosts
+        p = self._permute(0, 0, hosts, num_mr)
+        p = filter(lambda x: len(x) == num_mr, p)
+        # print "permutations: ", p
+        return p
+ 
+    def place_mappers_reducers(self):
+        flows = []
+        hosts = self.graph.get_hosts()
+        bandwidth = self.bandwidth
+        max_util = 0
+        i = 0 # XXX
+
+        # TODO: Check for availability
+        # TODO: Select only a subset of the nodes?
+        for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
+            flows = self.construct_flows(p)
+            self.graph.set_comm_pattern(flows)
+            max_util = max(max_util, self.compute_route())
+
+            # XXX
+            i += 1
+            if i == 10:
+                break
+
+            self.clean_up()
+
+        return max_util
+
+    def compute_route(self):
+        self._graph = self.graph.clone()
+        self.flows = self.graph.get_comm_pattern()
 
         self.build_paths()
         permutations = self.generate_permutations()
@@ -72,7 +122,7 @@ class KShortestPathBWAllocation:
         q = PriorityQueue()
         q.push(0, path, desired_bw)
 
-        flatGraph = self.graph.get_flat_graph()
+        flatGraph = self._graph.get_flat_graph()
 
         # Uniform Cost Search
         while (q.isEmpty() == False) and (len(pathsFound) < k):
@@ -165,7 +215,7 @@ class KShortestPathBWAllocation:
 
         i = 0
         for permute in permutations:
-            new_graph = deepcopy(self.graph.get_flat_graph())
+            new_graph = deepcopy(self._graph.get_flat_graph())
 
             valid = True
             paths_used = []
@@ -208,6 +258,8 @@ class KShortestPathBWAllocation:
                 maxUtil = util
                 bestGraph = g
 
-        # print "Utilization: ", maxUtil
+        # print "vanilla graph: ", self.graph.get_flat_graph()
+        # print "best graph: ", bestGraph.get_flat_graph()
+
         # return bestGraph
         return maxUtil
