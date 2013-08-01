@@ -15,5 +15,5 @@ class PriorityQueue:
       pair.extend([a for a in args])
       return pair
 
-  def isEmpty(self):
+  def is_empty(self):
     return len(self.heap) == 0

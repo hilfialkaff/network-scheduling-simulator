@@ -1,12 +1,23 @@
+"""
+Represents a job in map-reduce like environment.
+"""
 class Job:
+    NOT_EXECUTED = 0
+    EXECUTING = 1
+    FINISHED = 2
+
     def __init__(self, line):
         tmp = line.split('\t')
+        self.state = Job.NOT_EXECUTED
         self.job_id = tmp[0]
-        self.submit_time = tmp[1]
-        self.inter_job_diff = tmp[2]
-        self.map_size = tmp[3]
-        self.shuffle_size = tmp[4]
-        self.reduce_size = tmp[5]
+        self.submit_time = int(tmp[1])
+        self.inter_job_diff = int(tmp[2])
+        self.map_size = long(tmp[3])
+        self.shuffle_size = long(tmp[4])
+        self.reduce_size = long(tmp[5])
+
+    def get_state(self):
+        return self.state
 
     def get_job_id(self):
         return self.job_id

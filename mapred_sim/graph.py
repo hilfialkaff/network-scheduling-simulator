@@ -6,116 +6,156 @@ from random import choice, sample
 import matplotlib.pyplot as plt
 import networkx as nx
 
-class Graph(object):
-    def __init__(self, g={}, commPattern=[]):
-        self.g = g
-        self.commPattern = commPattern # tuples of (src, dst, bandwidth desired)
-        self.flows = None
-        self.links = None
-        self.hosts = None
-        self.switches = None
-        self.num_mappers = 1
-        self.num_reducers = 1
+"""
+Represents a graph of nodes currently working in the cluster
 
-        self.build()
+TODO
+"""
+class Graph:
+    def __init__(self, comm_pattern=[], bandwidth=100):
+        self.comm_pattern = comm_pattern # tuples of (src, dst, bandwidth desired)
+        self.bandwidth = bandwidth
+        self.nodes = {}
+        self.flows = {}
+        self.links = {}
 
     def __del__(self):
-        del self.g
+        del self.comm_pattern
         del self.links
         del self.flows
+        del self.nodes
 
-    # TODO: Make this heterogeneous?
-    def set_mappers_reducers(self, num_mappers, num_reducers):
-        self.num_mappers = num_mappers
-        self.num_reducers = num_reducers
+    def reset(self):
+        del self.flows
+        self.flows = {}
+        self.reset_links()
 
-    def clone(self):
-        return Graph(deepcopy(self.g), deepcopy(self.commPattern))
+    def get_bandwidth(self):
+        return self.bandwidth
 
-    def build(self):
-        hosts = []
-        switches = []
+    def set_links(self, links):
+        self.links = links
 
-        for nodeId in self.g:
-          if nodeId.startswith("h"):
-            hosts.append(Node(nodeId, self.num_mappers, self.num_reducers))
-          elif nodeId.startswith("s"):
-            switches.append(nodeId)
+    def get_link(self, node1, node2):
+        link_id = Link.get_id(node1.get_id(), node2.get_id())
 
-        self.hosts = hosts
-        self.switches = switches
-        self.set_link()
-
-    def get_total_mappers(self):
-        return sum([h.get_available_mappers() for h in hosts])
-
-    def get_total_reducers(self):
-        return sum([h.get_available_reducers() for h in hosts])
-
-    def set_link(self):
-        self.links = {}
-        for n1 in self.g.keys():
-            for n2 in self.g[n1]:
-                if not Link.getLinkId(n1, n2) in self.links.keys():
-                    l = Link(n1, n2, self.g[n1][n2])
-                    self.links[l.getEndPoints()] = l
-
-    def get_flat_graph(self):
-        return self.g
+        if link_id not in self.links:
+            raise Exception("Link does not exist...")
+        else:
+            return self.links[link_id]
 
     def get_links(self):
         return self.links
 
+    # Print the links and the bandwidth consumption of the flows running on it
+    def print_links(self):
+        for link in self.links.values():
+            print "link ", link.get_end_points(), " bandwidth ", link.get_bandwidth()
+            flows = link.get_flows()
+
+            for flow in flows:
+                print "flow bandwidth: ", link.get_flow_bandwidth(flow)
+
+    def add_link(self, node1, node2, bandwidth):
+        link = Link(node1.get_id(), node2.get_id(), bandwidth)
+        end_point = link.get_end_points()
+
+        if link in self.links:
+            raise Exception("Link already exist...")
+        else:
+            self.links[end_point] = link
+            node1.add_link(link)
+            node2.add_link(link)
+
+        self.links[end_point] = link
+
+    def clone_links(self):
+        new_links = {}
+        
+        for link in self.links.values():
+            bandwidth = link.get_bandwidth()
+            [node1_id, node2_id] = link.get_end_points()
+            new_link = Link(node1_id, node2_id, bandwidth)
+
+            new_links[(node1_id, node2_id)] = new_link
+
+        return new_links
+
+    def reset_links(self):
+        for link in self.links.values():
+            link.set_bandwidth(self.bandwidth)
+            link.set_flows({})
+
+    def set_nodes(self, nodes):
+        self.nodes = nodes
+
+    def get_node(self, node_id):
+        ret = None
+        if node_id in self.nodes:
+            ret = self.nodes[node_id]
+        return ret
+
+    def get_nodes(self):
+        return self.nodes
+
     def get_hosts(self):
-        return self.hosts
+        return filter(lambda node: node.get_type() == "host", self.nodes.values())
 
     def get_switches(self):
-        return self.switches
-
-    def set_comm_pattern(self, commPattern=[]):
-        self.commPattern = commPattern
-        self.flows = None
+        return filter(lambda node: node.get_type() == "switch", self.nodes.values())
 
     def get_comm_pattern(self):
-        return self.commPattern
+        return self.comm_pattern
+
+    def reset_flows(self):
+        self.flows = {}
+
+    def set_flows(self, flows):
+        self.flows = flows
 
     def get_flows(self):
         return self.flows
 
+    def add_node(self, node):
+        if node.get_id() in self.nodes:
+            raise Exception("Node already exist...")
+        else:
+            self.nodes[node.get_id()] = node
+
+    def set_comm_pattern(self, comm_pattern=[]):
+        self.comm_pattern = comm_pattern
+        self.flows = None
+
     def add_flow(self, src, dst, bw, path):
         fl = Flow(src, dst, bw)
 
-        linkList = []
+        link_list = []
         for i in range(len(path)-1):
-            l = self.links[Link.getLinkId(path[i], path[i+1])]
-            linkList.append(l)
+            l = self.links[Link.get_id(path[i], path[i+1])]
+            link_list.append(l)
 
-        fl.setPath(linkList)
-        self.flows[fl.getEndPoints()] = fl
+        fl.set_path(link_list)
+        self.flows[fl.get_end_points()] = fl
         return fl
-
-    def remove_flow(self, flow):
-        flow.setPath(None)
-        self.flows.pop(flow.getEndPoints())
 
     def set_flow(self, chosen_paths):
         self.flows = {}
 
         # Create Flow Objects
-        for cp in self.commPattern:
+        for cp in self.comm_pattern:
             fl = Flow(cp[0], cp[1], cp[2])
-            self.flows[fl.getEndPoints()] = fl
+            self.flows[fl.get_end_points()] = fl
 
         for p in chosen_paths:
             path = p[1]
 
-            linkList = []
+            link_list = []
             for i in range(len(path)-1):
-                l = self.links[Link.getLinkId(path[i], path[i+1])]
-                linkList.append(l)
+                l = self.links[Link.get_id(path[i], path[i+1])]
+                link_list.append(l)
 
-            fl = self.flows[Flow.getFlowId(path[0], path[-1])]
-            fl.setPath(linkList)
+            fl = self.flows[Flow.get_id(path[0], path[-1])]
+            fl.set_path(link_list)
 
         # for f in self.flows.keys():
         #     bottleneck = self.flows[f].getBottleneckLink()
@@ -124,70 +164,36 @@ class Graph(object):
         #     print "Flow%s Effective Bandwidth: %f" % (str(self.flows[f].getEndPoints()), self.flows[f].getEffectiveBandwidth())
 
     def compute_utilization(self):
-        util = sum([self.flows[fl].getEffectiveBandwidth() + self.flows[fl].getRequestedBandwidth() for fl in self.flows.keys()])
+        # print "begin compute utilization"
+        # for flow in self.flows.keys():
+        #     print "effective bw: ", self.flows[flow].get_effective_bandwidth()
+        #     print "requested bw: ", self.flows[flow].get_requested_bandwidth()
+        # print "end compute utilization"
+
+        util = sum([self.flows[fl].get_effective_bandwidth() + self.flows[fl].get_requested_bandwidth() for fl in self.flows.keys()])
         return util
 
-    def takeRandomLinkDown(self):
-        if len(self.links) == 0:
-            return None
-
-        linkId = None
-
-        while True:
-            linkId = sample(self.links, 1)[0]
-            link = self.links[linkId]
-
-            if link.isActive():
-                link.turnOff()
-
-                del self.g[linkId[0]][linkId[1]]
-                del self.g[linkId[1]][linkId[0]]
-                break
-
-        return linkId
-
-    def get_edge_link_for_host(self, hostId):
-        adjLinkIds = self.g[hostId].keys()
-
-        # No edge switches found for this host
-        if len(adjLinkIds) == 0:
-            return None
-
-        switchId = adjLinkIds[0]
-        return self.links[Link.getLinkId(hostId, switchId)]
-
-    def get_flow_allocation(self, link):
-        return self.links[link].getFlowAllocation()
-
     def plot(self, graph_type):
-        G = self.generate_graph()
-        hosts = [(u) for (u, v) in G.nodes(data = True) if v["type"] == "host"]
-        switches = [(u) for (u, v) in G.nodes(data = True) if v["type"] == "switch"]
+        nx_graph = nx.Graph()
 
-        pos = nx.graphviz_layout(G)
+        for node in self.get_nodes().values():
+            nx_graph.add_node(node.get_id(), type=node.get_type())
+
+        for node in self.get_nodes().values():
+            for link in node.get_links():
+                end_point = link.get_end_points()
+                neighbor = end_point[0] if node.get_id() != end_point[0] else end_point[1]
+                nx_graph.add_edge(node.get_id(), neighbor, weight=100)
+
+        hosts = [(u) for (u, v) in nx_graph.nodes(data = True) if v["type"] == "host"]
+        switches = [(u) for (u, v) in nx_graph.nodes(data = True) if v["type"] == "switch"]
+
+        pos = nx.graphviz_layout(nx_graph)
 
         # draw graph
-        nx.draw_networkx_nodes(G, pos, nodelist=switches, node_size=100, label="x")
-        nx.draw_networkx_nodes(G, pos, nodelist=hosts, node_size=50, node_color='b')
-        nx.draw_networkx_edges(G, pos)
+        nx.draw_networkx_nodes(nx_graph, pos, nodelist=switches, node_size=100, label="x")
+        nx.draw_networkx_nodes(nx_graph, pos, nodelist=hosts, node_size=50, node_color='b')
+        nx.draw_networkx_edges(nx_graph, pos)
 
         plt.savefig("graphs/" + graph_type + '.png')
         plt.clf()
-
-    def generate_graph(self):
-        graph = self.g
-        nx_graph = nx.Graph()
-
-        for node in graph:
-            if node.startswith("h"):
-                type = "host"
-            else:
-                type = "switch"
-            nx_graph.add_node(node, type = type)
-
-        for node in graph:
-            for adjNode in graph[node]:
-                weight = graph[node][adjNode]
-                nx_graph.add_edge(node, adjNode, weight = weight)
-
-        return nx_graph

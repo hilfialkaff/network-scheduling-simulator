@@ -5,38 +5,40 @@ from copy import deepcopy
 from pprint import pprint
 from time import time
 from utils import *
+from graph import Graph
 import flow
 import link
-from graph import *
-from guppy import hpy
 
-class KShortestPathBWAllocation:
-    def __init__(self, k=1, graph=None, bandwidth=100, numAltPaths=10, maxIntersections=0.5, num_mappers=2, num_reducers=2):
+"""
+Computes all-way k-path routing for the given flow in the datacenters
+
+TODO:
+- Take into consideration the number of mappers and reducers
+"""
+class KPathRouting:
+    def __init__(self, k, graph, num_mappers=2, num_reducers=2, numAltPaths=10, maxIntersections=0.5):
         self.k = k # Parameter for k-shortest path
-        self.numAltPaths = numAltPaths # Number of alternative paths to cache
-        self.maxIntersections = maxIntersections # Fraction of intersections tolerable between the paths
+        self.graph = graph
+        self.bandwidth = self.graph.get_bandwidth()
+        print "graph bandwidth: ", self.bandwidth
+        self.comm_pattern = None
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.bandwidth = bandwidth
+        self.numAltPaths = numAltPaths # Number of alternative paths to cache
+        self.maxIntersections = maxIntersections # Fraction of intersections tolerable between the paths
 
-        self.graph = graph
-        self._graph = None
         self.valid_paths = {}
-        self.chosen_graphs = []
-        self.chosen_paths = []
-        self._chosen_graphs = []
-        self.h = hpy()
+        self.used_paths = []
+        self.used_links = []
 
     def clean_up(self):
         del self.valid_paths
-        del self.chosen_paths
-        del self.chosen_graphs
-        del self._chosen_graphs
+        del self.used_paths
+        del self.used_links
 
         self.valid_paths = {}
-        self.chosen_paths = []
-        self.chosen_graphs = []
-        self._chosen_graphs = []
+        self.used_paths = []
+        self.used_links = []
 
     def construct_flows(self, nodes):
         ids = [node.get_id() for node in nodes]
@@ -75,13 +77,12 @@ class KShortestPathBWAllocation:
         return ret
 
     def _generate_permutations(self, hosts, num_mr):
-        # print "hosts: ", hosts
         p = self._permute(0, 0, hosts, num_mr)
         p = filter(lambda x: len(x) == num_mr, p)
-        # print "permutations: ", p
+        # print "_permutations: ", p
         return p
  
-    def place_mappers_reducers(self):
+    def execute_job(self, job):
         flows = []
         hosts = self.graph.get_hosts()
         bandwidth = self.bandwidth
@@ -92,6 +93,7 @@ class KShortestPathBWAllocation:
         # TODO: Select only a subset of the nodes?
         for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
             flows = self.construct_flows(p)
+            self.comm_pattern = flows
             self.graph.set_comm_pattern(flows)
             max_util = max(max_util, self.compute_route())
 
@@ -105,49 +107,51 @@ class KShortestPathBWAllocation:
         return max_util
 
     def compute_route(self):
-        self._graph = self.graph.clone()
-        self.flows = self.graph.get_comm_pattern()
-
         self.build_paths()
         permutations = self.generate_permutations()
-        permutations = self.prunePermutations(permutations)
+        # permutations = self.prune_permutations(permutations)
         self.generate_graphs(permutations)
-        return self.selectOptimalGraph()
 
-    def k_path(self, k, src, dst, desired_bw):
+        return self.select_optimal_graph()
+
+    def k_path(self, src, dst, desired_bw):
         # Find k shortest paths between src and dst which have sufficient bandwidth
 
-        pathsFound = []
+        paths_found = []
         path = [src]
         q = PriorityQueue()
         q.push(0, path, desired_bw)
 
-        flatGraph = self._graph.get_flat_graph()
-
         # Uniform Cost Search
-        while (q.isEmpty() == False) and (len(pathsFound) < k):
+        while (q.is_empty() == False) and (len(paths_found) < self.k):
             path_len, path, bw = q.pop()
 
             # If last node on path is the destination
             if path[-1] == dst:
-                pathsFound.append((bw, path))
+                paths_found.append((bw, path))
                 continue
 
+            node = self.graph.get_node(path[-1])
+
             # Add next neighbors to paths to explore
-            for neighbor, neighbor_bw in flatGraph[path[-1]].items():
+            for link in node.get_links():
+                end_point = link.get_end_points()
+                neighbor = end_point[0] if node.get_id() != end_point[0] else end_point[1]
+                neighbor_bw = link.get_bandwidth()
+
                 if neighbor not in path and bw >= desired_bw:
                     new_bw = min(bw, neighbor_bw)
                     new_path = path + [neighbor]
                     new_length = path_len + 1
                     q.push(new_length, new_path, new_bw)
 
-        # print pathsFound
-        return pathsFound
+        # print paths_found
+        return paths_found
 
     def build_paths(self):
         # Build path for all the communication pattern
-        for c in self.flows:
-            possible = self.k_path(self.k, c[0], c[1], c[2])
+        for c in self.comm_pattern:
+            possible = self.k_path(c[0], c[1], c[2])
 
             for v in possible:
                 src_dst_pair = (v[1][0], v[1][-1])
@@ -178,10 +182,11 @@ class KShortestPathBWAllocation:
         return ret
 
     def generate_permutations(self):
-        # print "permutations: ", permute(0)
-        return self.permute(0)
+        permutations = self.permute(0)
+        # print "permutations: ", permutations
+        return permutations
 
-    def prunePermutations(self, permutations):
+    def prune_permutations(self, permutations):
         new_permutations = []
 
         for permute in permutations:
@@ -215,18 +220,26 @@ class KShortestPathBWAllocation:
 
         i = 0
         for permute in permutations:
-            new_graph = deepcopy(self._graph.get_flat_graph())
-
+            cloned_links = self.graph.clone_links()
             valid = True
             paths_used = []
 
             for p in permute:
                 bw, links = p[0], p[1]
                 for l in range(len(links) - 1):
-                    if new_graph[links[l]][links[l + 1]] < bw:
+                    node1 = self.graph.get_node(links[l])
+                    node2 = self.graph.get_node(links[l + 1])
+                    link_id = self.graph.get_link(node1, node2).get_end_points()
+                    link = cloned_links[link_id]
+                    link_bandwidth = link.get_bandwidth()
+
+                    # print "link bandwidth: ", link_bandwidth
+
+                    if link_bandwidth < bw:
                         valid = False
                         break
-                    new_graph[links[l]][links[l + 1]] -= bw
+
+                    link.set_bandwidth(link_bandwidth - bw)
                     
                 if not valid:
                     break
@@ -234,32 +247,34 @@ class KShortestPathBWAllocation:
                     paths_used.append(p)
 
             if valid:
-                self.chosen_graphs.append(new_graph)
-                self.chosen_paths.append(paths_used)
+                self.used_links.append(cloned_links)
+                self.used_paths.append(paths_used)
                 i+=1
 
             # TODO
             if i > self.numAltPaths:
                 break
 
-        for g, p in zip(self.chosen_graphs, self.chosen_paths):
-            graph = Graph(g, self.flows)
-            graph.set_flow(p)
-            self._chosen_graphs.append(graph)
+    def select_optimal_graph(self):
+        best_graph = None
+        max_util = -float('inf')
 
-    def selectOptimalGraph(self):
-        # Create Link Objects from Graph
-        bestGraph = None
-        maxUtil = -float('inf')
+        for links, path in zip(self.used_links, self.used_paths):
+            self.graph.set_links(links)
+            self.graph.set_flow(path)
 
-        for g in self._chosen_graphs:
-            util = g.compute_utilization()
-            if util > maxUtil:
-                maxUtil = util
-                bestGraph = g
+            util = self.graph.compute_utilization()
+            if util > max_util:
+                max_util = util
+                best_links = links
+                best_flows = path
+            
+            # self.graph.print_links()
+            self.graph.reset_links()
+            self.graph.reset_flows()
 
-        # print "vanilla graph: ", self.graph.get_flat_graph()
-        # print "best graph: ", bestGraph.get_flat_graph()
+        self.graph.reset()
 
+        print "max_util: ", max_util
         # return bestGraph
-        return maxUtil
+        return max_util

@@ -1,5 +1,5 @@
 from random import shuffle, randrange, sample, seed
-from routing import KShortestPathBWAllocation
+from routing import KPathRouting
 from pprint import pprint
 from copy import deepcopy
 from job import Job
@@ -7,42 +7,67 @@ from node import *
 from topology import *
 from utils import *
 import math
-from guppy import hpy
 
 """
 Manager knows everything about the topology (available mappers, reducers)
 and receives workload information.
+
+TODO:
+- Make it asynchronous
+- mark_job_done()
 """
 class Manager:
-    def __init__(self, topology, workload, num_mappers, num_reducers):
+    def __init__(self, graph, workload, num_mappers, num_reducers):
         self.seed = randrange(100)
-        self.topology = topology
-        self.graph = topology.get_graph()
-        self.nextTenantIdSeq = 1
-        self.h = hpy()
+        self.graph = graph
         self.workload = workload
         self.jobs = []
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.allocStrategy = KShortestPathBWAllocation(2, self.graph, topology.get_bandwidth(), num_mappers=self.num_mappers, num_reducers=self.num_reducers)
+        self.routing = KPathRouting(2, self.graph, num_mappers, num_reducers)
+
+    def jobs_finished(self):
+        return len(self.jobs) == 0
+
+    def enqueue_job(self, line):
+        job = Job(line)
+        self.jobs.append(job)
+
+    def dequeue_job(self, cur_time):
+        dequeued_jobs = []
+        for job in self.jobs:
+            if job.get_submit_time() == cur_time and job.get_state() == Job.NOT_EXECUTED:
+                dequeued_jobs.append(job)
+            if job.get_submit_time() > cur_time: # This job and the following jobs are for future time
+                break
+        return dequeued_jobs
+
+    def execute_job(self, job):
+        self.routing.execute_job(job)
+
+    def mark_job_done(self):
+        pass
 
     def run(self):
         f = open(self.workload)
-        i = 1
+        t = 0 # Virtual time in the datacenter
 
         for line in f:
-            self.jobs.append(Job(line))
-            max_util = self.allocStrategy.place_mappers_reducers()
+            self.enqueue_job(line)
 
-            print "Job ", i, " utilization: ", max_util
+        # While there are jobs that are being executed in the system
+        while not self.jobs_finished():
+            jobs = self.dequeue_job(t)
+            for job in jobs:
+                self.execute_job(job)
+                return # XXX
 
-            # total_mappers = self.graph.get_total_mappers()
-            # total_reducers = self.graph.get_total_reducers()
-            break
+            self.mark_job_done()
+            t += 1
 
         f.close()
 
     def clean_up(self):
         del self.graph
-        if self.allocStrategy:
-            self.allocStrategy.clean_up()
+        # if self.allocStrategy:
+        #     self.allocStrategy.clean_up()

@@ -1,109 +1,106 @@
 from random import randrange, choice, seed
 from pprint import pprint
 from graph import Graph
+from node import Node
 import math
 
 class Topology(object):
     def __init__(self):
         self.graph = None
-        self.bandwidth = None
+        self.bandwidth = 0
     
     def generate_graph(self):
         raise NotImplementedError('Method is unimplemented in abstract class!')
-    
-    def get_graph(self):
-        if self.graph is None:
-            self.graph = self.generate_graph()
-    
-        return self.graph
-    
+   
     def get_bandwidth(self):
         return self.bandwidth
     
 class JellyfishTopology(Topology):
-    def __init__(self, bandwidth = 100, nHosts = 16, nSwitches = 20, nPorts = 4):
+    def __init__(self, bandwidth=100, num_hosts=16, num_switches=20, num_ports=4):
         super(JellyfishTopology, self).__init__()
         self.bandwidth = bandwidth
-        self.nHosts = nHosts
-        self.nSwitches = nSwitches
-        self.nPorts = nPorts
+        self.num_hosts = num_hosts
+        self.num_switches = num_switches
+        self.num_ports = num_ports
     
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
-        @param nHosts number of hosts
-        @param nSwitches number of switches
-        @param nPorts number of ports in each switch
+        @param num_hosts number of hosts
+        @param num_switches number of switches
+        @param num_ports number of ports in each switch
         @param s seed to be used for RNG
         @return dictionary of nodes and edges representing the topology
         '''
         seed(1) # for Random Number Generation
         hosts = []
         switches = []
-        openPorts = []
+        open_ports = []
         
         bandwidth = self.bandwidth
-        nHosts = self.nHosts
-        nSwitches = self.nSwitches
-        nPorts = self.nPorts
+        num_hosts = self.num_hosts
+        num_switches = self.num_switches
+        num_ports = self.num_ports
         
-        assert(nSwitches >= nHosts)
-        assert(nPorts > 1)
+        assert(num_switches >= num_hosts)
+        assert(num_ports > 1)
         
-        graph = {}
+        graph = Graph()
         
         # add hosts
-        for i in range(1, nHosts + 1):
-            nodeName = "h%s" % i
-            hosts.append(nodeName)
-            if not graph.has_key(nodeName):
-                graph[nodeName] = {}
+        for i in range(1, num_hosts + 1):
+            node_id = "h%s" % i
+
+            new_host = Node(node_id)
+            hosts.append(new_host)
+            graph.add_node(new_host)
         
         # add switches
-        for i in range(1, nSwitches + 1):
-            nodeName = "s%s" % i
-            switches.append(nodeName)
-            openPorts.append(nPorts)
-            if not graph.has_key(nodeName):
-                graph[nodeName] = {}
-        
+        for i in range(1, num_switches + 1):
+            node_id = "s%s" % i
+            new_switch = Node(node_id)
+
+            open_ports.append(num_ports)
+            new_switch = Node(node_id)
+            switches.append(new_switch)
+            graph.add_node(new_switch)
+
         # connect each server with a switch
-        for i in range(nHosts):
-            graph[hosts[i]][switches[i]] = bandwidth
-            graph[switches[i]][hosts[i]] = bandwidth
-            openPorts[i] -= 1
-        
+        for i in range(num_hosts):
+            graph.add_link(hosts[i], switches[i], bandwidth)
+            open_ports[i] -= 1
+
         links = set()
-        switchesLeft = nSwitches
-        consecFails = 0
-        
-        while switchesLeft > 1 and consecFails < 10:
-            s1 = randrange(nSwitches)
-            while openPorts[s1] == 0:
-                s1 = randrange(nSwitches)
-        
-            s2 = randrange(nSwitches)
-            while openPorts[s2] == 0 or s1 == s2:
-                s2 = randrange(nSwitches)
+        switches_left = num_switches
+        consec_fails = 0
+
+        while switches_left > 1 and consec_fails < 10:
+            s1 = randrange(num_switches)
+            while open_ports[s1] == 0:
+                s1 = randrange(num_switches)
+
+            s2 = randrange(num_switches)
+            while open_ports[s2] == 0 or s1 == s2:
+                s2 = randrange(num_switches)
         
             if (s1, s2) in links:
-                consecFails += 1
+                consec_fails += 1
             else:
-                consecFails = 0
+                consec_fails = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
                 
-                openPorts[s1] -= 1
-                openPorts[s2] -= 1
+                open_ports[s1] -= 1
+                open_ports[s2] -= 1
                 
-                if openPorts[s1] == 0:
-                    switchesLeft -= 1
+                if open_ports[s1] == 0:
+                    switches_left -= 1
                 
-                if openPorts[s2] == 0:
-                    switchesLeft -= 1
+                if open_ports[s2] == 0:
+                    switches_left -= 1
         
-        if switchesLeft > 0:
-            for i in range(nSwitches):
-                while openPorts[i] > 1:
+        if switches_left > 0:
+            for i in range(num_switches):
+                while open_ports[i] > 1:
                     while True:
                         rLink = choice(list(links))
                         if (i, rLink[0]) in links:
@@ -121,74 +118,79 @@ class JellyfishTopology(Topology):
                         links.add((i, rLink[1]))
                         links.add((rLink[1], i))
 
-                        openPorts[i] -= 2
+                        open_ports[i] -= 2
                         break
 
         for link in links:
             # prevent double counting
             if link[0] < link[1]:
-                graph[switches[link[0]]][switches[link[1]]] = bandwidth
-                graph[switches[link[1]]][switches[link[0]]] = bandwidth
+                graph.add_link(switches[link[0]], switches[link[1]], bandwidth)
 
-        return Graph(graph)
+        return graph
 
 class FatTreeTopology(Topology):
-    def __init__(self, bandwidth = 100, nPorts = 4):
+    def __init__(self, bandwidth=100, num_ports=4):
         super(FatTreeTopology, self).__init__()
         self.bandwidth = bandwidth
-        self.nPorts = nPorts
+        self.num_ports = num_ports
 
     def generate_graph(self):
         ''' Generate a Fat Tree topology-like graph
-        @param nPorts number of ports in each switch
+        @param num_ports number of ports in each switch
         @return dictionary of nodes and edges representing the topology
         '''
         hosts = []
         switches = []
 
         bandwidth = self.bandwidth
-        nPorts = self.nPorts
+        num_ports = self.num_ports
 
-        pods = range(0, nPorts)
-        core_sws = range(1, nPorts/2 + 1)
-        agg_sws = range(nPorts/2, nPorts)
-        edge_sws = range(0, nPorts/2)
-        hosts = range(2, nPorts/2 + 2)
+        pods = range(0, num_ports)
+        core_sws = range(1, num_ports/2 + 1)
+        agg_sws = range(num_ports/2, num_ports)
+        edge_sws = range(0, num_ports/2)
+        hosts = range(2, num_ports/2 + 2)
 
-        graph = {}
+        graph = Graph()
 
         for p in pods:
             for e in edge_sws:
                 edge_id = "se_%i_%i_%i" % (p, e, 1)
-                if not graph.has_key(edge_id):
-                    graph[edge_id] = {}
+                edge_switch = graph.get_node(edge_id)
+
+                if not edge_switch:
+                    edge_switch = Node(edge_id)
+                    graph.add_node(edge_switch)
 
                 for h in hosts:
                     host_id = "h_%i_%i_%i" % (p, e, h)
-                    if not graph.has_key(host_id):
-                        graph[host_id] = {}
+                    host = graph.get_node(host_id) 
 
-                    graph[host_id][edge_id] = bandwidth
-                    graph[edge_id][host_id] = bandwidth
+                    if not host:
+                        host = Node(host_id)
+                        graph.add_node(host)
+                    graph.add_link(edge_switch, host, bandwidth)
 
                 for a in agg_sws:
                     agg_id = "sa_%i_%i_%i" %(p, a, 1)
-                    if not graph.has_key(agg_id):
-                        graph[agg_id] = {}
+                    agg_switch = graph.get_node(agg_id)
 
-                    graph[agg_id][edge_id] = bandwidth
-                    graph[edge_id][agg_id] = bandwidth
+                    if not agg_switch:
+                        agg_switch = Node(agg_id)
+                        graph.add_node(agg_switch)
+                    graph.add_link(agg_switch, edge_switch, bandwidth)
 
             for a in agg_sws:
                 agg_id = "sa_%i_%i_%i" %(p, a, 1)
-                c_index = a - nPorts / 2 + 1
+                agg_switch = graph.get_node(agg_id)
+                c_index = a - num_ports / 2 + 1
                 for c in core_sws:
-                    core_id = "sc_%i_%i_%i" % (nPorts, c_index, c)
+                    core_id = "sc_%i_%i_%i" % (num_ports, c_index, c)
+                    core_switch = graph.get_node(core_id)
 
-                    if not graph.has_key(core_id):
-                        graph[core_id] = {}
-
-                    graph[core_id][agg_id] = bandwidth
-                    graph[agg_id][core_id] = bandwidth
+                    if not core_switch:
+                        core_switch = Node(core_id)
+                        graph.add_node(core_switch)
+                    graph.add_link(core_switch, agg_switch, bandwidth)
         
-        return Graph(graph)
+        return graph

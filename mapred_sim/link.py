@@ -1,117 +1,105 @@
-import flow
+"""
+A link between switches/hosts
 
+Assumption:
+- No failures
+- Full-duplex
+"""
 class Link:
-  'A link between switches/hosts'
+    def __init__(self, node1_id, node2_id, bandwidth):
+        self.end_points = Link.get_id(node1_id, node2_id)
+        self.bandwidth = bandwidth
+        self.flows = {}
 
-  def __init__(self, n1, n2, bw = 100, isFullDuplex = True):
-    self.endPoints = Link.getLinkId(n1, n2, isFullDuplex)
-    self.bandwidth = float(bw)
-    self.flows = {}
-    self.state = True
+    @staticmethod
+    def get_id(node1, node2):
+        return tuple(sorted([node1, node2]))
 
-  @staticmethod
-  def getLinkId(n1, n2, isFullDuplex = True):
-    return tuple(sorted([n1, n2]) if isFullDuplex else [n1, n2])
+    def has_flow(self, fl):
+        return fl in self.flows
 
-  def setState(self, state):
-    if self.state == state:
-      return
+    def get_end_points(self):
+        return self.end_points
 
-    self.state = state
+    def get_flow_allocation(self):
+        return self.flows
 
-    for f in self.getFlows():
-      f.linkStateChanged(self)
+    def set_flows(self, flows):
+        self.flows = flows
 
+    def get_flows(self):
+        return self.flows.keys()
 
-  def turnOff(self):
-    self.setState(False)
+    def remove_flow(self, fl):
+        if self.has_flow(fl):
+            del self.flows[fl]
+            self.adjust_flow_bandwidths()
+        else:
+            raise Exception("Flow does not exist...")
+            exit(1)
 
-  def turnOn(self):
-    self.setState(True)
+    def add_flow(self, fl):
+        if self.has_flow(fl):
+            raise Exception("Flow already exists...")
+            exit(1)
+        else:
+            self.flows[fl] = 0
+            self.adjust_flow_bandwidths()
 
-  def isActive(self):
-    return self.state
+    def set_bandwidth(self, bandwidth):
+        self.bandwidth = bandwidth
 
-  def containsFlow(self, fl):
-    return fl in self.flows
+    def get_bandwidth(self):
+        return self.bandwidth
 
-  def getEndPoints(self):
-    return self.endPoints
+    def get_flow_bandwidth(self, fl):
+        if self.has_flow(fl):
+            return self.flows[fl]
+        else:
+            raise Exception("Flow does not exist...")
 
-  def getFlowAllocation(self):
-    return self.flows
+    # Computing max-min fairness
+    def adjust_flow_bandwidths(self):
+        flow_list = self.flows.keys()
 
-  def getFlows(self):
-    return self.flows.keys()
+        # No flow to adjust
+        if (len(flow_list) == 0):
+            return
 
-  def getUtilization(self):
-    bw_used = 0.0
+        # print "flow list: ", len(flow_list)
 
-    for fl in self.flows.keys():
-      bw_used += fl.getEffectiveBandwidth()
+        flow_list.sort(key=lambda x: x.bandwidth, reverse=True)
 
-    return bw_used / self.bandwidth
+        allocation = {}
+        for fl in flow_list:
+            allocation[fl] = 0
 
-  def removeFlow(self, fl):
-    if self.containsFlow(fl):
-      del self.flows[fl]
-      self.adjustFlowBandwidths()
+        bw_spare = self.bandwidth
+        while (bw_spare > 0):
+            delete_list = []
 
-  def addFlow(self, fl):
-    if not self.containsFlow(fl):
-      self.flows[fl] = 0
-      self.adjustFlowBandwidths()
+            # Distribute spare bandwidth among all flows
+            if (len(flow_list) == 0):
+                bw_portion = float(bw_spare) / len(allocation.keys())
+                bw_spare = 0
 
-  def getLinkBandwidth(self):
-    return self.bandwidth
+                for fl in allocation.keys():
+                    allocation[fl] = allocation[fl] + bw_portion
 
-  def getBandwidthForFlow(self, fl):
-    if self.containsFlow(fl):
-      return self.flows[fl]
-    else:
-      raise Exception('Flow does not exist')
+            else:
+                bw_portion = float(bw_spare) / len(flow_list)
+                bw_spare = 0
 
-  def adjustFlowBandwidths(self):
-    self.__computeMaxMinFairness()
+                for fl in flow_list:
+                    allocation[fl] = allocation[fl] + bw_portion
 
-  def __computeMaxMinFairness(self):
-    flowList = self.flows.keys()
+                    if (allocation[fl] > fl.get_requested_bandwidth()):
+                        bw_spare = bw_spare + (allocation[fl] - fl.get_requested_bandwidth())
+                        allocation[fl] = fl.get_requested_bandwidth()
+                        delete_list.append(fl)
 
-    if (len(flowList) == 0):
-      return
+                for fl in delete_list:
+                    flow_list.remove(fl)
 
-    flowList.sort(key = lambda x: x.bandwidth, reverse = True)
-
-    allocation = {}
-    for fl in flowList:
-      allocation[fl] = 0
-
-    bw_spare = self.bandwidth
-    while (bw_spare > 0):
-      deleteList = []
-
-      # Distribute spare bandwidth among all flows
-      if (len(flowList) == 0):
-        bw_portion = bw_spare / len(allocation.keys())
-        bw_spare = 0
-
-        for fl in allocation.keys():
-          allocation[fl] = allocation[fl] + bw_portion
-
-      else:
-        bw_portion = bw_spare / len(flowList)
-        bw_spare = 0
-
-        for fl in flowList:
-          allocation[fl] = allocation[fl] + bw_portion
-
-          if (allocation[fl] > fl.getRequestedBandwidth()):
-            bw_spare = bw_spare + (allocation[fl] - fl.getRequestedBandwidth())
-            allocation[fl] = fl.getRequestedBandwidth()
-            deleteList.append(fl)
-
-        for fl in deleteList:
-          flowList.remove(fl)
-
-    self.flows = allocation
-    # print self.flows
+        self.flows = allocation
+        # print self.flows
