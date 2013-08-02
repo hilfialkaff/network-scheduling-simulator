@@ -10,22 +10,21 @@ import flow
 import link
 
 """
-Computes all-way k-path routing for the given flow in the datacenters
+Computes optimal routing for the given flows in the datacenters
 
 TODO:
 - Take into consideration the number of mappers and reducers
 """
-class KPathRouting:
-    def __init__(self, k, graph, num_mappers=2, num_reducers=2, num_alt_paths=10, maxIntersections=0.5):
-        self.k = k # Parameter for k-shortest path
+class OptimalRouting:
+    def __init__(self, graph, num_mappers, num_reducers, *args):
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
-        print "graph bandwidth: ", self.bandwidth
         self.comm_pattern = None
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.num_alt_paths = num_alt_paths # Number of alternative paths to cache
-        self.maxIntersections = maxIntersections # Fraction of intersections tolerable between the paths
+        self.k = args[0] # For k-shortest path algorithm
+        self.num_alt_paths = args[1] # Number of alternative paths to cache
+        self.max_intersections = args[2] # Fraction of intersections tolerable between the paths
 
         self.valid_paths = {}
         self.used_paths = []
@@ -109,7 +108,7 @@ class KPathRouting:
     def compute_route(self):
         self.build_paths()
         permutations = self.generate_permutations()
-        # permutations = self.prune_permutations(permutations)
+        permutations = self.prune_permutations(permutations)
         self.generate_graphs(permutations)
 
         return self.select_optimal_graph()
@@ -193,7 +192,7 @@ class KPathRouting:
 
         for permute in permutations:
             intersections = []
-            numIntersection = 0
+            num_intersections = 0
             total_path_lengths = sum([len(p[1]) for p in permute])
             valid = True
 
@@ -203,9 +202,9 @@ class KPathRouting:
                     if (links[l], links[l + 1]) not in intersections:
                         intersections.append((links[l], links[l + 1]))
                     else:
-                        numIntersection += 1
+                        num_intersections += 1
 
-                    if numIntersection > (total_path_lengths * self.maxIntersections):
+                    if num_intersections > (total_path_lengths * self.max_intersections):
                         valid = False
                         break
 

@@ -1,5 +1,5 @@
 from random import shuffle, randrange, sample, seed
-from routing import KPathRouting
+from routing import OptimalRouting
 from pprint import pprint
 from copy import deepcopy
 from job import Job
@@ -24,7 +24,7 @@ class Manager:
         self.jobs = []
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.routing = KPathRouting(2, self.graph, num_mappers, num_reducers)
+        self.routing = OptimalRouting(self.graph, num_mappers, num_reducers, 2, 10, 0.5)
 
     def jobs_finished(self):
         return len(self.jobs) == 0
