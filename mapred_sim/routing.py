@@ -16,7 +16,7 @@ TODO:
 - Take into consideration the number of mappers and reducers
 """
 class KPathRouting:
-    def __init__(self, k, graph, num_mappers=2, num_reducers=2, numAltPaths=10, maxIntersections=0.5):
+    def __init__(self, k, graph, num_mappers=2, num_reducers=2, num_alt_paths=10, maxIntersections=0.5):
         self.k = k # Parameter for k-shortest path
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
@@ -24,7 +24,7 @@ class KPathRouting:
         self.comm_pattern = None
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.numAltPaths = numAltPaths # Number of alternative paths to cache
+        self.num_alt_paths = num_alt_paths # Number of alternative paths to cache
         self.maxIntersections = maxIntersections # Fraction of intersections tolerable between the paths
 
         self.valid_paths = {}
@@ -116,7 +116,6 @@ class KPathRouting:
 
     def k_path(self, src, dst, desired_bw):
         # Find k shortest paths between src and dst which have sufficient bandwidth
-
         paths_found = []
         path = [src]
         q = PriorityQueue()
@@ -144,6 +143,9 @@ class KPathRouting:
                     new_path = path + [neighbor]
                     new_length = path_len + 1
                     q.push(new_length, new_path, new_bw)
+
+            if len(paths_found) > self.num_alt_paths:
+                break
 
         # print paths_found
         return paths_found
@@ -252,7 +254,7 @@ class KPathRouting:
                 i+=1
 
             # TODO
-            if i > self.numAltPaths:
+            if i > self.num_alt_paths:
                 break
 
     def select_optimal_graph(self):

@@ -37,12 +37,13 @@ class Graph:
         self.links = links
 
     def get_link(self, node1, node2):
+        ret = None
         link_id = Link.get_id(node1.get_id(), node2.get_id())
 
-        if link_id not in self.links:
-            raise Exception("Link does not exist...")
-        else:
-            return self.links[link_id]
+        if link_id in self.links:
+            ret = self.links[link_id]
+
+        return ret
 
     def get_links(self):
         return self.links

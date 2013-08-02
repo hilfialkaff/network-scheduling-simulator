@@ -1,4 +1,4 @@
-from random import randrange, choice, seed
+from random import randrange, choice, seed, random
 from pprint import pprint
 from graph import Graph
 from node import Node
@@ -68,6 +68,141 @@ class JellyfishTopology(Topology):
         for i in range(num_hosts):
             graph.add_link(hosts[i], switches[i], bandwidth)
             open_ports[i] -= 1
+
+        links = set()
+        switches_left = num_switches
+        consec_fails = 0
+
+        while switches_left > 1 and consec_fails < 10:
+            s1 = randrange(num_switches)
+            while open_ports[s1] == 0:
+                s1 = randrange(num_switches)
+
+            s2 = randrange(num_switches)
+            while open_ports[s2] == 0 or s1 == s2:
+                s2 = randrange(num_switches)
+        
+            if (s1, s2) in links:
+                consec_fails += 1
+            else:
+                consec_fails = 0
+                links.add((s1, s2))
+                links.add((s2, s1))
+                
+                open_ports[s1] -= 1
+                open_ports[s2] -= 1
+                
+                if open_ports[s1] == 0:
+                    switches_left -= 1
+                
+                if open_ports[s2] == 0:
+                    switches_left -= 1
+        
+        if switches_left > 0:
+            for i in range(num_switches):
+                while open_ports[i] > 1:
+                    while True:
+                        rLink = choice(list(links))
+                        if (i, rLink[0]) in links:
+                          continue
+                        if (i, rLink[1]) in links:
+                          continue
+
+                        #remove links
+                        links.remove(rLink)
+                        links.remove(rLink[::-1])
+
+                        # add new links
+                        links.add((i, rLink[0]))
+                        links.add((rLink[0], i))
+                        links.add((i, rLink[1]))
+                        links.add((rLink[1], i))
+
+                        open_ports[i] -= 2
+                        break
+
+        for link in links:
+            # prevent double counting
+            if link[0] < link[1]:
+                graph.add_link(switches[link[0]], switches[link[1]], bandwidth)
+
+        return graph
+
+class Jellyfish2Topology(Topology):
+    def __init__(self, bandwidth=100, num_hosts=16, num_switches=20, num_ports=4):
+        super(Jellyfish2Topology, self).__init__()
+        self.bandwidth = bandwidth
+        self.num_hosts = num_hosts
+        self.num_switches = num_switches
+        self.num_ports = num_ports
+    
+    def generate_graph(self):
+        ''' Generate a Jellyfish topology-like graph
+        @param num_hosts number of hosts
+        @param num_switches number of switches
+        @param num_ports number of ports in each switch
+        @param s seed to be used for RNG
+        @return dictionary of nodes and edges representing the topology
+        '''
+        seed(1) # for Random Number Generation
+        hosts = []
+        switches = []
+        open_ports = []
+        
+        bandwidth = self.bandwidth
+        num_hosts = self.num_hosts
+        num_switches = self.num_switches
+        num_ports = self.num_ports
+        
+        assert(num_switches >= num_hosts)
+        assert(num_ports > 1)
+        
+        graph = Graph()
+        
+        # add hosts
+        for i in range(1, num_hosts + 1):
+            node_id = "h%s" % i
+
+            new_host = Node(node_id)
+            hosts.append(new_host)
+            graph.add_node(new_host)
+        
+        # add switches
+        for i in range(1, num_switches + 1):
+            node_id = "s%s" % i
+            new_switch = Node(node_id)
+
+            open_ports.append(num_ports)
+            new_switch = Node(node_id)
+            switches.append(new_switch)
+            graph.add_node(new_switch)
+
+        # connect each server with a switch
+        for i in range(num_hosts):
+            graph.add_link(hosts[i], switches[i], bandwidth)
+            open_ports[i] -= 1
+
+        # Modified jellyfish: add "supernodes"
+        for i in range(num_hosts):
+            add_switch = 0
+            added_switch = 0
+
+            if random() > 0.5:
+                add_switch = 0
+            elif random() > 0.25:
+                add_switch = 1
+            else:
+                add_switch = 3
+
+            while added_switch != add_switch:
+                switch_id = randrange(num_switches)
+
+                if graph.get_link(hosts[i], switches[switch_id]):
+                    continue
+
+                graph.add_link(hosts[i], switches[switch_id], bandwidth)
+                open_ports[switch_id] -= 1
+                added_switch += 1
 
         links = set()
         switches_left = num_switches

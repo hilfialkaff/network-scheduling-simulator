@@ -43,7 +43,7 @@ class Manager:
         return dequeued_jobs
 
     def execute_job(self, job):
-        self.routing.execute_job(job)
+        return self.routing.execute_job(job)
 
     def mark_job_done(self):
         pass
@@ -51,6 +51,7 @@ class Manager:
     def run(self):
         f = open(self.workload)
         t = 0 # Virtual time in the datacenter
+        i = 1 # XXX
 
         for line in f:
             self.enqueue_job(line)
@@ -59,7 +60,10 @@ class Manager:
         while not self.jobs_finished():
             jobs = self.dequeue_job(t)
             for job in jobs:
-                self.execute_job(job)
+                max_util = self.execute_job(job)
+
+                print "Job", i, "utilization: ", max_util
+                i += 1
                 return # XXX
 
             self.mark_job_done()
