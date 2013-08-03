@@ -13,7 +13,7 @@ import link
 Computes optimal routing for the given flows in the datacenters
 
 TODO:
-- Take into consideration the number of mappers and reducers
+- Take into consideration available of mappers and reducers
 """
 class OptimalRouting:
     def __init__(self, graph, num_mappers, num_reducers, *args):
@@ -90,28 +90,36 @@ class OptimalRouting:
 
         # TODO: Check for availability
         # TODO: Select only a subset of the nodes?
+        print "HERE"
         for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
+            print "HERE1"
             flows = self.construct_flows(p)
             self.comm_pattern = flows
             self.graph.set_comm_pattern(flows)
             max_util = max(max_util, self.compute_route())
 
+            ########################################################
             # XXX
-            i += 1
+            if max_util != 0:
+                i += 1
+
             if i == 10:
                 break
+            ########################################################
 
             self.clean_up()
 
         return max_util
 
     def compute_route(self):
-        self.build_paths()
-        permutations = self.generate_permutations()
-        permutations = self.prune_permutations(permutations)
-        self.generate_graphs(permutations)
+        ret = 0
+        if self.build_paths():
+            permutations = self.generate_permutations()
+            permutations = self.prune_permutations(permutations)
+            self.generate_graphs(permutations)
+            ret = self.select_optimal_graph()
 
-        return self.select_optimal_graph()
+        return ret
 
     def k_path(self, src, dst, desired_bw):
         # Find k shortest paths between src and dst which have sufficient bandwidth
@@ -126,6 +134,7 @@ class OptimalRouting:
 
             # If last node on path is the destination
             if path[-1] == dst:
+                # print "paths found:", path
                 paths_found.append((bw, path))
                 continue
 
@@ -137,22 +146,29 @@ class OptimalRouting:
                 neighbor = end_point[0] if node.get_id() != end_point[0] else end_point[1]
                 neighbor_bw = link.get_bandwidth()
 
-                if neighbor not in path and bw >= desired_bw:
-                    new_bw = min(bw, neighbor_bw)
-                    new_path = path + [neighbor]
-                    new_length = path_len + 1
-                    q.push(new_length, new_path, new_bw)
+                # If the path is valid according to heuristic per network topology
+                if self.graph.k_path_validity(path + [neighbor]):
+                    if neighbor not in path and bw >= desired_bw:
+                        new_bw = min(bw, neighbor_bw)
+                        new_path = path + [neighbor]
+                        new_length = path_len + 1
+                        q.push(new_length, new_path, new_bw)
 
             if len(paths_found) > self.num_alt_paths:
                 break
 
-        # print paths_found
+        # print "paths: ", paths_found
         return paths_found
 
     def build_paths(self):
+        ret = True
+
         # Build path for all the communication pattern
         for c in self.comm_pattern:
             possible = self.k_path(c[0], c[1], c[2])
+            if not possible:
+                ret = False
+                break
 
             for v in possible:
                 src_dst_pair = (v[1][0], v[1][-1])
@@ -161,7 +177,7 @@ class OptimalRouting:
                 self.valid_paths[src_dst_pair].append(v)
 
         # print "valid paths: ", self.valid_paths
-        return
+        return ret
 
     def permute(self, index):
         ret = []
@@ -279,3 +295,5 @@ class OptimalRouting:
         print "max_util: ", max_util
         # return bestGraph
         return max_util
+
+

@@ -6,12 +6,14 @@ import math
 
 class Topology(object):
     def __init__(self):
-        self.graph = None
         self.bandwidth = 0
-    
+
     def generate_graph(self):
         raise NotImplementedError('Method is unimplemented in abstract class!')
-   
+
+    def k_path_validity(self, path):
+        return True
+
     def get_bandwidth(self):
         return self.bandwidth
     
@@ -22,7 +24,7 @@ class JellyfishTopology(Topology):
         self.num_hosts = num_hosts
         self.num_switches = num_switches
         self.num_ports = num_ports
-    
+
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
         @param num_hosts number of hosts
@@ -126,6 +128,7 @@ class JellyfishTopology(Topology):
             if link[0] < link[1]:
                 graph.add_link(switches[link[0]], switches[link[1]], bandwidth)
 
+        graph.set_k_path_validity(self.k_path_validity)
         return graph
 
 class Jellyfish2Topology(Topology):
@@ -261,6 +264,7 @@ class Jellyfish2Topology(Topology):
             if link[0] < link[1]:
                 graph.add_link(switches[link[0]], switches[link[1]], bandwidth)
 
+        graph.set_k_path_validity(self.k_path_validity)
         return graph
 
 class FatTreeTopology(Topology):
@@ -268,6 +272,39 @@ class FatTreeTopology(Topology):
         super(FatTreeTopology, self).__init__()
         self.bandwidth = bandwidth
         self.num_ports = num_ports
+
+    def k_path_validity(self, path):
+        # return True
+        se_count = 0
+        sa_count = 0
+        sc_count = 0
+        h_count = 0
+        ret = True
+
+        # print "path: ", path
+        for p in path:
+            if 'se' in p:
+                se_count += 1
+            if 'sa' in p:
+                sa_count += 1
+            if 'sc' in p:
+                sc_count += 1
+            if 'h' in p:
+                h_count += 1
+
+            if h_count > 2:
+                ret = False
+                break
+
+            if sc_count == 0 and (sa_count > 1 or se_count > 1):
+                ret = False
+                break
+
+        if se_count > 2 or sa_count > 2:
+            ret = False
+
+        # print "count: ", se_count, sa_count, sc_count, h_count
+        return ret
 
     def generate_graph(self):
         ''' Generate a Fat Tree topology-like graph
@@ -327,5 +364,6 @@ class FatTreeTopology(Topology):
                         core_switch = Node(core_id)
                         graph.add_node(core_switch)
                     graph.add_link(core_switch, agg_switch, bandwidth)
-        
+
+        graph.set_k_path_validity(self.k_path_validity)
         return graph

@@ -18,6 +18,7 @@ class Graph:
         self.nodes = {}
         self.flows = {}
         self.links = {}
+        self.k_path_validity = None # Heuristic for path validation in k-path
 
     def __del__(self):
         del self.comm_pattern
@@ -29,6 +30,9 @@ class Graph:
         del self.flows
         self.flows = {}
         self.reset_links()
+
+    def set_k_path_validity(self, f):
+        self.k_path_validity = f
 
     def get_bandwidth(self):
         return self.bandwidth
@@ -127,20 +131,9 @@ class Graph:
         self.comm_pattern = comm_pattern
         self.flows = None
 
-    def add_flow(self, src, dst, bw, path):
-        fl = Flow(src, dst, bw)
-
-        link_list = []
-        for i in range(len(path)-1):
-            l = self.links[Link.get_id(path[i], path[i+1])]
-            link_list.append(l)
-
-        fl.set_path(link_list)
-        self.flows[fl.get_end_points()] = fl
-        return fl
-
     def set_flow(self, chosen_paths):
         self.flows = {}
+        # print "chosen_paths: ", chosen_paths
 
         # Create Flow Objects
         for cp in self.comm_pattern:
@@ -195,6 +188,7 @@ class Graph:
         nx.draw_networkx_nodes(nx_graph, pos, nodelist=switches, node_size=100, label="x")
         nx.draw_networkx_nodes(nx_graph, pos, nodelist=hosts, node_size=50, node_color='b')
         nx.draw_networkx_edges(nx_graph, pos)
+        # nx.draw(nx_graph, pos)
 
         plt.savefig("graphs/" + graph_type + '.png')
         plt.clf()
