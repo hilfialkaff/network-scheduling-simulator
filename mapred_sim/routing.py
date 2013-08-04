@@ -341,11 +341,11 @@ class AnnealingRouting(OptimalRouting):
         return util
 
     def find_temperature(self, step):
-        return 1/(step * 10)
+        return 1/(step * 0.01)
 
     def execute_job(self, job):
         max_util = self.num_mappers * self.num_reducers * self.bandwidth
-        max_step = 10 # XXX
+        max_step = 20 # XXX
 
         # Executing simulated annealing for map-reduce placement
         simulated_annealing = SimulatedAnnealing(max_util, \
@@ -385,8 +385,12 @@ class AnnealingRouting(OptimalRouting):
 
     def routing_generate_neighbor(self, state):
         state_length = len(state)
+
         path_to_change = choice(range(state_length))
         possible_paths = self.valid_paths.values()[path_to_change]
+        while len(possible_paths) == 1:
+            path_to_change = choice(range(state_length))
+            possible_paths = self.valid_paths.values()[path_to_change]
 
         new_path = choice(range(len(possible_paths)))
         while possible_paths[new_path] == state[path_to_change]:
@@ -410,8 +414,6 @@ class AnnealingRouting(OptimalRouting):
                 link_id = self.graph.get_link(node1, node2).get_end_points()
                 link = cloned_links[link_id]
                 link_bandwidth = link.get_bandwidth()
-
-                # print "link bandwidth: ", link_bandwidth
 
                 if link_bandwidth < bw:
                     valid = False
