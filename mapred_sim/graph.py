@@ -27,8 +27,7 @@ class Graph:
         del self.nodes
 
     def reset(self):
-        del self.flows
-        self.flows = {}
+        self.reset_flows()
         self.reset_links()
 
     def set_k_path_validity(self, f):
@@ -113,6 +112,7 @@ class Graph:
         return self.comm_pattern
 
     def reset_flows(self):
+        del self.flows
         self.flows = {}
 
     def set_flows(self, flows):
@@ -122,10 +122,12 @@ class Graph:
         return self.flows
 
     def add_node(self, node):
-        if node.get_id() in self.nodes:
+        node_id = node.get_id()
+
+        if node_id in self.nodes:
             raise Exception("Node already exist...")
         else:
-            self.nodes[node.get_id()] = node
+            self.nodes[node_id] = node
 
     def set_comm_pattern(self, comm_pattern=[]):
         self.comm_pattern = comm_pattern

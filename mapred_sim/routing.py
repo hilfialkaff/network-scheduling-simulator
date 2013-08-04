@@ -1,9 +1,12 @@
 from collections import deque
-from random import choice, sample
+from random import choice, random
 from sys import maxint
 from copy import deepcopy
 from pprint import pprint
 from time import time
+from math import exp
+
+from simulated_annealing import SimulatedAnnealing
 from utils import *
 from graph import Graph
 import flow
@@ -15,7 +18,7 @@ Computes optimal routing for the given flows in the datacenters
 TODO:
 - Take into consideration available of mappers and reducers
 """
-class OptimalRouting:
+class OptimalRouting(object):
     def __init__(self, graph, num_mappers, num_reducers, *args):
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
@@ -90,9 +93,7 @@ class OptimalRouting:
 
         # TODO: Check for availability
         # TODO: Select only a subset of the nodes?
-        print "HERE"
         for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
-            print "HERE1"
             flows = self.construct_flows(p)
             self.comm_pattern = flows
             self.graph.set_comm_pattern(flows)
@@ -274,7 +275,7 @@ class OptimalRouting:
 
     def select_optimal_graph(self):
         best_graph = None
-        max_util = -float('inf')
+        max_util = 0
 
         for links, path in zip(self.used_links, self.used_paths):
             self.graph.set_links(links)
@@ -292,8 +293,142 @@ class OptimalRouting:
 
         self.graph.reset()
 
-        print "max_util: ", max_util
+        # print "max_util: ", max_util
         # return bestGraph
         return max_util
 
+class AnnealingRouting(OptimalRouting):
+    def placement_init_state(self):
+        hosts = self.graph.get_hosts()
 
+        return hosts[:self.num_mappers + self.num_reducers]
+
+    def placement_generate_neighbor(self, state):
+        hosts = self.graph.get_hosts()
+        num_hosts = len(hosts)
+        state_length = len(state)
+
+        if random() > 0.5:
+            host1 = choice(range(state_length/2))
+            host2 = choice(range(state_length/2, state_length))
+            hosts[host1], hosts[host2] = hosts[host2], hosts[host1] 
+        else:
+            host_to_remove = choice(range(len(state)))
+            host_to_add = choice(hosts)
+
+            while host_to_add in state:
+                host_to_add = choice(hosts)
+
+            state[host_to_remove] = host_to_add
+
+        return state
+
+    def transition(self, util, new_util, temperature):
+        ret = 1
+
+        if util < new_util:
+            ret = exp(-(new_util - util)/temperature)
+
+        return ret
+
+    def placement_compute_util(self, state):
+        flows = self.construct_flows(state)
+        self.comm_pattern = flows
+        self.graph.set_comm_pattern(flows)
+        util = self.compute_route()
+        self.clean_up()
+
+        return util
+
+    def find_temperature(self, step):
+        return 1/(step * 10)
+
+    def execute_job(self, job):
+        max_util = self.num_mappers * self.num_reducers * self.bandwidth
+        max_step = 10 # XXX
+
+        # Executing simulated annealing for map-reduce placement
+        simulated_annealing = SimulatedAnnealing(max_util, \
+                                                 max_step, \
+                                                 self.placement_init_state, \
+                                                 self.find_temperature, \
+                                                 self.placement_generate_neighbor, \
+                                                 self.placement_compute_util, \
+                                                 self.transition)
+
+        util = simulated_annealing.run()
+        print "util: ", util
+        return util
+
+    def compute_route(self):
+        util = 0
+        max_step = 20
+        max_util = self.num_mappers * self.num_reducers * self.bandwidth
+
+        if self.build_paths():
+            # Executing simulated annealing for map-reduce routing
+            simulated_annealing = SimulatedAnnealing(max_util, \
+                                                     max_step, \
+                                                     self.routing_init_state, \
+                                                     self.find_temperature, \
+                                                     self.routing_generate_neighbor, \
+                                                     self.routing_compute_util, \
+                                                     self.transition)
+
+            util = simulated_annealing.run()
+
+        return util
+
+
+    def routing_init_state(self):
+        return [path[0] for path in self.valid_paths.values()]
+
+    def routing_generate_neighbor(self, state):
+        state_length = len(state)
+        path_to_change = choice(range(state_length))
+        possible_paths = self.valid_paths.values()[path_to_change]
+
+        new_path = choice(range(len(possible_paths)))
+        while possible_paths[new_path] == state[path_to_change]:
+            new_path = choice(range(len(possible_paths)))
+
+        state[path_to_change] = possible_paths[new_path]
+
+        return state
+
+    def routing_compute_util(self, state):
+        cloned_links = self.graph.clone_links()
+        valid = True
+        paths_used = []
+        util = 0
+
+        for p in state:
+            bw, links = p[0], p[1]
+            for l in range(len(links) - 1):
+                node1 = self.graph.get_node(links[l])
+                node2 = self.graph.get_node(links[l + 1])
+                link_id = self.graph.get_link(node1, node2).get_end_points()
+                link = cloned_links[link_id]
+                link_bandwidth = link.get_bandwidth()
+
+                # print "link bandwidth: ", link_bandwidth
+
+                if link_bandwidth < bw:
+                    valid = False
+                    break
+
+                link.set_bandwidth(link_bandwidth - bw)
+                
+            if not valid:
+                break
+            else:
+                paths_used.append(p)
+
+        if valid:
+            self.graph.set_links(cloned_links)
+            self.graph.set_flow(paths_used)
+
+            util = self.graph.compute_utilization()
+            self.graph.reset()
+
+        return util

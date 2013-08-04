@@ -300,8 +300,8 @@ class FatTreeTopology(Topology):
                 ret = False
                 break
 
-        if se_count > 2 or sa_count > 2:
-            ret = False
+        # if se_count > 2 or sa_count > 2:
+        #     ret = False
 
         # print "count: ", se_count, sa_count, sc_count, h_count
         return ret
