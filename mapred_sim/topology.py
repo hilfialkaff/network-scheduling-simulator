@@ -274,7 +274,6 @@ class FatTreeTopology(Topology):
         self.num_ports = num_ports
 
     def k_path_validity(self, path):
-        # return True
         se_count = 0
         sa_count = 0
         sc_count = 0
@@ -300,8 +299,8 @@ class FatTreeTopology(Topology):
                 ret = False
                 break
 
-        # if se_count > 2 or sa_count > 2:
-        #     ret = False
+        if se_count > 3 or sa_count > 3:
+            ret = False
 
         # print "count: ", se_count, sa_count, sc_count, h_count
         return ret
@@ -364,6 +363,9 @@ class FatTreeTopology(Topology):
                         core_switch = Node(core_id)
                         graph.add_node(core_switch)
                     graph.add_link(core_switch, agg_switch, bandwidth)
+
+        print "num hosts: ", len(graph.get_hosts())
+        print "num switches: ", len(graph.get_switches())
 
         graph.set_k_path_validity(self.k_path_validity)
         return graph
