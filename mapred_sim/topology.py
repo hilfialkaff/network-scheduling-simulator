@@ -16,7 +16,7 @@ class Topology(object):
 
     def get_bandwidth(self):
         return self.bandwidth
-    
+
 class JellyfishTopology(Topology):
     def __init__(self, bandwidth=100, num_hosts=16, num_switches=20, num_ports=4):
         super(JellyfishTopology, self).__init__()
@@ -37,17 +37,17 @@ class JellyfishTopology(Topology):
         hosts = []
         switches = []
         open_ports = []
-        
+
         bandwidth = self.bandwidth
         num_hosts = self.num_hosts
         num_switches = self.num_switches
         num_ports = self.num_ports
-        
+
         assert(num_switches >= num_hosts)
         assert(num_ports > 1)
-        
+
         graph = Graph()
-        
+
         # add hosts
         for i in range(1, num_hosts + 1):
             node_id = "h%s" % i
@@ -55,7 +55,7 @@ class JellyfishTopology(Topology):
             new_host = Node(node_id)
             hosts.append(new_host)
             graph.add_node(new_host)
-        
+
         # add switches
         for i in range(1, num_switches + 1):
             node_id = "s%s" % i
@@ -83,23 +83,23 @@ class JellyfishTopology(Topology):
             s2 = randrange(num_switches)
             while open_ports[s2] == 0 or s1 == s2:
                 s2 = randrange(num_switches)
-        
+
             if (s1, s2) in links:
                 consec_fails += 1
             else:
                 consec_fails = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
-                
+
                 open_ports[s1] -= 1
                 open_ports[s2] -= 1
-                
+
                 if open_ports[s1] == 0:
                     switches_left -= 1
-                
+
                 if open_ports[s2] == 0:
                     switches_left -= 1
-        
+
         if switches_left > 0:
             for i in range(num_switches):
                 while open_ports[i] > 1:
@@ -138,7 +138,7 @@ class Jellyfish2Topology(Topology):
         self.num_hosts = num_hosts
         self.num_switches = num_switches
         self.num_ports = num_ports
-    
+
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
         @param num_hosts number of hosts
@@ -151,17 +151,17 @@ class Jellyfish2Topology(Topology):
         hosts = []
         switches = []
         open_ports = []
-        
+
         bandwidth = self.bandwidth
         num_hosts = self.num_hosts
         num_switches = self.num_switches
         num_ports = self.num_ports
-        
+
         assert(num_switches >= num_hosts)
         assert(num_ports > 1)
-        
+
         graph = Graph()
-        
+
         # add hosts
         for i in range(1, num_hosts + 1):
             node_id = "h%s" % i
@@ -169,7 +169,7 @@ class Jellyfish2Topology(Topology):
             new_host = Node(node_id)
             hosts.append(new_host)
             graph.add_node(new_host)
-        
+
         # add switches
         for i in range(1, num_switches + 1):
             node_id = "s%s" % i
@@ -219,23 +219,23 @@ class Jellyfish2Topology(Topology):
             s2 = randrange(num_switches)
             while open_ports[s2] == 0 or s1 == s2:
                 s2 = randrange(num_switches)
-        
+
             if (s1, s2) in links:
                 consec_fails += 1
             else:
                 consec_fails = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
-                
+
                 open_ports[s1] -= 1
                 open_ports[s2] -= 1
-                
+
                 if open_ports[s1] == 0:
                     switches_left -= 1
-                
+
                 if open_ports[s2] == 0:
                     switches_left -= 1
-        
+
         if switches_left > 0:
             for i in range(num_switches):
                 while open_ports[i] > 1:
@@ -335,7 +335,7 @@ class FatTreeTopology(Topology):
 
                 for h in hosts:
                     host_id = "h_%i_%i_%i" % (p, e, h)
-                    host = graph.get_node(host_id) 
+                    host = graph.get_node(host_id)
 
                     if not host:
                         host = Node(host_id)

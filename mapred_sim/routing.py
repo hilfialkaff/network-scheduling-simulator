@@ -83,7 +83,7 @@ class OptimalRouting(object):
         p = filter(lambda x: len(x) == num_mr, p)
         # print "_permutations: ", p
         return p
- 
+
     def execute_job(self, job):
         flows = []
         hosts = self.graph.get_hosts()
@@ -258,7 +258,7 @@ class OptimalRouting(object):
                         break
 
                     link.set_bandwidth(link_bandwidth - bw)
-                    
+
                 if not valid:
                     break
                 else:
@@ -286,7 +286,7 @@ class OptimalRouting(object):
                 max_util = util
                 best_links = links
                 best_flows = path
-            
+
             # self.graph.print_links()
             self.graph.reset_links()
             self.graph.reset_flows()
@@ -311,7 +311,7 @@ class AnnealingRouting(OptimalRouting):
         if random() > 0.5:
             host1 = choice(range(state_length/2))
             host2 = choice(range(state_length/2, state_length))
-            hosts[host1], hosts[host2] = hosts[host2], hosts[host1] 
+            hosts[host1], hosts[host2] = hosts[host2], hosts[host1]
         else:
             host_to_remove = choice(range(len(state)))
             host_to_add = choice(hosts)
@@ -379,7 +379,6 @@ class AnnealingRouting(OptimalRouting):
 
         return util
 
-
     def routing_init_state(self):
         return [path[0] for path in self.valid_paths.values()]
 
@@ -420,7 +419,7 @@ class AnnealingRouting(OptimalRouting):
                     break
 
                 link.set_bandwidth(link_bandwidth - bw)
-                
+
             if not valid:
                 break
             else:

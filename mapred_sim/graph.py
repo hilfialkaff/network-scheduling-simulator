@@ -75,7 +75,7 @@ class Graph:
 
     def clone_links(self):
         new_links = {}
-        
+
         for link in self.links.values():
             bandwidth = link.get_bandwidth()
             [node1_id, node2_id] = link.get_end_points()

@@ -8,9 +8,9 @@ WORKLOAD = "workload/FB-2010_samples_24_times_1hr_0.tsv"
 def main():
     num_ports = range(4, 10)
     # Fat-tree: num_hosts = [16, 20, 54, 63, 128, 144]
-    num_hosts = [16, 20, 45, 61, 80, 101]
-    num_switches = [20, 31, 45, 61, 80, 101]
-    num_mr = range(4, 8)
+    num_hosts = [16, 20, 45, 61, 80, 101] # Number of host nodes in the topology
+    num_switches = [20, 31, 45, 61, 80, 101] # Number of switches in the topology
+    num_mr = range(4, 8) # Number of maps/reducers
 
     # Jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
@@ -40,7 +40,7 @@ def main():
 
     # Fat-Tree
     for i in num_ports:
-        for j in num_mr: # Number of maps/reducers
+        for j in num_mr:
             print "ft %d %d" % (i, j)
             topo = FatTreeTopology(BANDWIDTH, i)
             graph = topo.generate_graph()
