@@ -4,10 +4,10 @@ import link
 Represents a flow in the datacenter network
 """
 class Flow:
-    def __init__(self, node1, node2, bw = 100):
+    def __init__(self, node1, node2, bandwidth):
         self.end_points = Flow.get_id(node1, node2)
         self.path = []
-        self.bandwidth = float(bw)
+        self.bandwidth = bandwidth
 
     @staticmethod
     def get_id(node1, node2):

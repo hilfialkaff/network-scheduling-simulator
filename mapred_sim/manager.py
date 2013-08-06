@@ -14,7 +14,7 @@ and receives workload information.
 
 TODO:
 - Make it asynchronous
-- mark_job_done()
+- Number of mappers/reducers not necessarily static
 """
 class Manager:
     def __init__(self, graph, workload, num_mappers, num_reducers):
@@ -45,8 +45,23 @@ class Manager:
     def execute_job(self, job):
         return self.routing.execute_job(job)
 
-    def mark_job_done(self):
-        pass
+    def update_jobs_progress(self, t):
+        for job in self.jobs:
+            if job.get_state() == Job.EXECUTING:
+                job_id = job.get_id()
+                util = self.routing.jobs_config[job_id].get_util()
+
+                job.update_data_left(util)
+                if job.get_data_left() <= 0:
+                    print "Job", job_id, "done at", t
+                    self.routing.delete_job_config(job_id)
+                    self.jobs.remove(job)
+
+                    for host in self.graph.get_hosts():
+                        if host.get_job_id_executed() == job_id:
+                            host.set_free()
+
+                    self.routing.update_jobs_utilization()
 
     def run(self):
         f = open(self.workload)
@@ -55,23 +70,43 @@ class Manager:
 
         for line in f:
             self.enqueue_job(line)
+            i += 1
+            if i == 50:
+                break
+
+        i = 0
 
         # While there are jobs that are being executed in the system
         while not self.jobs_finished():
             jobs = self.dequeue_job(t)
             for job in jobs:
-                max_util = self.execute_job(job)
+                job_config = self.execute_job(job)
 
-                print "Job", i, "utilization: ", max_util
+                # The job is actually executed
+                if job_config.get_util() > 0:
+                    print "Executing job:", job.get_id()
+
+                    job.set_state(Job.EXECUTING)
+                    self.routing.add_job_config(i, job_config)
+                    self.routing.update_nodes_status(i, job_config)
+                    self.routing.update_jobs_utilization()
+
+                    self.print_jobs_utilization()
+                # print "best links: ", job_config.get_links()
+                # print "best paths: ", job_config.get_used_paths()
+
                 i += 1
-                return # XXX
 
-            self.mark_job_done()
+            self.update_jobs_progress(t)
             t += 1
 
         f.close()
 
     def clean_up(self):
         del self.graph
-        # if self.allocStrategy:
-        #     self.allocStrategy.clean_up()
+
+    def print_jobs_utilization(self):
+        for job in self.jobs:
+            if job.get_state() != Job.NOT_EXECUTED:
+                job_id = job.get_id()
+                print "Job", job_id, "has utilization:", self.routing.get_job_config(job_id).get_util()

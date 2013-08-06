@@ -4,9 +4,11 @@ from sys import maxint
 from copy import deepcopy
 from pprint import pprint
 from time import time
-from math import exp
 
 from simulated_annealing import SimulatedAnnealing
+from job_config import JobConfig
+from node import Node
+from flow import Flow
 from utils import *
 from graph import Graph
 import flow
@@ -16,7 +18,7 @@ import link
 Computes optimal routing for the given flows in the datacenters
 
 TODO:
-- Take into consideration available of mappers and reducers
+- Might need to reschedule the algorithm again?
 """
 class OptimalRouting(object):
     def __init__(self, graph, num_mappers, num_reducers, *args):
@@ -32,6 +34,8 @@ class OptimalRouting(object):
         self.valid_paths = {}
         self.used_paths = []
         self.used_links = []
+
+        self.jobs_config = {}
 
     def clean_up(self):
         del self.valid_paths
@@ -288,20 +292,23 @@ class OptimalRouting(object):
                 best_flows = path
 
             # self.graph.print_links()
-            self.graph.reset_links()
-            self.graph.reset_flows()
-
-        self.graph.reset()
+            self.reset()
 
         # print "max_util: ", max_util
         # return bestGraph
         return max_util
 
+"""
+Computes routing for the given flows using simulated annealing for placement and routing
+
+TODO:
+- Take into consideration available of mappers and reducers
+"""
 class AnnealingRouting(OptimalRouting):
     def placement_init_state(self):
-        hosts = self.graph.get_hosts()
+        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
 
-        return hosts[:self.num_mappers + self.num_reducers]
+        return available_hosts[:self.num_mappers + self.num_reducers]
 
     def placement_generate_neighbor(self, state):
         hosts = self.graph.get_hosts()
@@ -313,56 +320,56 @@ class AnnealingRouting(OptimalRouting):
             host2 = choice(range(state_length/2, state_length))
             hosts[host1], hosts[host2] = hosts[host2], hosts[host1]
         else:
+            # Only take free hosts into consideration
+            available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+
             host_to_remove = choice(range(len(state)))
-            host_to_add = choice(hosts)
+            host_to_add = choice(available_hosts)
 
             while host_to_add in state:
-                host_to_add = choice(hosts)
+                host_to_add = choice(available_hosts)
 
             state[host_to_remove] = host_to_add
 
         return state
 
-    def transition(self, util, new_util, temperature):
-        ret = 1
-
-        if util < new_util:
-            ret = exp(-(new_util - util)/temperature)
-
-        return ret
-
-    def placement_compute_util(self, state):
+    def set_placement(self, state):
         flows = self.construct_flows(state)
         self.comm_pattern = flows
+        # print "comm pattern: ", self.comm_pattern
         self.graph.set_comm_pattern(flows)
+
+    def placement_compute_util(self, state):
+        self.set_placement(state)
         util = self.compute_route()
         self.clean_up()
+        util.set_placements(deepcopy(state))
 
         return util
 
-    def find_temperature(self, step):
-        return 1/(step * 0.01)
-
     def execute_job(self, job):
-        max_util = self.num_mappers * self.num_reducers * self.bandwidth
-        max_step = 20 # XXX
+        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+        util = JobConfig(0, None, None)
 
-        # Executing simulated annealing for map-reduce placement
-        simulated_annealing = SimulatedAnnealing(max_util, \
-                                                 max_step, \
-                                                 self.placement_init_state, \
-                                                 self.find_temperature, \
-                                                 self.placement_generate_neighbor, \
-                                                 self.placement_compute_util, \
-                                                 self.transition)
+        # There are enough nodes to run the job
+        if len(available_hosts) > (self.num_mappers + self.num_reducers):
+            max_util = self.num_mappers * self.num_reducers * self.bandwidth
+            max_step = 10 # XXX
 
-        util = simulated_annealing.run()
-        print "util: ", util
+            # Executing simulated annealing for map-reduce placement
+            simulated_annealing = SimulatedAnnealing(max_util, \
+                                                     max_step, \
+                                                     self.placement_init_state, \
+                                                     self.placement_generate_neighbor, \
+                                                     self.placement_compute_util)
+
+            util = simulated_annealing.run()
+
         return util
 
     def compute_route(self):
-        util = 0
-        max_step = 20
+        util = JobConfig(0, None, None)
+        max_step = 10
         max_util = self.num_mappers * self.num_reducers * self.bandwidth
 
         if self.build_paths():
@@ -370,13 +377,12 @@ class AnnealingRouting(OptimalRouting):
             simulated_annealing = SimulatedAnnealing(max_util, \
                                                      max_step, \
                                                      self.routing_init_state, \
-                                                     self.find_temperature, \
                                                      self.routing_generate_neighbor, \
-                                                     self.routing_compute_util, \
-                                                     self.transition)
+                                                     self.routing_compute_util)
 
             util = simulated_annealing.run()
 
+        # print "util: ", util.get_util()
         return util
 
     def routing_init_state(self):
@@ -400,10 +406,12 @@ class AnnealingRouting(OptimalRouting):
         return state
 
     def routing_compute_util(self, state):
+        self.add_previous_jobs()
         cloned_links = self.graph.clone_links()
         valid = True
         paths_used = []
         util = 0
+        job_config = JobConfig(0, None, None)
 
         for p in state:
             bw, links = p[0], p[1]
@@ -427,9 +435,67 @@ class AnnealingRouting(OptimalRouting):
 
         if valid:
             self.graph.set_links(cloned_links)
-            self.graph.set_flow(paths_used)
+            all_paths_used = deepcopy(paths_used)
+            for job in self.jobs_config.values():
+                all_paths_used.extend(job.get_used_paths())
+            self.graph.set_flow(all_paths_used)
 
-            util = self.graph.compute_utilization()
-            self.graph.reset()
+            util = 0
+            for p in paths_used:
+                flow = self.graph.get_flow(Flow.get_id(p[1][0], p[1][-1]))
+                util += (flow.get_requested_bandwidth() + flow.get_effective_bandwidth())
 
-        return util
+            job_config = JobConfig(util, deepcopy(cloned_links), paths_used)
+            self.reset()
+
+        return job_config
+
+    def get_job_config(self, job_num):
+        return self.jobs_config[job_num]
+
+    def add_job_config(self, job_num, config):
+        self.jobs_config[job_num] = config
+
+    def delete_job_config(self, job_num):
+        if job_num not in self.jobs_config:
+            raise Exception("Invalid job number...")
+        else:
+            del self.jobs_config[job_num]
+
+    def add_previous_jobs(self):
+        for job in self.jobs_config.values():
+            flows = self.construct_flows(job.get_placements())
+            self.comm_pattern.extend(flows)
+            self.graph.merge_paths(job.get_used_paths())
+
+
+    # Mark nodes executing the job as busy
+    def update_nodes_status(self, i, job_config):
+        for p in job_config.get_used_paths():
+            host1 = self.graph.get_node(p[1][0])
+            host2 = self.graph.get_node(p[1][-1])
+            host1.set_job_id_executed(i)
+            host2.set_job_id_executed(i)
+
+    # Update per job utilization
+    def update_jobs_utilization(self):
+        used_paths = []
+
+        self.add_previous_jobs()
+
+        for job in self.jobs_config.values():
+            used_paths.extend(job.get_used_paths())
+        self.graph.set_flow(used_paths)
+
+        for job in self.jobs_config.values():
+            util = 0
+            for p in job.get_used_paths():
+                flow = self.graph.get_flow(Flow.get_id(p[1][0], p[1][-1]))
+                util += (flow.get_requested_bandwidth() + flow.get_effective_bandwidth())
+
+            job.set_util(util)
+
+        self.reset()
+
+    def reset(self):
+        self.graph.reset()

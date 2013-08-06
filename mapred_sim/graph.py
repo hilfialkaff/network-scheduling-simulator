@@ -12,13 +12,14 @@ Represents a graph of nodes currently working in the cluster
 TODO
 """
 class Graph:
-    def __init__(self, comm_pattern=[], bandwidth=100):
-        self.comm_pattern = comm_pattern # tuples of (src, dst, bandwidth desired)
+    def __init__(self, bandwidth, comm_pattern=[]):
         self.bandwidth = bandwidth
+        self.comm_pattern = comm_pattern # tuples of (src, dst, bandwidth desired)
         self.nodes = {}
         self.flows = {}
         self.links = {}
         self.k_path_validity = None # Heuristic for path validation in k-path
+        self.jobs_config = {}
 
     def __del__(self):
         del self.comm_pattern
@@ -29,6 +30,14 @@ class Graph:
     def reset(self):
         self.reset_flows()
         self.reset_links()
+
+    def merge_paths(self, used_paths):
+        # XXX
+        for paths in used_paths:
+            path = paths[1]
+            for i in range(len(path) - 1):
+                l = self.links[Link.get_id(path[i], path[i + 1])]
+                l.set_bandwidth(l.get_bandwidth() - self.bandwidth / 10)
 
     def set_k_path_validity(self, f):
         self.k_path_validity = f
@@ -115,6 +124,9 @@ class Graph:
         del self.flows
         self.flows = {}
 
+    def get_flow(self, flow_id):
+        return self.flows[flow_id]
+
     def set_flows(self, flows):
         self.flows = flows
 
@@ -128,6 +140,9 @@ class Graph:
             raise Exception("Node already exist...")
         else:
             self.nodes[node_id] = node
+
+    def add_comm_pattern(self, comm_pattern):
+        self.comm_pattern.extend(comm_pattern)
 
     def set_comm_pattern(self, comm_pattern=[]):
         self.comm_pattern = comm_pattern
@@ -166,7 +181,8 @@ class Graph:
         #     print "requested bw: ", self.flows[flow].get_requested_bandwidth()
         # print "end compute utilization"
 
-        util = sum([self.flows[fl].get_effective_bandwidth() + self.flows[fl].get_requested_bandwidth() for fl in self.flows.keys()])
+        util = sum([self.flows[fl].get_effective_bandwidth() + self.flows[fl].get_requested_bandwidth() \
+                    for fl in self.flows.keys()])
         return util
 
     def plot(self, graph_type):

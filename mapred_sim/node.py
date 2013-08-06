@@ -4,14 +4,26 @@ from random import randrange, choice, seed
 Represents a node in the cluster.
 
 TODO:
-- mappers' & reducers' state
-- get_neighbors
+- Node may execute multiple mappers/reducers
 """
 class Node:
     def __init__(self, node_id):
         self.node_id = node_id
         self.links = []
-    
+        self.job_id_executed = -1 # Not executing any job
+
+    def set_free(self):
+        self.job_id_executed = -1
+
+    def is_free(self):
+        return self.job_id_executed == -1
+
+    def get_job_id_executed(self):
+        return self.job_id_executed
+
+    def set_job_id_executed(self, job_id):
+        self.job_id_executed = job_id
+
     def get_id(self):
         return self.node_id
 

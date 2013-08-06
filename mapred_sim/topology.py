@@ -18,7 +18,7 @@ class Topology(object):
         return self.bandwidth
 
 class JellyfishTopology(Topology):
-    def __init__(self, bandwidth=100, num_hosts=16, num_switches=20, num_ports=4):
+    def __init__(self, bandwidth, num_hosts, num_switches, num_ports):
         super(JellyfishTopology, self).__init__()
         self.bandwidth = bandwidth
         self.num_hosts = num_hosts
@@ -46,7 +46,7 @@ class JellyfishTopology(Topology):
         assert(num_switches >= num_hosts)
         assert(num_ports > 1)
 
-        graph = Graph()
+        graph = Graph(bandwidth)
 
         # add hosts
         for i in range(1, num_hosts + 1):
@@ -132,7 +132,7 @@ class JellyfishTopology(Topology):
         return graph
 
 class Jellyfish2Topology(Topology):
-    def __init__(self, bandwidth=100, num_hosts=16, num_switches=20, num_ports=4):
+    def __init__(self, bandwidth, num_hosts, num_switches, num_ports):
         super(Jellyfish2Topology, self).__init__()
         self.bandwidth = bandwidth
         self.num_hosts = num_hosts
@@ -160,7 +160,7 @@ class Jellyfish2Topology(Topology):
         assert(num_switches >= num_hosts)
         assert(num_ports > 1)
 
-        graph = Graph()
+        graph = Graph(bandwidth)
 
         # add hosts
         for i in range(1, num_hosts + 1):
@@ -268,7 +268,7 @@ class Jellyfish2Topology(Topology):
         return graph
 
 class FatTreeTopology(Topology):
-    def __init__(self, bandwidth=100, num_ports=4):
+    def __init__(self, bandwidth, num_ports):
         super(FatTreeTopology, self).__init__()
         self.bandwidth = bandwidth
         self.num_ports = num_ports
@@ -299,7 +299,7 @@ class FatTreeTopology(Topology):
                 ret = False
                 break
 
-        if se_count > 3 or sa_count > 3:
+        if se_count > 4 or sa_count > 4:
             ret = False
 
         # print "count: ", se_count, sa_count, sc_count, h_count
@@ -322,7 +322,7 @@ class FatTreeTopology(Topology):
         edge_sws = range(0, num_ports/2)
         hosts = range(2, num_ports/2 + 2)
 
-        graph = Graph()
+        graph = Graph(bandwidth)
 
         for p in pods:
             for e in edge_sws:
