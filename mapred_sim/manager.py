@@ -36,7 +36,7 @@ class Manager:
     def dequeue_job(self, cur_time):
         dequeued_jobs = []
         for job in self.jobs:
-            if job.get_submit_time() == cur_time and job.get_state() == Job.NOT_EXECUTED:
+            if job.get_submit_time() <= cur_time and job.get_state() == Job.NOT_EXECUTED:
                 dequeued_jobs.append(job)
             if job.get_submit_time() > cur_time: # This job and the following jobs are for future time
                 break
@@ -74,8 +74,6 @@ class Manager:
             if i == 50:
                 break
 
-        i = 0
-
         # While there are jobs that are being executed in the system
         while not self.jobs_finished():
             jobs = self.dequeue_job(t)
@@ -84,18 +82,18 @@ class Manager:
 
                 # The job is actually executed
                 if job_config.get_util() > 0:
-                    print "Executing job:", job.get_id()
+                    job_id = job.get_id()
+
+                    print "Executing job:", job_id
 
                     job.set_state(Job.EXECUTING)
-                    self.routing.add_job_config(i, job_config)
-                    self.routing.update_nodes_status(i, job_config)
+                    self.routing.add_job_config(job_id, job_config)
+                    self.routing.update_nodes_status(job_id, job_config)
                     self.routing.update_jobs_utilization()
 
                     self.print_jobs_utilization()
                 # print "best links: ", job_config.get_links()
                 # print "best paths: ", job_config.get_used_paths()
-
-                i += 1
 
             self.update_jobs_progress(t)
             t += 1

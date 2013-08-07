@@ -8,7 +8,7 @@ WORKLOAD = "workload/FB-2010_samples_24_times_1hr_0.tsv"
 def main():
     num_ports = range(4, 10)
     # Fat-tree: num_hosts = [16, 20, 54, 63, 128, 144]
-    num_hosts = [17, 20, 45, 61, 80, 101] # Number of host nodes in the topology
+    num_hosts = [16, 20, 45, 61, 80, 101] # Number of host nodes in the topology
     num_switches = [20, 31, 45, 61, 80, 101] # Number of switches in the topology
     num_mr = range(2, 4) # Number of maps/reducers
 

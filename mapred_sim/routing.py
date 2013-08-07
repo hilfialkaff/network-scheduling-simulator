@@ -454,6 +454,7 @@ class AnnealingRouting(OptimalRouting):
         return self.jobs_config[job_num]
 
     def add_job_config(self, job_num, config):
+        print "job_num: ", job_num
         self.jobs_config[job_num] = config
 
     def delete_job_config(self, job_num):
