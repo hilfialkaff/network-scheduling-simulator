@@ -7,14 +7,16 @@ from node import *
 from topology import *
 from utils import *
 import math
+import timeit
 
 """
 Manager knows everything about the topology (available mappers, reducers)
 and receives workload information.
 
 TODO:
-- Make it asynchronous
 - Number of mappers/reducers not necessarily static
+- Bandwidth requirement per job might be different
+- Take into account link failures
 """
 class Manager:
     def __init__(self, graph, workload, num_mappers, num_reducers):
@@ -68,6 +70,25 @@ class Manager:
         t = 0 # Virtual time in the datacenter
         i = 1 # XXX
 
+        def loop():
+            jobs = self.dequeue_job(t)
+
+            for job in jobs:
+                job_config = self.execute_job(job)
+
+                # The job is actually executed
+                if job_config.get_util() > 0:
+                    job_id = job.get_id()
+
+                    print "Executing job %d submitted at %d at %d" % (job_id, job.get_submit_time(), t)
+
+                    job.set_state(Job.EXECUTING)
+                    self.routing.add_job_config(job_id, job_config)
+                    self.routing.update_nodes_status(job_id, job_config)
+                    self.routing.update_jobs_utilization()
+
+                    self.print_jobs_utilization()
+
         for line in f:
             self.enqueue_job(line)
             i += 1
@@ -76,27 +97,10 @@ class Manager:
 
         # While there are jobs that are being executed in the system
         while not self.jobs_finished():
-            jobs = self.dequeue_job(t)
-            for job in jobs:
-                job_config = self.execute_job(job)
-
-                # The job is actually executed
-                if job_config.get_util() > 0:
-                    job_id = job.get_id()
-
-                    print "Executing job:", job_id
-
-                    job.set_state(Job.EXECUTING)
-                    self.routing.add_job_config(job_id, job_config)
-                    self.routing.update_nodes_status(job_id, job_config)
-                    self.routing.update_jobs_utilization()
-
-                    self.print_jobs_utilization()
-                # print "best links: ", job_config.get_links()
-                # print "best paths: ", job_config.get_used_paths()
+            time_taken = timeit.timeit(loop)
+            t += time_taken
 
             self.update_jobs_progress(t)
-            t += 1
 
         f.close()
 
