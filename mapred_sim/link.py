@@ -1,9 +1,5 @@
 """
 A link between switches/hosts
-
-Assumption:
-- No failures
-- Full-duplex
 """
 class Link:
     def __init__(self, node1_id, node2_id, bandwidth):

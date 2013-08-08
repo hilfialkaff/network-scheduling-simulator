@@ -8,8 +8,6 @@ import networkx as nx
 
 """
 Represents a graph of nodes currently working in the cluster
-
-TODO
 """
 class Graph:
     def __init__(self, bandwidth, comm_pattern=[]):
@@ -41,6 +39,9 @@ class Graph:
 
     def set_k_path_validity(self, f):
         self.k_path_validity = f
+
+    def set_k_path_heuristic(self, f):
+        self.k_path_heuristic = f
 
     def get_bandwidth(self):
         return self.bandwidth

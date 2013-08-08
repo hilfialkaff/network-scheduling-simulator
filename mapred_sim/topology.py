@@ -14,6 +14,9 @@ class Topology(object):
     def k_path_validity(self, path):
         return True
 
+    def k_path_heuristic(self, path):
+        return 0
+
     def get_bandwidth(self):
         return self.bandwidth
 
@@ -128,6 +131,7 @@ class JellyfishTopology(Topology):
             if link[0] < link[1]:
                 graph.add_link(switches[link[0]], switches[link[1]], bandwidth)
 
+        graph.set_k_path_heuristic(self.k_path_heuristic)
         graph.set_k_path_validity(self.k_path_validity)
         return graph
 
@@ -264,6 +268,7 @@ class Jellyfish2Topology(Topology):
             if link[0] < link[1]:
                 graph.add_link(switches[link[0]], switches[link[1]], bandwidth)
 
+        graph.set_k_path_heuristic(self.k_path_heuristic)
         graph.set_k_path_validity(self.k_path_validity)
         return graph
 
@@ -299,11 +304,27 @@ class FatTreeTopology(Topology):
                 ret = False
                 break
 
-        if se_count > 4 or sa_count > 4:
-            ret = False
-
         # print "count: ", se_count, sa_count, sc_count, h_count
         return ret
+
+    def k_path_heuristic(self, path):
+        return 0
+        se_count = 0
+        sa_count = 0
+        heuristic = 0
+
+        for p in path:
+            if 'se' in p:
+                se_count += 1
+            if 'sa' in p:
+                sa_count += 1
+
+        if 'se' > 2:
+            heuristic += se_count - 2
+        if 'sa' > 2:
+            heuristic += sa_count - 2
+
+        return heuristic
 
     def generate_graph(self):
         ''' Generate a Fat Tree topology-like graph
@@ -364,8 +385,6 @@ class FatTreeTopology(Topology):
                         graph.add_node(core_switch)
                     graph.add_link(core_switch, agg_switch, bandwidth)
 
-        print "num hosts: ", len(graph.get_hosts())
-        print "num switches: ", len(graph.get_switches())
-
+        graph.set_k_path_heuristic(self.k_path_heuristic)
         graph.set_k_path_validity(self.k_path_validity)
         return graph

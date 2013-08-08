@@ -95,8 +95,6 @@ class OptimalRouting(object):
         max_util = 0
         i = 0 # XXX
 
-        # TODO: Check for availability
-        # TODO: Select only a subset of the nodes?
         for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
             flows = self.construct_flows(p)
             self.comm_pattern = flows
@@ -157,7 +155,7 @@ class OptimalRouting(object):
                         new_bw = min(bw, neighbor_bw)
                         new_path = path + [neighbor]
                         new_length = path_len + 1
-                        q.push(new_length, new_path, new_bw)
+                        q.push(new_length + self.graph.k_path_heuristic(new_path), new_path, new_bw)
 
             if len(paths_found) > self.num_alt_paths:
                 break
@@ -300,9 +298,6 @@ class OptimalRouting(object):
 
 """
 Computes routing for the given flows using simulated annealing for placement and routing
-
-TODO:
-- Take into consideration available of mappers and reducers
 """
 class AnnealingRouting(OptimalRouting):
     def placement_init_state(self):
@@ -454,7 +449,6 @@ class AnnealingRouting(OptimalRouting):
         return self.jobs_config[job_num]
 
     def add_job_config(self, job_num, config):
-        print "job_num: ", job_num
         self.jobs_config[job_num] = config
 
     def delete_job_config(self, job_num):
@@ -468,7 +462,6 @@ class AnnealingRouting(OptimalRouting):
             flows = self.construct_flows(job.get_placements())
             self.comm_pattern.extend(flows)
             self.graph.merge_paths(job.get_used_paths())
-
 
     # Mark nodes executing the job as busy
     def update_nodes_status(self, i, job_config):
