@@ -15,6 +15,7 @@ class Job:
         self.shuffle_size = long(tmp[4])
         self.reduce_size = long(tmp[5])
         self.data_left = self.shuffle_size
+        self.last_update = 0
 
     def get_state(self):
         return self.state
@@ -44,3 +45,9 @@ class Job:
 
     def update_data_left(self, util):
         self.data_left -= util
+
+    def get_last_update(self):
+        return self.last_update
+
+    def set_last_update(self, last_update):
+        self.last_update = last_update

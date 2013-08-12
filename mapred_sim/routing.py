@@ -19,8 +19,9 @@ Computes optimal routing for the given flows in the datacenters
 
 TODO:
 - Might need to reschedule the algorithm again?
+- Multiple jobs
 """
-class OptimalRouting(object):
+class Routing(object):
     def __init__(self, graph, num_mappers, num_reducers, *args):
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
@@ -37,6 +38,19 @@ class OptimalRouting(object):
 
         self.jobs_config = {}
 
+    def is_full(self):
+        ret = False
+        num_free = 0
+
+        for h in self.graph.get_hosts():
+            if h.is_free():
+                num_free += 1
+
+        if num_free <= (self.num_mappers + self.num_reducers):
+            ret = True
+
+        return ret
+
     def clean_up(self):
         del self.valid_paths
         del self.used_paths
@@ -45,6 +59,64 @@ class OptimalRouting(object):
         self.valid_paths = {}
         self.used_paths = []
         self.used_links = []
+
+    def k_path(self, src, dst, desired_bw):
+        # Find k shortest paths between src and dst which have sufficient bandwidth
+        paths_found = []
+        path = [src]
+        q = PriorityQueue()
+        q.push(0, path, desired_bw)
+
+        # Uniform Cost Search
+        while (q.is_empty() == False) and (len(paths_found) < self.k):
+            path_len, path, bw = q.pop()
+
+            # If last node on path is the destination
+            if path[-1] == dst:
+                # print "paths found:", path
+                paths_found.append((bw, path))
+                continue
+
+            node = self.graph.get_node(path[-1])
+
+            # Add next neighbors to paths to explore
+            for link in node.get_links():
+                end_point = link.get_end_points()
+                neighbor = end_point[0] if node.get_id() != end_point[0] else end_point[1]
+                neighbor_bw = link.get_bandwidth()
+
+                # If the path is valid according to heuristic per network topology
+                if self.graph.k_path_validity(path + [neighbor]):
+                    if neighbor not in path and bw >= desired_bw:
+                        new_bw = min(bw, neighbor_bw)
+                        new_path = path + [neighbor]
+                        new_length = path_len + 1
+                        q.push(new_length + self.graph.k_path_heuristic(new_path), new_path, new_bw)
+
+            if len(paths_found) > self.num_alt_paths:
+                break
+
+        # print "paths: ", paths_found
+        return paths_found
+
+    def build_paths(self):
+        ret = True
+
+        # Build path for all the communication pattern
+        for c in self.comm_pattern:
+            possible = self.k_path(c[0], c[1], c[2])
+            if not possible:
+                ret = False
+                break
+
+            for v in possible:
+                src_dst_pair = (v[1][0], v[1][-1])
+                if src_dst_pair not in self.valid_paths:
+                    self.valid_paths[src_dst_pair] = []
+                self.valid_paths[src_dst_pair].append(v)
+
+        # print "valid paths: ", self.valid_paths
+        return ret
 
     def construct_flows(self, nodes):
         ids = [node.get_id() for node in nodes]
@@ -60,6 +132,14 @@ class OptimalRouting(object):
                 flows.append(flow)
 
         return flows
+
+    @staticmethod
+    def get_name():
+        raise NotImplementedError("Method unimplemented in abstract class...")
+class OptimalRouting(Routing):
+    @staticmethod
+    def get_name():
+        return "OR"
 
     def _permute(self, index, num_chosen, hosts, num_mr):
         ret = []
@@ -122,64 +202,6 @@ class OptimalRouting(object):
             self.generate_graphs(permutations)
             ret = self.select_optimal_graph()
 
-        return ret
-
-    def k_path(self, src, dst, desired_bw):
-        # Find k shortest paths between src and dst which have sufficient bandwidth
-        paths_found = []
-        path = [src]
-        q = PriorityQueue()
-        q.push(0, path, desired_bw)
-
-        # Uniform Cost Search
-        while (q.is_empty() == False) and (len(paths_found) < self.k):
-            path_len, path, bw = q.pop()
-
-            # If last node on path is the destination
-            if path[-1] == dst:
-                # print "paths found:", path
-                paths_found.append((bw, path))
-                continue
-
-            node = self.graph.get_node(path[-1])
-
-            # Add next neighbors to paths to explore
-            for link in node.get_links():
-                end_point = link.get_end_points()
-                neighbor = end_point[0] if node.get_id() != end_point[0] else end_point[1]
-                neighbor_bw = link.get_bandwidth()
-
-                # If the path is valid according to heuristic per network topology
-                if self.graph.k_path_validity(path + [neighbor]):
-                    if neighbor not in path and bw >= desired_bw:
-                        new_bw = min(bw, neighbor_bw)
-                        new_path = path + [neighbor]
-                        new_length = path_len + 1
-                        q.push(new_length + self.graph.k_path_heuristic(new_path), new_path, new_bw)
-
-            if len(paths_found) > self.num_alt_paths:
-                break
-
-        # print "paths: ", paths_found
-        return paths_found
-
-    def build_paths(self):
-        ret = True
-
-        # Build path for all the communication pattern
-        for c in self.comm_pattern:
-            possible = self.k_path(c[0], c[1], c[2])
-            if not possible:
-                ret = False
-                break
-
-            for v in possible:
-                src_dst_pair = (v[1][0], v[1][-1])
-                if src_dst_pair not in self.valid_paths:
-                    self.valid_paths[src_dst_pair] = []
-                self.valid_paths[src_dst_pair].append(v)
-
-        # print "valid paths: ", self.valid_paths
         return ret
 
     def permute(self, index):
@@ -297,9 +319,13 @@ class OptimalRouting(object):
         return max_util
 
 """
-Computes routing for the given flows using simulated annealing for placement and routing
+Routing algorithm using simulated annealing for both placement and routing
 """
-class AnnealingRouting(OptimalRouting):
+class AnnealingRouting(Routing):
+    @staticmethod
+    def get_name():
+        return "AR"
+
     def placement_init_state(self):
         available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
 
@@ -493,3 +519,48 @@ class AnnealingRouting(OptimalRouting):
 
     def reset(self):
         self.graph.reset()
+
+"""
+Routing algorithm using simulated annealing for only routing
+"""
+class HalfAnnealingRouting(AnnealingRouting):
+    @staticmethod
+    def get_name():
+        return "HAR"
+
+    def execute_job(self, job):
+        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+        hosts = []
+        util = JobConfig(0, None, None)
+
+        # There are enough nodes to run the job
+        if len(available_hosts) > (self.num_mappers + self.num_reducers):
+            for i in range(self.num_mappers + self.num_reducers):
+                host_to_add = choice(available_hosts)
+
+                while host_to_add in hosts:
+                    host_to_add = choice(available_hosts)
+                hosts.append(host_to_add)
+
+            util = self.placement_compute_util(hosts)
+
+        return util
+
+"""
+Routing algorithm with random placement and routing
+"""
+class RandomRouting(HalfAnnealingRouting):
+    @staticmethod
+    def get_name():
+        return "RR"
+
+    def compute_route(self):
+        util = JobConfig(0, None, None)
+        chosen_paths = []
+
+        if self.build_paths():
+            for path in self.valid_paths.values():
+                chosen_paths.append(choice(path))
+            util = self.routing_compute_util(chosen_paths)
+
+        return util

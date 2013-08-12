@@ -20,6 +20,9 @@ class Topology(object):
     def get_bandwidth(self):
         return self.bandwidth
 
+    @staticmethod
+    def get_name():
+        raise NotImplementedError("Method unimplemented in abstract class...")
 class JellyfishTopology(Topology):
     def __init__(self, bandwidth, num_hosts, num_switches, num_ports):
         super(JellyfishTopology, self).__init__()
@@ -27,6 +30,10 @@ class JellyfishTopology(Topology):
         self.num_hosts = num_hosts
         self.num_switches = num_switches
         self.num_ports = num_ports
+
+    @staticmethod
+    def get_name():
+        return "JF"
 
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
@@ -142,6 +149,10 @@ class Jellyfish2Topology(Topology):
         self.num_hosts = num_hosts
         self.num_switches = num_switches
         self.num_ports = num_ports
+
+    @staticmethod
+    def get_name():
+        return "JF2"
 
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
@@ -277,6 +288,10 @@ class FatTreeTopology(Topology):
         super(FatTreeTopology, self).__init__()
         self.bandwidth = bandwidth
         self.num_ports = num_ports
+
+    @staticmethod
+    def get_name():
+        return "FT"
 
     def k_path_validity(self, path):
         se_count = 0
