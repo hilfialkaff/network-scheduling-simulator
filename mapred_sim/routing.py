@@ -466,7 +466,7 @@ class AnnealingRouting(Routing):
                 flow = self.graph.get_flow(Flow.get_id(p[1][0], p[1][-1]))
                 util += (flow.get_requested_bandwidth() + flow.get_effective_bandwidth())
 
-            job_config = JobConfig(util, deepcopy(cloned_links), paths_used)
+            job_config = JobConfig(util, copy_links(cloned_links), paths_used)
             self.reset()
 
         return job_config
@@ -481,6 +481,14 @@ class AnnealingRouting(Routing):
         if job_num not in self.jobs_config:
             raise Exception("Invalid job number...")
         else:
+            job = self.jobs_config[job_num]
+            links = job.get_links()
+            placements = job.get_placements()
+            paths = job.get_used_paths()
+
+            del links
+            del placements
+            del paths
             del self.jobs_config[job_num]
 
     def add_previous_jobs(self):
