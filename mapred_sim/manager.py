@@ -100,9 +100,6 @@ class Manager:
                 self.routing.update_jobs_utilization()
 
                 self.print_jobs_utilization()
-            else:
-                pass
-                # print "job", job.get_id(), "cannot be executed"
 
         self.update_jobs_progress(t)
 
@@ -125,7 +122,7 @@ class Manager:
         for line in f:
             self.enqueue_job(line)
             i += 1
-            if i == 30:
+            if i == 50:
                 break
         f.close()
 
@@ -135,6 +132,7 @@ class Manager:
             self.loop(t)
             diff = time.clock() - start
 
+            self._write("Algorithm: %f\n" % diff)
             if diff < 1:
                 time.sleep(1 - diff)
                 t += (1 - diff)

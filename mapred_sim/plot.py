@@ -7,6 +7,7 @@ LOG_NAME="./jellyfish_log"
 PLOT_DIR="./figs/"
 
 jobs = {}
+algo = {}
 
 class Job:
     def __init__(self, submitted, start):
@@ -31,12 +32,16 @@ def parse():
 
             if topo not in jobs:
                 jobs[topo] = {}
+                algo[topo] = {}
             if routing not in jobs[topo]:
                 jobs[topo][routing] = {}
+                algo[topo][routing] = {}
             if num_mr not in jobs[topo][routing]:
                 jobs[topo][routing][num_mr] = {}
+                algo[topo][routing][num_mr] = {}
             if num_host not in jobs[topo][routing][num_mr]:
                 jobs[topo][routing][num_mr][num_host] = {}
+                algo[topo][routing][num_mr][num_host] = []
 
         if "Executing" in line:
             job_id = int(l[2])
@@ -58,11 +63,17 @@ def parse():
             job_id = int(l[1])
             jobs[topo][routing][num_mr][num_host][job_id].end = int(l[-1])
 
+        if "Algorithm" in line:
+            algo[topo][routing][num_mr][num_host].append(float(l[-1]))
+
     f.close()
 
 """ Same topology, varied routing """
-def plot_routing_throughput(ax, plt, name):
+def plot_routing_throughput(name):
     global jobs
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
     for topo, _ in jobs.items():
         if topo != name:
@@ -80,7 +91,6 @@ def plot_routing_throughput(ax, plt, name):
                 plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
                              fmt='--o', label=(str(routing) + " " + str(num_mr)))
 
-
     plt.legend()
     ax.set_title(name + " w/ Varied Routing")
     ax.set_xlabel("Number of hosts")
@@ -90,8 +100,11 @@ def plot_routing_throughput(ax, plt, name):
     plt.clf()
 
 """ Varied topology, same routing """
-def plot_topo_throughput(ax, plt, name):
+def plot_topo_throughput(name):
     global jobs
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
     for topo, _ in jobs.items():
         for routing, __ in _.items():
@@ -109,7 +122,6 @@ def plot_topo_throughput(ax, plt, name):
                 plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
                              fmt='--o', label=(str(topo) + " " + str(num_mr)))
 
-
     plt.legend()
     ax.set_title(name + " w/ Varied Topology")
     ax.set_xlabel("Number of hosts")
@@ -120,18 +132,18 @@ def plot_topo_throughput(ax, plt, name):
 
 """ Plot all throughput graphs """
 def plot_throughput():
+    plot_routing_throughput("JF")
+    # plot_routing_throughput("JF2")
+    # plot_routing_throughput("FT")
+
+    plot_topo_throughput("AR")
+    plot_topo_throughput("HAR")
+    plot_topo_throughput("RR")
+
+def plot_routing_delay(name):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    plot_routing_throughput(ax, plt, "JF")
-    # plot_routing_throughput(plt, "JF2")
-    # plot_routing_throughput(plt, "FT")
-
-    # plot_topo_throughput(ax, plt, "AR")
-    # plot_topo_throughput(ax, plt, "HAR")
-    # plot_topo_throughput(ax, plt, "RR")
-
-def plot_routing_delay(ax, plt, name):
     num_bins = 100
     def arange(arr):
         return np.arange(min(arr), max(arr), (max(arr) - min(arr)) / num_bins)
@@ -162,17 +174,88 @@ def plot_routing_delay(ax, plt, name):
 
 """ Plot all delay graphs """
 def plot_delay():
+    plot_routing_delay("JF")
+    # plot_routing_delay("JF2")
+    # plot_routing_delay("FT")
+
+    # plot_topo_delay("AR")
+    # plot_topo_delay("HAR")
+    # plot_topo_delay("RR")
+
+""" Same topology, varied routing """
+def plot_routing_algo(name):
+    global algo
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    plot_routing_delay(ax, plt, "JF")
-    # plot_routing_delay(ax, plt, "JF2")
-    # plot_routing_delay(ax, plt, "FT")
+    for topo, _ in algo.items():
+        if topo != name:
+            continue
 
-    # plot_topo_delay(ax, plt, "AR")
-    # plot_topo_delay(ax, plt, "HAR")
-    # plot_topo_delay(ax, plt, "RR")
+        for routing, __ in _.items():
+            for num_mr, ___ in __.items():
+                y = []
+                x = []
+
+                for num_host, times in sorted(___.items()):
+                    x.append(num_host)
+                    y.append(times)
+
+                plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
+                             fmt='--o', label=(str(routing) + " " + str(num_mr)))
+
+    plt.legend()
+    ax.set_title(name + " w/ Varied Routing")
+    ax.set_xlabel("Number of hosts")
+    ax.set_ylabel("Computation time (s)")
+
+    plt.savefig(PLOT_DIR + name.lower() + "_algo.png", format="png")
+    plt.clf()
+
+""" Varied topology, same routing """
+def plot_topo_algo(name):
+    global algo
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    for topo, _ in algo.items():
+        for routing, __ in _.items():
+            if routing != name:
+                continue
+
+            for num_mr, ___ in __.items():
+                y = []
+                x = []
+
+                for num_host, times in sorted(___.items()):
+                    x.append(num_host)
+                    y.append(times)
+
+                plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
+                             fmt='--o', label=(str(topo) + " " + str(num_mr)))
+
+    plt.legend()
+    ax.set_title(name + " w/ Varied Topology")
+    ax.set_xlabel("Number of hosts")
+    ax.set_ylabel("Computation time (s)")
+
+    plt.savefig(PLOT_DIR + name.lower() + "_algo.png", format="png")
+    plt.clf()
+
+""" Plot all algorithm graphs """
+def plot_algorithm():
+    plot_routing_algo("JF")
+    plot_routing_algo("JF2")
+    # plot_routing_algo("FT")
+
+    plot_topo_algo("AR")
+    plot_topo_algo("HAR")
+    plot_topo_algo("RR")
+
 if __name__ == '__main__':
     parse()
-    # plot_throughput()
+    plot_throughput()
     # plot_delay()
+    plot_algorithm()
