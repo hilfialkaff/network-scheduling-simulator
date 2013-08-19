@@ -1,6 +1,7 @@
 from random import random
 from job_config import JobConfig
 from math import exp
+from time import clock
 
 class SimulatedAnnealing:
     def __init__(self, max_util, max_step, init_state, generate_neighbor, compute_util):

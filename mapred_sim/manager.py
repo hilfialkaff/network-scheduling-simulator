@@ -17,13 +17,13 @@ and receives workload information.
 
 TODO:
 - Number of mappers/reducers not necessarily static
-- Bandwidth requirement per job might be different
 - Take into account link failures
+- Apps might have min. bandwidth requirement (check for bandwidth/10)
 """
 class Manager:
     LOG_NAME = "./log"
 
-    def __init__(self, topo, routing, num_host, workload, num_mappers, num_reducers):
+    def __init__(self, topo, routing, num_host, workload, num_mappers, num_reducers, num_jobs=100):
         self.seed = randrange(100)
         self.graph = topo.generate_graph()
         self.workload = workload
@@ -32,6 +32,7 @@ class Manager:
         self.num_reducers = num_reducers
         self.routing = routing(self.graph, num_mappers, num_reducers, 2, 10, 0.5)
         self.f = open(Manager.LOG_NAME, 'a')
+        self.num_jobs = num_jobs
 
         self._write("%s %s %d %d\n" % (topo.get_name(), routing.get_name(), num_host, num_mappers))
 
@@ -61,12 +62,14 @@ class Manager:
 
     def update_jobs_progress(self, t):
         for job in self.jobs:
-            if job.get_state() == Job.EXECUTING and t >= (job.get_last_update() + 1):
+            last_update = job.get_last_update()
+            if job.get_state() == Job.EXECUTING and t >= (last_update + 1):
                 job_id = job.get_id()
                 util = self.routing.jobs_config[job_id].get_util()
 
+                job.update_data_left(util * (t - last_update))
                 job.set_last_update(t)
-                job.update_data_left(util)
+
                 if job.get_data_left() <= 0:
                     self._write("Job %d done at %d\n" % (job_id, t))
                     self.routing.delete_job_config(job_id)
@@ -79,16 +82,17 @@ class Manager:
                     self.routing.update_jobs_utilization()
 
     def loop(self, t):
-        # print "Beginning of loop"
+        # print "Beginning of loop:", t
         jobs = self.dequeue_job(t)
 
         for job in jobs:
             job_config = self.execute_job(job)
+            # print "trying to execute job", job.get_id(), "at", t
 
             # The job is actually executed
             if job_config.get_util() > 0:
                 job_id = job.get_id()
-                # print "job", job.get_id(), "executed"
+                # print "job", job.get_id(), "executed", "at", t
 
                 self._write("Executing job %d submitted at %d at %d\n" \
                     % (job_id, job.get_submit_time(), t))
@@ -107,6 +111,7 @@ class Manager:
         jobs = self.dequeue_job(t)
 
         # XXX: If all machines are used up or there is no new job, keep looping
+        # Might need to be modified on adaptive machine.
         while len(self.jobs) and (not len(jobs) or self.routing.is_full()):
             self.update_jobs_progress(t)
             t += 1
@@ -117,12 +122,12 @@ class Manager:
     def run(self):
         f = open(self.workload)
         t = float(0) # Virtual time in the datacenter
-        i = 1 # XXX
+        i = 1
 
         for line in f:
             self.enqueue_job(line)
             i += 1
-            if i == 50:
+            if i == self.num_jobs:
                 break
         f.close()
 
@@ -133,10 +138,12 @@ class Manager:
             diff = time.clock() - start
 
             self._write("Algorithm: %f\n" % diff)
-            if diff < 1:
-                time.sleep(1 - diff)
-                t += (1 - diff)
-            t += diff
+            # XXX
+            # if diff < 1:
+            #     time.sleep(1 - diff)
+            #     t += (1 - diff)
+            # t += diff
+            t += 1
 
             t = self.accelerate(t)
 

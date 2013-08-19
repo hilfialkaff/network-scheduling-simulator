@@ -44,7 +44,12 @@ class Job:
         return self.data_left
 
     def update_data_left(self, util):
-        self.data_left -= util
+        if self.data_left > util:
+            self.data_left -= util
+        else:
+            self.data_left = 0
+
+        return self.data_left
 
     def get_last_update(self):
         return self.last_update

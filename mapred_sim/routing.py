@@ -3,7 +3,7 @@ from random import choice, random
 from sys import maxint
 from copy import deepcopy
 from pprint import pprint
-from time import time
+from time import time, clock
 
 from simulated_annealing import SimulatedAnnealing
 from job_config import JobConfig
@@ -23,6 +23,7 @@ TODO:
 """
 class Routing(object):
     def __init__(self, graph, num_mappers, num_reducers, *args):
+        self.tmp = 1
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
         self.comm_pattern = None
@@ -37,6 +38,8 @@ class Routing(object):
         self.used_links = []
 
         self.jobs_config = {}
+        self.k_paths = {}
+        # self.build_k_paths()
 
     def is_full(self):
         ret = False
@@ -60,6 +63,29 @@ class Routing(object):
         self.used_paths = []
         self.used_links = []
 
+    def build_k_paths(self):
+        hosts_id = [node.get_id() for node in self.graph.get_hosts()]
+
+        start = clock()
+
+        for src in hosts_id:
+            for dst in hosts_id:
+                if src == dst:
+                    continue
+
+                if src not in self.k_paths:
+                    self.k_paths[src] = {}
+                if dst not in self.k_paths[src]:
+                    self.k_paths[src][dst] = []
+
+                if dst in self.k_paths and src in self.k_paths[dst]:
+                    self.k_paths[src][dst] = self.k_paths[dst][src] # Symmetry
+                else:
+                    self.k_paths[src][dst] = self.k_path(src, dst, self.bandwidth/10) # XXX
+
+        diff = clock() - start
+        print "K-paths construction:", diff
+
     def k_path(self, src, dst, desired_bw):
         # Find k shortest paths between src and dst which have sufficient bandwidth
         paths_found = []
@@ -73,7 +99,6 @@ class Routing(object):
 
             # If last node on path is the destination
             if path[-1] == dst:
-                # print "paths found:", path
                 paths_found.append((bw, path))
                 continue
 
@@ -104,7 +129,7 @@ class Routing(object):
 
         # Build path for all the communication pattern
         for c in self.comm_pattern:
-            possible = self.k_path(c[0], c[1], c[2])
+            possible = self.k_paths[c[0]][c[1]]
             if not possible:
                 ret = False
                 break
@@ -136,6 +161,112 @@ class Routing(object):
     @staticmethod
     def get_name():
         raise NotImplementedError("Method unimplemented in abstract class...")
+
+"""
+Routing algorithm using simulated annealing for both placement and routing + Floyd-Warshall
+"""
+class FWRouting(Routing):
+    def __init__(self, *args):
+        super(FWRouting, self).__init__(*args)
+        self.distances = {}
+        self.next_nodes = {}
+
+        self.k_floyd_warshall()
+
+    def build_paths(self):
+        ret = True
+
+        """ Build path for all the communication pattern """
+        for c in self.comm_pattern:
+            possible = self.floyd_warshall_path(c[0], c[1], c[2])
+            if not possible:
+                ret = False
+                break
+
+            for v in possible:
+                src_dst_pair = (v[1][0], v[1][-1])
+                if src_dst_pair not in self.valid_paths:
+                    self.valid_paths[src_dst_pair] = []
+                self.valid_paths[src_dst_pair].append(v)
+
+        # print "valid paths: ", self.valid_paths
+        return ret
+
+    def _helper(self, src, dst, bandwidth):
+        paths = []
+
+        if self.distances[src][dst] == float("inf"):
+            raise Exception("! Floyd-Warshall path")
+
+        middle = self.next_nodes[src][dst]
+        if dst in middle:
+            paths.append([src, dst])
+        else:
+            for _middle in middle:
+                paths_src_middle = self._helper(src, _middle, bandwidth)
+                paths_middle_dst = self._helper(_middle, dst, bandwidth)
+
+                for p1 in paths_src_middle:
+                    for p2 in paths_middle_dst:
+                        paths.append(p1[:-1] + p2)
+
+        return paths
+
+    def floyd_warshall_path(self, src, dst, bandwidth):
+        paths_found = []
+        start = clock()
+
+        path = self._helper(src, dst, bandwidth)
+
+        for p in path:
+            paths_found.append((bandwidth, p))
+
+        return paths_found
+
+    """ Modified floyd-warshall algorithm to find top k-paths instead of only the shortest path """
+    def k_floyd_warshall(self):
+        start = clock()
+        nodes_id = [node.get_id() for node in self.graph.get_nodes().values()]
+        links = self.graph.get_links().keys()
+
+        for src in nodes_id:
+            for dst in nodes_id:
+                if src not in self.distances:
+                    self.distances[src] = {}
+                    self.next_nodes[src] = {}
+                if dst not in self.next_nodes[src]:
+                    self.next_nodes[src][dst] = []
+
+                if src == dst:
+                    self.distances[src][dst] = 0
+                else:
+                    self.distances[src][dst] = float("inf")
+
+        for link in links:
+            [v1, v2] = link
+            self.distances[v1][v2] = 1
+            self.distances[v2][v1] = 1
+            self.next_nodes[v1][v2] = [v2]
+            self.next_nodes[v2][v1] = [v1]
+
+        for i in nodes_id:
+            for j in nodes_id:
+                for k in nodes_id:
+                    if i == j or i == k or j == k:
+                        continue
+
+                    if self.distances[j][k] == float("inf") or \
+                        self.distances[j][i] + self.distances[i][k] < self.distances[j][k]:
+
+                        self.distances[j][k] = self.distances[j][i] + self.distances[i][k]
+                        self.next_nodes[j][k] = []
+                        self.next_nodes[j][k].append(i)
+                    elif self.distances[j][i] + self.distances[i][k] == self.distances[j][k]:
+                        self.next_nodes[j][k].append(i)
+
+        diff = clock() - start
+        print "Floyd-Warshall construction:", diff
+
 class OptimalRouting(Routing):
     @staticmethod
     def get_name():
@@ -173,7 +304,7 @@ class OptimalRouting(Routing):
         hosts = self.graph.get_hosts()
         bandwidth = self.bandwidth
         max_util = 0
-        i = 0 # XXX
+        i = 0
 
         for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
             flows = self.construct_flows(p)
@@ -321,7 +452,11 @@ class OptimalRouting(Routing):
 """
 Routing algorithm using simulated annealing for both placement and routing
 """
-class AnnealingRouting(Routing):
+class AnnealingRouting(FWRouting):
+    def __init__(self, *args):
+        super(AnnealingRouting, self).__init__(*args)
+        self.max_step = 50 # XXX
+
     @staticmethod
     def get_name():
         return "AR"
@@ -342,13 +477,10 @@ class AnnealingRouting(Routing):
             hosts[host1], hosts[host2] = hosts[host2], hosts[host1]
         else:
             # Only take free hosts into consideration
-            available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+            available_hosts = [h for h in self.graph.get_hosts() if h.is_free() and h not in state]
 
             host_to_remove = choice(range(len(state)))
             host_to_add = choice(available_hosts)
-
-            while host_to_add in state:
-                host_to_add = choice(available_hosts)
 
             state[host_to_remove] = host_to_add
 
@@ -375,7 +507,7 @@ class AnnealingRouting(Routing):
         # There are enough nodes to run the job
         if len(available_hosts) > (self.num_mappers + self.num_reducers):
             max_util = self.num_mappers * self.num_reducers * self.bandwidth
-            max_step = 10 # XXX
+            max_step = self.max_step
 
             # Executing simulated annealing for map-reduce placement
             simulated_annealing = SimulatedAnnealing(max_util, \
@@ -390,7 +522,7 @@ class AnnealingRouting(Routing):
 
     def compute_route(self):
         util = JobConfig(0, None, None)
-        max_step = 10
+        max_step = self.max_step
         max_util = self.num_mappers * self.num_reducers * self.bandwidth
 
         if self.build_paths():
@@ -411,6 +543,18 @@ class AnnealingRouting(Routing):
 
     def routing_generate_neighbor(self, state):
         state_length = len(state)
+        ret = True
+
+        # XXX: Hmmm
+        for possible_paths in self.valid_paths.values():
+            if len(possible_paths) != 1:
+                ret = False
+                break
+
+        if ret:
+            print self.tmp, "There is only one state"
+            self.tmp += 1
+            return state
 
         path_to_change = choice(range(state_length))
         possible_paths = self.valid_paths.values()[path_to_change]
@@ -551,6 +695,25 @@ class HalfAnnealingRouting(AnnealingRouting):
                 hosts.append(host_to_add)
 
             util = self.placement_compute_util(hosts)
+
+        return util
+
+"""
+Routing algorithm using simulated annealing for only placement
+"""
+class HalfAnnealingRouting2(AnnealingRouting):
+    @staticmethod
+    def get_name():
+        return "HAR2"
+
+    def compute_route(self):
+        util = JobConfig(0, None, None)
+        chosen_paths = []
+
+        if self.build_paths():
+            for path in self.valid_paths.values():
+                chosen_paths.append(choice(path))
+            util = self.routing_compute_util(chosen_paths)
 
         return util
 

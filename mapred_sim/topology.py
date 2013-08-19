@@ -205,10 +205,12 @@ class Jellyfish2Topology(Topology):
             add_switch = 0
             added_switch = 0
 
-            if random() > 0.5:
+            if random() > 0.75:
                 add_switch = 0
-            elif random() > 0.25:
+            elif random() > 0.50:
                 add_switch = 1
+            elif random() > 0.25:
+                add_switch = 2
             else:
                 add_switch = 3
 
@@ -399,6 +401,9 @@ class FatTreeTopology(Topology):
                         core_switch = Node(core_id)
                         graph.add_node(core_switch)
                     graph.add_link(core_switch, agg_switch, bandwidth)
+
+        # print "number of hosts:", len(graph.get_hosts())
+        # print "number of switches:", len(graph.get_switches())
 
         graph.set_k_path_heuristic(self.k_path_heuristic)
         graph.set_k_path_validity(self.k_path_validity)
