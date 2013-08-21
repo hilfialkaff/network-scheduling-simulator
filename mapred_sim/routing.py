@@ -424,7 +424,7 @@ class OptimalRouting(Routing):
                 self.used_paths.append(paths_used)
                 i+=1
 
-            # TODO
+            # XXX
             if i > self.num_alt_paths:
                 break
 
@@ -455,7 +455,7 @@ Routing algorithm using simulated annealing for both placement and routing
 class AnnealingRouting(FWRouting):
     def __init__(self, *args):
         super(AnnealingRouting, self).__init__(*args)
-        self.max_step = 50 # XXX
+        self.max_step = 100 # XXX
 
     @staticmethod
     def get_name():
