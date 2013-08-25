@@ -3,3 +3,4 @@ conf/slaves
 *.jar
 *.pyc
 *.png
+*.log
