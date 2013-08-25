@@ -22,8 +22,11 @@ TODO:
 - Multiple jobs
 - Simulated annealing utilization should be based on all jobs, not just one
 """
-class Routing(object):
-    def __init__(self, graph, num_mappers, num_reducers, *args):
+class Algorithm(object):
+    K_PATH = 1
+    FLOYD_WARSHALL = 2
+
+    def __init__(self, graph, algo, num_mappers, num_reducers, *args):
         self.tmp = 1
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
@@ -39,8 +42,16 @@ class Routing(object):
         self.used_links = []
 
         self.jobs_config = {}
-        self.k_paths = {}
-        self.build_k_paths()
+
+        if algo == Algorithm.K_PATH:
+            self.k_paths = {}
+            self.build_k_paths()
+            self.build_paths = self.k_build_paths
+        elif algo == Algorithm.FLOYD_WARSHALL:
+            self.distances = {}
+            self.next_nodes = {}
+            self.build_fw()
+            self.build_paths = self.fw_build_paths
 
     def is_full(self):
         ret = False
@@ -126,7 +137,7 @@ class Routing(object):
         # print "paths: ", paths_found
         return paths_found
 
-    def build_paths(self):
+    def k_build_paths(self):
         ret = True
 
         # Build path for all the communication pattern
@@ -145,42 +156,12 @@ class Routing(object):
         # print "valid paths: ", self.valid_paths
         return ret
 
-    def construct_flows(self, nodes):
-        ids = [node.get_id() for node in nodes]
-        mappers = ids[:len(ids)/2]
-        reducers = ids[len(ids)/2:]
-
-        flows = []
-        bw = self.bandwidth
-
-        for m in mappers:
-            for r in reducers:
-                flow = (m, r, bw / 10)
-                flows.append(flow)
-
-        return flows
-
-    @staticmethod
-    def get_name():
-        raise NotImplementedError("Method unimplemented in abstract class...")
-
-"""
-Routing algorithm using simulated annealing for both placement and routing + Floyd-Warshall
-"""
-class FWRouting(Routing):
-    def __init__(self, *args):
-        super(FWRouting, self).__init__(*args)
-        self.distances = {}
-        self.next_nodes = {}
-
-        self.k_floyd_warshall()
-
-    def build_paths(self):
+    def fw_build_paths(self):
         ret = True
 
         """ Build path for all the communication pattern """
         for c in self.comm_pattern:
-            possible = self.floyd_warshall_path(c[0], c[1], c[2])
+            possible = self.fw_paths(c[0], c[1], c[2])
             if not possible:
                 ret = False
                 break
@@ -194,7 +175,7 @@ class FWRouting(Routing):
         # print "valid paths: ", self.valid_paths
         return ret
 
-    def _helper(self, src, dst, bandwidth):
+    def _fw_paths(self, src, dst, bandwidth):
         paths = []
 
         if self.distances[src][dst] == float("inf"):
@@ -205,8 +186,8 @@ class FWRouting(Routing):
             paths.append([src, dst])
         else:
             for _middle in middle:
-                paths_src_middle = self._helper(src, _middle, bandwidth)
-                paths_middle_dst = self._helper(_middle, dst, bandwidth)
+                paths_src_middle = self._fw_paths(src, _middle, bandwidth)
+                paths_middle_dst = self._fw_paths(_middle, dst, bandwidth)
 
                 for p1 in paths_src_middle:
                     for p2 in paths_middle_dst:
@@ -214,11 +195,10 @@ class FWRouting(Routing):
 
         return paths
 
-    def floyd_warshall_path(self, src, dst, bandwidth):
+    def fw_paths(self, src, dst, bandwidth):
         paths_found = []
-        start = clock()
 
-        path = self._helper(src, dst, bandwidth)
+        path = self._fw_paths(src, dst, bandwidth)
 
         for p in path:
             paths_found.append((bandwidth, p))
@@ -226,7 +206,7 @@ class FWRouting(Routing):
         return paths_found
 
     """ Modified floyd-warshall algorithm to find top k-paths instead of only the shortest path """
-    def k_floyd_warshall(self):
+    def build_fw(self):
         start = clock()
         nodes_id = [node.get_id() for node in self.graph.get_nodes().values()]
         links = self.graph.get_links().keys()
@@ -269,7 +249,26 @@ class FWRouting(Routing):
         diff = clock() - start
         print "Floyd-Warshall construction:", diff
 
-class OptimalRouting(Routing):
+    def construct_flows(self, nodes):
+        ids = [node.get_id() for node in nodes]
+        mappers = ids[:len(ids)/2]
+        reducers = ids[len(ids)/2:]
+
+        flows = []
+        bw = self.bandwidth
+
+        for m in mappers:
+            for r in reducers:
+                flow = (m, r, bw / 10)
+                flows.append(flow)
+
+        return flows
+
+    @staticmethod
+    def get_name():
+        raise NotImplementedError("Method unimplemented in abstract class...")
+
+class OptimalAlgorithm(Algorithm):
     @staticmethod
     def get_name():
         return "OR"
@@ -452,11 +451,11 @@ class OptimalRouting(Routing):
         return max_util
 
 """
-Routing algorithm using simulated annealing for both placement and routing
+Algorithm algorithm using simulated annealing for both placement and routing
 """
-class AnnealingRouting(Routing):
+class AnnealingAlgorithm(Algorithm):
     def __init__(self, *args):
-        super(AnnealingRouting, self).__init__(*args)
+        super(AnnealingAlgorithm, self).__init__(*args)
         self.max_step = 100 # XXX
 
     @staticmethod
@@ -665,9 +664,9 @@ class AnnealingRouting(Routing):
         self.graph.reset()
 
 """
-Routing algorithm using simulated annealing for only routing
+Algorithm algorithm using simulated annealing for only routing
 """
-class HalfAnnealingRouting(AnnealingRouting):
+class HalfAnnealingAlgorithm(AnnealingAlgorithm):
     @staticmethod
     def get_name():
         return "HAR"
@@ -691,9 +690,9 @@ class HalfAnnealingRouting(AnnealingRouting):
         return util
 
 """
-Routing algorithm using simulated annealing for only placement
+Algorithm algorithm using simulated annealing for only placement
 """
-class HalfAnnealingRouting2(AnnealingRouting):
+class HalfAnnealingAlgorithm2(AnnealingAlgorithm):
     @staticmethod
     def get_name():
         return "HAR2"
@@ -710,9 +709,9 @@ class HalfAnnealingRouting2(AnnealingRouting):
         return util
 
 """
-Routing algorithm with random placement and routing
+Algorithm algorithm with random placement and routing
 """
-class RandomRouting(HalfAnnealingRouting):
+class RandomAlgorithm(HalfAnnealingAlgorithm):
     @staticmethod
     def get_name():
         return "RR"

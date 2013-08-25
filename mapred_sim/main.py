@@ -1,6 +1,6 @@
 from manager import Manager
 from topology import *
-from routing import *
+from algorithm import *
 import sys
 
 BANDWIDTH = 10000000 # 100 MBps link
@@ -22,9 +22,9 @@ def main():
     # Jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for routing in [HalfAnnealingRouting2]:
+            for algorithm in [HalfAnnealingAlgorithm2]:
                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, routing, num_host, WORKLOAD, j, j)
+                mgr = Manager(topo, algorithm, Algorithm.K_PATH, num_host, WORKLOAD, j, j)
                 mgr.graph.plot("jf_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
@@ -32,9 +32,9 @@ def main():
     # Modified jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for routing in [HalfAnnealingRouting2, HalfAnnealingRouting, RandomRouting]:
+            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, routing, num_host, WORKLOAD, j, j)
+                mgr = Manager(topo, algorithm, Algorithm.K_PATH, num_host, WORKLOAD, j, j)
                 mgr.graph.plot("jf2_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
@@ -42,9 +42,9 @@ def main():
     # Fat-Tree
     for i, num_host in zip(num_ports, ft_num_hosts):
         for j in num_mr:
-            for routing in [HalfAnnealingRouting2, HalfAnnealingRouting, RandomRouting]:
+            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = FatTreeTopology(BANDWIDTH, i)
-                mgr = Manager(topo, routing, num_host, WORKLOAD, j, j)
+                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, num_host, WORKLOAD, j, j)
                 mgr.graph.plot("ft_" + str(i))
                 mgr.run()
                 mgr.clean_up()

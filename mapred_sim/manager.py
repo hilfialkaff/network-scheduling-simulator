@@ -1,5 +1,5 @@
 from random import shuffle, randrange, sample, seed
-from routing import OptimalRouting, AnnealingRouting
+from algorithm import *
 from pprint import pprint
 from copy import deepcopy
 from job import Job
@@ -23,18 +23,19 @@ TODO:
 class Manager:
     LOG_NAME = "./log"
 
-    def __init__(self, topo, routing, num_host, workload, num_mappers, num_reducers, num_jobs=100):
+    def __init__(self, topo, algorithm, routing_algo, num_host, workload, num_mappers, num_reducers, \
+        num_jobs=100):
         self.seed = randrange(100)
         self.graph = topo.generate_graph()
         self.workload = workload
         self.jobs = []
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.routing = routing(self.graph, num_mappers, num_reducers, 2, 10, 0.5)
+        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, 2, 10, 0.5)
         self.f = open(Manager.LOG_NAME, 'a')
         self.num_jobs = num_jobs
 
-        self._write("%s %s %d %d\n" % (topo.get_name(), routing.get_name(), num_host, num_mappers))
+        self._write("%s %s %d %d\n" % (topo.get_name(), algorithm.get_name(), num_host, num_mappers))
 
     def _write(self, s):
         self.f.write(s)
@@ -58,28 +59,28 @@ class Manager:
         return dequeued_jobs
 
     def execute_job(self, job):
-        return self.routing.execute_job(job)
+        return self.algorithm.execute_job(job)
 
     def update_jobs_progress(self, t):
         for job in self.jobs:
             last_update = job.get_last_update()
             if job.get_state() == Job.EXECUTING and t >= (last_update + 1):
                 job_id = job.get_id()
-                util = self.routing.jobs_config[job_id].get_util()
+                util = self.algorithm.jobs_config[job_id].get_util()
 
                 job.update_data_left(util * (t - last_update))
                 job.set_last_update(t)
 
                 if job.get_data_left() <= 0:
                     self._write("Job %d done at %d\n" % (job_id, t))
-                    self.routing.delete_job_config(job_id)
+                    self.algorithm.delete_job_config(job_id)
                     self.jobs.remove(job)
 
                     for host in self.graph.get_hosts():
                         if host.get_job_id_executed() == job_id:
                             host.set_free()
 
-                    self.routing.update_jobs_utilization()
+                    self.algorithm.update_jobs_utilization()
 
     def loop(self, t):
         # print "Beginning of loop:", t
@@ -99,9 +100,9 @@ class Manager:
 
                 job.set_state(Job.EXECUTING)
                 job.set_last_update(t)
-                self.routing.add_job_config(job_id, job_config)
-                self.routing.update_nodes_status(job_id, job_config)
-                self.routing.update_jobs_utilization()
+                self.algorithm.add_job_config(job_id, job_config)
+                self.algorithm.update_nodes_status(job_id, job_config)
+                self.algorithm.update_jobs_utilization()
 
                 self.print_jobs_utilization()
 
@@ -112,7 +113,7 @@ class Manager:
 
         # XXX: If all machines are used up or there is no new job, keep looping
         # Might need to be modified on adaptive machine.
-        while len(self.jobs) and (not len(jobs) or self.routing.is_full()):
+        while len(self.jobs) and (not len(jobs) or self.algorithm.is_full()):
             self.update_jobs_progress(t)
             t += 1
             jobs = self.dequeue_job(t)
@@ -157,4 +158,4 @@ class Manager:
             if job.get_state() != Job.NOT_EXECUTED:
                 job_id = job.get_id()
                 self._write("Job %d has utilization: %d\n" % \
-                    (job_id, self.routing.get_job_config(job_id).get_util()))
+                    (job_id, self.algorithm.get_job_config(job_id).get_util()))
