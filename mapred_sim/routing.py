@@ -20,6 +20,7 @@ Computes optimal routing for the given flows in the datacenters
 TODO:
 - Might need to reschedule the algorithm again?
 - Multiple jobs
+- Simulated annealing utilization should be based on all jobs, not just one
 """
 class Routing(object):
     def __init__(self, graph, num_mappers, num_reducers, *args):
@@ -39,7 +40,7 @@ class Routing(object):
 
         self.jobs_config = {}
         self.k_paths = {}
-        # self.build_k_paths()
+        self.build_k_paths()
 
     def is_full(self):
         ret = False
@@ -111,12 +112,13 @@ class Routing(object):
                 neighbor_bw = link.get_bandwidth()
 
                 # If the path is valid according to heuristic per network topology
-                if self.graph.k_path_validity(path + [neighbor]):
-                    if neighbor not in path and bw >= desired_bw:
-                        new_bw = min(bw, neighbor_bw)
-                        new_path = path + [neighbor]
-                        new_length = path_len + 1
-                        q.push(new_length + self.graph.k_path_heuristic(new_path), new_path, new_bw)
+                # if self.graph.k_path_validity(path + [neighbor]):
+                if neighbor not in path and bw >= desired_bw:
+                    new_bw = min(bw, neighbor_bw)
+                    new_path = path + [neighbor]
+                    new_length = path_len + 1
+                    q.push(new_length, new_path, new_bw)
+                    # q.push(new_length + self.graph.k_path_heuristic(new_path), new_path, new_bw)
 
             if len(paths_found) > self.num_alt_paths:
                 break
@@ -452,7 +454,7 @@ class OptimalRouting(Routing):
 """
 Routing algorithm using simulated annealing for both placement and routing
 """
-class AnnealingRouting(FWRouting):
+class AnnealingRouting(Routing):
     def __init__(self, *args):
         super(AnnealingRouting, self).__init__(*args)
         self.max_step = 100 # XXX
@@ -495,8 +497,8 @@ class AnnealingRouting(FWRouting):
     def placement_compute_util(self, state):
         self.set_placement(state)
         util = self.compute_route()
+        util.set_placements(state[:])
         self.clean_up()
-        util.set_placements(deepcopy(state))
 
         return util
 
@@ -510,11 +512,13 @@ class AnnealingRouting(FWRouting):
             max_step = self.max_step
 
             # Executing simulated annealing for map-reduce placement
+            start = clock()
             simulated_annealing = SimulatedAnnealing(max_util, \
                                                      max_step, \
                                                      self.placement_init_state, \
                                                      self.placement_generate_neighbor, \
                                                      self.placement_compute_util)
+            end = clock()
 
             util = simulated_annealing.run()
 
@@ -545,17 +549,7 @@ class AnnealingRouting(FWRouting):
         state_length = len(state)
         ret = True
 
-        # XXX: Hmmm
-        for possible_paths in self.valid_paths.values():
-            if len(possible_paths) != 1:
-                ret = False
-                break
-
-        if ret:
-            print self.tmp, "There is only one state"
-            self.tmp += 1
-            return state
-
+        # XXX: Will infinite loop if there is only one state
         path_to_change = choice(range(state_length))
         possible_paths = self.valid_paths.values()[path_to_change]
         while len(possible_paths) == 1:
@@ -581,9 +575,7 @@ class AnnealingRouting(FWRouting):
         for p in state:
             bw, links = p[0], p[1]
             for l in range(len(links) - 1):
-                node1 = self.graph.get_node(links[l])
-                node2 = self.graph.get_node(links[l + 1])
-                link_id = self.graph.get_link(node1, node2).get_end_points()
+                link_id = Link.get_id(links[l], links[l + 1])
                 link = cloned_links[link_id]
                 link_bandwidth = link.get_bandwidth()
 

@@ -40,7 +40,6 @@ class Link:
             exit(1)
         else:
             self.flows[fl] = 0
-            self.adjust_flow_bandwidths()
 
     def set_bandwidth(self, bandwidth):
         self.bandwidth = bandwidth

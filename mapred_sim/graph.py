@@ -1,7 +1,6 @@
 from flow import Flow
 from link import Link
 from node import Node
-from copy import deepcopy
 from random import choice, sample
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -168,6 +167,9 @@ class Graph:
 
             fl = self.flows[Flow.get_id(path[0], path[-1])]
             fl.set_path(link_list)
+
+        for link in self.get_links().values():
+            link.adjust_flow_bandwidths()
 
         # for f in self.flows.keys():
         #     bottleneck = self.flows[f].getBottleneckLink()
