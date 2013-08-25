@@ -1,0 +1,54 @@
+\section{Design}
+
+\note{Try linear programming approach as discussed in VM placement papers?}
+
+The problem of optimizing throughput of Hadoop applications are inherently two-folds;
+deciding the placement of mapper and reducer jobs and then, deciding the routing
+between the mappers and reducers.
+
+\begin{algorithm}
+    \caption{Simulated Annealing Algorithm}
+    \label{alg:1}
+    \begin{algorithmic}[1]
+        \State $currentState \gets initState()$
+            \For{$i \gets 1 \textrm{ to } maxStep$}
+                \State $newState \gets genState(currentState)$
+                \State $newUtil \gets computeUtil(newState)$
+                \State
+                \If{$transition(currentUtil, newUtil)$}
+                    \State $currentState \gets newState$
+                    \State $currentUtil \gets newUtil$
+                \EndIf
+                \State
+                \If{$currentUtil \ge bestUtil$}
+                    \State $bestUtil \gets currentUtil$
+                    \State $bestState \gets currentState$
+                \EndIf
+            \EndFor
+            \State \Return{$bestState$}
+    \end{algorithmic}
+\end{algorithm}
+
+\todo{When to move job around?}.
+\todo{Apps might have min. bandwidth requirement}
+
+To this end, our algorithm use two levels of Simulated Annealing (SA), one for
+placement decisions and another for routing decisions. We also could substitute
+the second-level of SA with other approaches in SDN~\cite{flowcomb13}.The
+first-level of SA loops to explore the optimal placement of mappers and
+reducers placement while the second-level of SA loops to explore the optimal
+routing paths of the mappers and reducers. To help in the routing paths
+computation, we modify Floyd-Warshall Algorithm~\cite{FloydWarshall13} to
+compute all-pairs k-shortest paths instead of just the shortest path and
+the results are then cached.
+
+When a new job arrives, it first specifies the number of mappers, $M$, and the
+number of reducers, $R$. Since Hadoop keep tracks of the nodes that are
+currently free, $freeHost$, the first-level of SA will then iterate through
+$freeHost \choose (M+R)$ possible states. In each iteration, the first-level of
+SA will then call the second-level of SA. From our pre-computed routing paths,
+each mapper has k paths to communicate with each reducer. Thus, our
+second-level of SA will then iterate through $k^{2}$ possible states. In
+each iteration, the second-level of SA will compute the max-min fairness
+of the currently running jobs in conjunction with the potential paths and placements
+of the new job.
