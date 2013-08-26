@@ -21,7 +21,7 @@ TODO:
 - Apps might have min. bandwidth requirement (check for bandwidth/10)
 """
 class Manager:
-    LOG_NAME = "./log"
+    LOG_NAME = "./simulator.log"
 
     def __init__(self, topo, algorithm, routing_algo, num_host, workload, num_mappers, num_reducers, \
         num_jobs=100):

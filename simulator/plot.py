@@ -1,9 +1,12 @@
+"""
+Usage: ./plot.py <log_name>
+"""
 import numpy as np
+import sys
 import os
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 
-LOG_NAME="./3_log"
 PLOT_DIR="./figs/"
 
 jobs = {}
@@ -17,8 +20,8 @@ class Job:
         self.util = float(0)
         self.util_helper = 1
 
-def parse():
-    f = open(LOG_NAME)
+def parse(log_name):
+    f = open(log_name)
 
     topo = ""
     num_host = 0
@@ -232,7 +235,9 @@ def plot_completion_time():
     plot_routing_ct("FT")
 
 if __name__ == '__main__':
-    parse()
+    log_name = sys.argv[1]
+
+    parse(log_name)
     plot_throughput()
     # plot_algorithm()
     # plot_delay()
