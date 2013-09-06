@@ -7,8 +7,9 @@ TODO:
 """
 
 class JobConfig:
-    def __init__(self, util, links, used_paths):
+    def __init__(self, util=0, total_util=0, links=None, used_paths=None):
         self.util = util
+        self.total_util = total_util # XXX: Represents utilization of whole cluster
         self.links = links
         self.used_paths = used_paths
 
@@ -17,6 +18,12 @@ class JobConfig:
 
     def set_placements(self, placements):
         self.placements = placements
+
+    def get_total_util(self):
+        return self.total_util
+
+    def set_total_util(self, total_util):
+        self.total_util = total_util
 
     def set_util(self, util):
         self.util = util

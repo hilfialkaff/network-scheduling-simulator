@@ -13,8 +13,8 @@ class SimulatedAnnealing:
 
     def transition(self, old_util, new_util, temperature):
         ret = 1
-        _new_util = new_util.get_util()
-        _old_util = old_util.get_util()
+        _new_util = new_util.get_total_util()
+        _old_util = old_util.get_total_util()
 
         if _old_util > _new_util:
             ret = exp((_new_util - _old_util)/temperature)

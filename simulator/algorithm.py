@@ -503,7 +503,7 @@ class AnnealingAlgorithm(Algorithm):
 
     def execute_job(self, job):
         available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
-        util = JobConfig(0, None, None)
+        util = JobConfig()
 
         # There are enough nodes to run the job
         if len(available_hosts) > (self.num_mappers + self.num_reducers):
@@ -524,7 +524,7 @@ class AnnealingAlgorithm(Algorithm):
         return util
 
     def compute_route(self):
-        util = JobConfig(0, None, None)
+        util = JobConfig()
         max_step = self.max_step
         max_util = self.num_mappers * self.num_reducers * self.bandwidth
 
@@ -569,7 +569,7 @@ class AnnealingAlgorithm(Algorithm):
         valid = True
         paths_used = []
         util = 0
-        job_config = JobConfig(0, None, None)
+        job_config = JobConfig()
 
         for p in state:
             bw, links = p[0], p[1]
@@ -597,11 +597,16 @@ class AnnealingAlgorithm(Algorithm):
             self.graph.set_flow(all_paths_used)
 
             util = 0
+            total_util = 0
             for p in paths_used:
                 flow = self.graph.get_flow(Flow.get_id(p[1][0], p[1][-1]))
                 util += (flow.get_requested_bandwidth() + flow.get_effective_bandwidth())
 
-            job_config = JobConfig(util, copy_links(cloned_links), paths_used)
+            for p in all_paths_used:
+                flow = self.graph.get_flow(Flow.get_id(p[1][0], p[1][-1]))
+                total_util += (flow.get_requested_bandwidth() + flow.get_effective_bandwidth())
+
+            job_config = JobConfig(util, total_util, copy_links(cloned_links), paths_used)
             self.reset()
 
         return job_config
@@ -674,7 +679,7 @@ class HalfAnnealingAlgorithm(AnnealingAlgorithm):
     def execute_job(self, job):
         available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
         hosts = []
-        util = JobConfig(0, None, None)
+        util = JobConfig()
 
         # There are enough nodes to run the job
         if len(available_hosts) > (self.num_mappers + self.num_reducers):
@@ -698,7 +703,7 @@ class HalfAnnealingAlgorithm2(AnnealingAlgorithm):
         return "HAR2"
 
     def compute_route(self):
-        util = JobConfig(0, None, None)
+        util = JobConfig()
         chosen_paths = []
 
         if self.build_paths():
@@ -717,7 +722,7 @@ class RandomAlgorithm(HalfAnnealingAlgorithm):
         return "RR"
 
     def compute_route(self):
-        util = JobConfig(0, None, None)
+        util = JobConfig()
         chosen_paths = []
 
         if self.build_paths():

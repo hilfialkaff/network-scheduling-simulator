@@ -21,7 +21,7 @@ TODO:
 - Apps might have min. bandwidth requirement (check for bandwidth/10)
 """
 class Manager:
-    LOG_NAME = "./simulator.log"
+    LOG_NAME = "./logs/simulator.log"
 
     def __init__(self, topo, algorithm, routing_algo, num_host, workload, num_mappers, num_reducers, \
         num_jobs=100):
@@ -54,6 +54,7 @@ class Manager:
         for job in self.jobs:
             if job.get_submit_time() <= cur_time and job.get_state() == Job.NOT_EXECUTED:
                 dequeued_jobs.append(job)
+                break # XXX: Need to be able to schedule multiple jobs at once
             if job.get_submit_time() > cur_time: # This job and the following jobs are for future time
                 break
         return dequeued_jobs
