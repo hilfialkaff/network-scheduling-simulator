@@ -4,3 +4,4 @@ conf/slaves
 *.pyc
 *.png
 *.log
+config
