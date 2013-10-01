@@ -7,8 +7,10 @@ TODO:
 - Node may execute multiple mappers/reducers
 """
 class Node:
-    def __init__(self, node_id):
+    def __init__(self, node_id, cpu=0, memory=0):
         self.node_id = node_id
+        self.cpu = cpu
+        self.memory = memory
         self.links = []
         self.job_id_executed = -1 # Not executing any job
 

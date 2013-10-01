@@ -128,10 +128,8 @@ def add_users(num_users):
         D.append(_D)
         s.append(0)
 
-def main():
-    global R, C, s, U, D
-
-    # Static case
+""" Static resource allocation """
+def compute_static():
     # num_users = range(100, 1001, 100)
     # times = []
 
@@ -150,8 +148,9 @@ def main():
     #     times.append(_times)
 
     # plot("static", num_users, times)
+    pass
 
-    # Dynamic case
+def compute_dynamic():
     num_users = range(100, 1001, 100)
 
     C_list = []
@@ -196,12 +195,16 @@ def main():
                 s_list.append(s)
                 U_list.append(U)
 
-                print "inc_C: ", inc_C
-                print "C: ", C
-
                 C = deepcopy(inc_C)
                 s = deepcopy(inc_s)
                 U = deepcopy(inc_U)
+
+
+def main():
+    global R, C, s, U, D
+
+    # compute_static()
+    compute_dynamic()
 
 if __name__ == '__main__':
     main()
