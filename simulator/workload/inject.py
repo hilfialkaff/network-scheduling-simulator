@@ -3,6 +3,10 @@ import random # random
 
 old_log = sys.argv[1]
 new_log = sys.argv[2]
+num_rsrc = 8 # Number of CPUs/RAMs
+
+def gen_rsrc():
+    return int((random.random() * (num_rsrc - 1)) + 1)
 
 def inject():
     f_old = open(old_log)
@@ -10,7 +14,7 @@ def inject():
 
     for line in f_old:
         line = line.strip('\n')
-        line += '\t' + str(random.random()) + '\t' + str(random.random()) + '\n'
+        line += '\t' + str(gen_rsrc()) + '\t' + str(gen_rsrc()) + '\n'
         f_new.write(line)
 
     f_new.close()

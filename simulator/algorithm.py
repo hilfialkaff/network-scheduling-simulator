@@ -1,18 +1,11 @@
-from collections import deque
 from random import choice, random
-from sys import maxint
 from copy import deepcopy
-from pprint import pprint
-from time import time, clock
+from time import clock
 
 from simulated_annealing import SimulatedAnnealing
 from job_config import JobConfig
-from node import Node
 from flow import Flow
 from utils import *
-from graph import Graph
-import flow
-import link
 
 """
 Computes optimal routing for the given flows in the datacenters
@@ -20,7 +13,7 @@ Computes optimal routing for the given flows in the datacenters
 TODO:
 - Might need to reschedule the algorithm again?
 - Multiple jobs
-- Simulated annealing utilization should be based on all jobs, not just one
+- Algorithm utilization should be based on all jobs, not just one
 """
 class Algorithm(object):
     K_PATH = 1
@@ -451,7 +444,7 @@ class OptimalAlgorithm(Algorithm):
         return max_util
 
 """
-Algorithm algorithm using simulated annealing for both placement and routing
+Simulated annealing algorithm using simulated annealing for both placement and routing
 """
 class AnnealingAlgorithm(Algorithm):
     def __init__(self, *args):
@@ -493,9 +486,9 @@ class AnnealingAlgorithm(Algorithm):
         # print "comm pattern: ", self.comm_pattern
         self.graph.set_comm_pattern(flows)
 
-    def placement_compute_util(self, state):
+    def placement_compute_util(self, state, max_util=0):
         self.set_placement(state)
-        util = self.compute_route()
+        util = self.compute_route(max_util)
         util.set_placements(state[:])
         self.clean_up()
 
@@ -503,6 +496,7 @@ class AnnealingAlgorithm(Algorithm):
 
     def execute_job(self, job):
         available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+
         util = JobConfig()
 
         # There are enough nodes to run the job
@@ -511,19 +505,17 @@ class AnnealingAlgorithm(Algorithm):
             max_step = self.max_step
 
             # Executing simulated annealing for map-reduce placement
-            start = clock()
             simulated_annealing = SimulatedAnnealing(max_util, \
                                                      max_step, \
                                                      self.placement_init_state, \
                                                      self.placement_generate_neighbor, \
                                                      self.placement_compute_util)
-            end = clock()
 
             util = simulated_annealing.run()
 
         return util
 
-    def compute_route(self):
+    def compute_route(self, max_util=0):
         util = JobConfig()
         max_step = self.max_step
         max_util = self.num_mappers * self.num_reducers * self.bandwidth
@@ -563,7 +555,7 @@ class AnnealingAlgorithm(Algorithm):
 
         return state
 
-    def routing_compute_util(self, state):
+    def routing_compute_util(self, state, max_util=0):
         self.add_previous_jobs()
         cloned_links = self.graph.clone_links()
         valid = True
@@ -669,7 +661,59 @@ class AnnealingAlgorithm(Algorithm):
         self.graph.reset()
 
 """
-Algorithm algorithm using simulated annealing for only routing
+Simulated annealing algorithm combined with Domain Resource Fairness (DRF)
+"""
+class AnnealingAlgorithmDRF(AnnealingAlgorithm):
+    def __init__(self, *args):
+        super(AnnealingAlgorithmDRF, self).__init__(*args)
+
+    def execute_job(self, job):
+        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+
+        util = JobConfig()
+
+        # There are enough nodes to run the job
+        if len(available_hosts) > (self.num_mappers + self.num_reducers):
+            max_util = job.max_util
+            max_step = self.max_step
+
+            # Executing simulated annealing for map-reduce placement
+            simulated_annealing = SimulatedAnnealing(max_util, \
+                                                     max_step, \
+                                                     self.placement_init_state, \
+                                                     self.placement_generate_neighbor, \
+                                                     self.placement_compute_util)
+
+            util = simulated_annealing.run()
+
+        return util
+    def placement_compute_util(self, state, max_util):
+        self.set_placement(state)
+        util = self.compute_route(max_util)
+        util.set_placements(state[:])
+        self.clean_up()
+
+        return util
+
+    def compute_route(self, max_util):
+        util = JobConfig()
+        max_step = self.max_step
+
+        if self.build_paths():
+            # Executing simulated annealing for map-reduce routing
+            simulated_annealing = SimulatedAnnealing(max_util, \
+                                                     max_step, \
+                                                     self.routing_init_state, \
+                                                     self.routing_generate_neighbor, \
+                                                     self.routing_compute_util)
+
+            util = simulated_annealing.run()
+
+        # print "util: ", util.get_util()
+        return util
+
+"""
+Simulated annealing algorithm using simulated annealing for only routing
 """
 class HalfAnnealingAlgorithm(AnnealingAlgorithm):
     @staticmethod
@@ -695,14 +739,14 @@ class HalfAnnealingAlgorithm(AnnealingAlgorithm):
         return util
 
 """
-Algorithm algorithm using simulated annealing for only placement
+Simulated annealing algorithm using simulated annealing for only placement
 """
 class HalfAnnealingAlgorithm2(AnnealingAlgorithm):
     @staticmethod
     def get_name():
         return "HAR2"
 
-    def compute_route(self):
+    def compute_route(self, max_util=0):
         util = JobConfig()
         chosen_paths = []
 
@@ -714,14 +758,14 @@ class HalfAnnealingAlgorithm2(AnnealingAlgorithm):
         return util
 
 """
-Algorithm algorithm with random placement and routing
+Simulated annealing algorithm with random placement and routing
 """
 class RandomAlgorithm(HalfAnnealingAlgorithm):
     @staticmethod
     def get_name():
         return "RR"
 
-    def compute_route(self):
+    def compute_route(self, max_util=0):
         util = JobConfig()
         chosen_paths = []
 

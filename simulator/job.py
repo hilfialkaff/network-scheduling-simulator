@@ -5,15 +5,17 @@ class Job:
     NOT_EXECUTED = 0
     EXECUTING = 1
 
-    def __init__(self, line):
-        tmp = line.split('\t')
+    def __init__(self, job_id, submit_time, inter_job_diff, map_size, shuffle_size,
+        reduce_size, cpu_usage=0, mem_usage=0):
         self.state = Job.NOT_EXECUTED
-        self.job_id = int(tmp[0].strip("job"))
-        self.submit_time = int(tmp[1])
-        self.inter_job_diff = int(tmp[2])
-        self.map_size = long(tmp[3])
-        self.shuffle_size = long(tmp[4])
-        self.reduce_size = long(tmp[5])
+        self.job_id = job_id
+        self.submit_time = submit_time
+        self.inter_job_diff = inter_job_diff
+        self.map_size = map_size
+        self.shuffle_size = shuffle_size
+        self.reduce_size = reduce_size
+        self.cpu_usage = cpu_usage
+        self.mem_usage = mem_usage
         self.data_left = self.shuffle_size
         self.last_update = 0
 
@@ -56,3 +58,15 @@ class Job:
 
     def set_last_update(self, last_update):
         self.last_update = last_update
+
+    def get_cpu_usage(self):
+        return self.cpu_usage
+
+    def set_cpu_usage(self, cpu_usage):
+        self.cpu_usage = cpu_usage
+
+    def get_mem_usage(self):
+        return self.mem_usage
+
+    def set_mem_usage(self, mem_usage):
+        self.mem_usage = mem_usage

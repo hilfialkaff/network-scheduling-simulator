@@ -34,7 +34,7 @@ class SimulatedAnnealing:
         while step < self.max_step and util.get_util() < self.max_util:
             temperature = self.find_temperature(float(step)/self.max_step)
             new_state = self.generate_neighbor(state)
-            new_util = self.compute_util(new_state)
+            new_util = self.compute_util(new_state, self.max_util)
 
             if self.transition(util, new_util, temperature) > random():
                 state = new_state

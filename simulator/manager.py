@@ -23,12 +23,11 @@ TODO:
 class Manager:
     LOG_NAME = "./logs/simulator.log"
 
-    def __init__(self, topo, algorithm, routing_algo, num_host, workload, num_mappers, num_reducers, \
-        num_jobs=100):
+    def __init__(self, topo, algorithm, routing_algo, num_host, jobs, num_mappers, num_reducers, \
+        with_drf=false, num_jobs=100):
         self.seed = randrange(100)
         self.graph = topo.generate_graph()
-        self.workload = workload
-        self.jobs = []
+        self.jobs = jobs
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
         self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, 2, 10, 0.5)
@@ -45,10 +44,6 @@ class Manager:
 
     def jobs_finished(self):
         return len(self.jobs) == 0
-
-    def enqueue_job(self, line):
-        job = Job(line)
-        self.jobs.append(job)
 
     def dequeue_job(self):
         dequeued_jobs = []
@@ -121,16 +116,6 @@ class Manager:
             jobs = self.dequeue_job()
 
     def run(self):
-        f = open(self.workload)
-        i = 1
-
-        for line in f:
-            self.enqueue_job(line)
-            i += 1
-            if i == self.num_jobs:
-                break
-        f.close()
-
         # While there are jobs that are being executed in the system
         while not self.jobs_finished():
             start = time.clock()
