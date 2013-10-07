@@ -1,11 +1,20 @@
 from copy import deepcopy
 import sys
+import logging
+import optparse
 
 from manager import Manager
 from topology import JellyfishTopology, Jellyfish2Topology, FatTreeTopology
 from algorithm import *
 from drf import DRF
 from parse import ParsePlacementWorkload, ParseDRFWorkload
+
+
+LOGGING_LEVELS = {'critical': logging.CRITICAL,
+                  'error': logging.ERROR,
+                  'warning': logging.WARNING,
+                  'info': logging.INFO,
+                  'debug': logging.DEBUG}
 
 CONFIG_NAME = 'config'
 BANDWIDTH = 10000000 # 100 MBps link
@@ -18,6 +27,15 @@ num_switches = [] # Number of switches in the topology
 num_mr = [] # Number of maps/reducers
 cpu = [] # Number of CPU cores/machine
 mem = [] # GB of RAM/machine
+
+def set_logging():
+    parser = optparse.OptionParser()
+    parser.add_option('-l', '--logging-level', help='Logging level')
+    parser.add_option('-f', '--logging-file', help='Logging file name')
+    (options, args) = parser.parse_args()
+    logging_level = LOGGING_LEVELS.get(options.logging_level, logging.NOTSET)
+    logging.basicConfig(level=logging_level, filename=options.logging_file,
+                        format='%(levelname)s %(funcName)s@%(filename)s: %(message)s')
 
 def read_config():
     global num_jobs, num_ports, num_hosts, ft_num_hosts, num_switches, \
@@ -50,7 +68,6 @@ def run_placement():
         for j in num_mr: # Number of maps/reducers
             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
-                print "jobs:", jobs
                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, num_host, deepcopy(jobs), j, j)
                 mgr.graph.plot("jf_" + str(num_port))
                 mgr.run()
@@ -120,5 +137,6 @@ def main():
     run_drf()
 
 if __name__ == "__main__":
+    set_logging()
     read_config()
     sys.exit(main())

@@ -7,6 +7,7 @@ from topology import *
 from utils import *
 from resource import Resource
 
+import logging
 import time
 import os
 
