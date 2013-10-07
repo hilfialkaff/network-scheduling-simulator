@@ -1,4 +1,3 @@
-from time import time
 from heapq import heappush, heappop
 from link import Link
 

@@ -3,7 +3,6 @@ Usage: ./plot.py <log_name>
 """
 import numpy as np
 import sys
-import os
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 

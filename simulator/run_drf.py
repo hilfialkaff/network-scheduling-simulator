@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 from random import random
 from copy import deepcopy
@@ -151,6 +150,8 @@ def compute_static():
     pass
 
 def compute_dynamic():
+    global C, s, U
+
     num_users = range(100, 1001, 100)
 
     C_list = []

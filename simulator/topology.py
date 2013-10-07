@@ -1,8 +1,6 @@
 from random import randrange, choice, seed, random
-from pprint import pprint
 from graph import Graph
 from node import Node
-import math
 
 class Topology(object):
     def __init__(self):
@@ -349,7 +347,6 @@ class FatTreeTopology(Topology):
         @return dictionary of nodes and edges representing the topology
         '''
         hosts = []
-        switches = []
 
         bandwidth = self.bandwidth
         num_ports = self.num_ports
@@ -401,9 +398,6 @@ class FatTreeTopology(Topology):
                         core_switch = Node(core_id)
                         graph.add_node(core_switch)
                     graph.add_link(core_switch, agg_switch, bandwidth)
-
-        # print "number of hosts:", len(graph.get_hosts())
-        # print "number of switches:", len(graph.get_switches())
 
         graph.set_k_path_heuristic(self.k_path_heuristic)
         graph.set_k_path_validity(self.k_path_validity)

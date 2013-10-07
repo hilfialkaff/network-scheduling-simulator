@@ -1,7 +1,6 @@
 from random import random
 from job_config import JobConfig
 from math import exp
-from time import clock
 
 class SimulatedAnnealing:
     def __init__(self, max_util, max_step, init_state, generate_neighbor, compute_util, \
@@ -31,7 +30,6 @@ class SimulatedAnnealing:
         util = JobConfig(0, None, None)
         best_util = JobConfig(0, None, None)
         state = self.init_state()
-        best_state = None
 
         if self.check_constraint:
             while self.check_constraint(state):
@@ -52,7 +50,6 @@ class SimulatedAnnealing:
 
             if new_util.compare(best_util):
                 best_util = new_util
-                best_state = state
 
             step += 1
 

@@ -1,5 +1,3 @@
-import link
-
 """
 Represents a flow in the datacenter network
 """

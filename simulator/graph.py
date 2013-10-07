@@ -1,7 +1,5 @@
 from flow import Flow
 from link import Link
-from node import Node
-from random import choice, sample
 import matplotlib.pyplot as plt
 import networkx as nx
 

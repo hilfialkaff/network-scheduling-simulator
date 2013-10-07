@@ -296,7 +296,6 @@ class OptimalAlgorithm(Algorithm):
     def execute_job(self, job):
         flows = []
         hosts = self.graph.get_hosts()
-        bandwidth = self.bandwidth
         max_util = 0
         i = 0
 
@@ -423,7 +422,6 @@ class OptimalAlgorithm(Algorithm):
                 break
 
     def select_optimal_graph(self):
-        best_graph = None
         max_util = 0
 
         for links, path in zip(self.used_links, self.used_paths):
@@ -433,8 +431,6 @@ class OptimalAlgorithm(Algorithm):
             util = self.graph.compute_utilization()
             if util > max_util:
                 max_util = util
-                best_links = links
-                best_flows = path
 
             # self.graph.print_links()
             self.reset()
@@ -462,7 +458,6 @@ class AnnealingAlgorithm(Algorithm):
 
     def placement_generate_neighbor(self, state):
         hosts = self.graph.get_hosts()
-        num_hosts = len(hosts)
         state_length = len(state)
 
         if random() > 0.5:
@@ -538,7 +533,6 @@ class AnnealingAlgorithm(Algorithm):
 
     def routing_generate_neighbor(self, state):
         state_length = len(state)
-        ret = True
 
         # XXX: Will infinite loop if there is only one state
         path_to_change = choice(range(state_length))
