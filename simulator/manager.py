@@ -1,15 +1,14 @@
-from random import shuffle, randrange, sample, seed
+from random import randrange
 from algorithm import *
-from pprint import pprint
-from copy import deepcopy
 from job import Job
+from drf import DRF
 from node import *
 from topology import *
 from utils import *
+from resource import Resource
 
-import time # clock
-import sys # stdout
-import os # fsync
+import time
+import os
 
 """
 Manager knows everything about the topology (available mappers, reducers)
@@ -19,23 +18,30 @@ TODO:
 - Number of mappers/reducers not necessarily static
 - Take into account link failures
 - Apps might have min. bandwidth requirement (check for bandwidth/10)
+- Split jobs to have jobs that are not run and those that have
 """
 class Manager:
     LOG_NAME = "./logs/simulator.log"
 
-    def __init__(self, topo, algorithm, routing_algo, num_host, jobs, num_mappers, num_reducers, \
-        with_drf=false, num_jobs=100):
+    def __init__(self, topo, algorithm, routing_algo, num_host, jobs, \
+        num_mappers, num_reducers, cpu=0, mem=0, with_drf=0):
         self.seed = randrange(100)
         self.graph = topo.generate_graph()
+        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, 2, 10, 0.5)
         self.jobs = jobs
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, 2, 10, 0.5)
+        self.cpu = cpu
+        self.mem = mem
+        self.with_drf = with_drf
+
         self.f = open(Manager.LOG_NAME, 'a')
-        self.num_jobs = num_jobs
         self.t = float(0) # Virtual time in the datacenter
 
         self._write("%s %s %d %d\n" % (topo.get_name(), algorithm.get_name(), num_host, num_mappers))
+
+        if self.with_drf == DRF.INC_DRF:
+            self.drf = DRF([net, cpu, mem])
 
     def _write(self, s):
         self.f.write(s)
@@ -59,7 +65,16 @@ class Manager:
         return dequeued_jobs
 
     def execute_job(self, job):
-        return self.algorithm.execute_job(job)
+        ret = None
+
+        if self.with_drf:
+            rsrc = self.drf.get_resource_alloc(job.get_id())
+            print rsrc
+            ret = self.algorithm.execute_job(job, rsrc)
+        else:
+            ret = self.algorithm.execute_job(job)
+
+        return ret
 
     def update_jobs_progress(self):
         for job in self.jobs:
@@ -82,9 +97,24 @@ class Manager:
 
                     self.algorithm.update_jobs_utilization()
 
-    def loop(self):
-        jobs = self.dequeue_job()
+    def run_drf(self, new_jobs):
+        jobs_to_consider = new_jobs
+        for job in self.jobs:
+            if job.get_state() == Job.EXECUTING:
+                jobs_to_consider.append(job)
 
+        if len(jobs_to_consider) > 0:
+            num_hosts = len(self.graph.get_nodes())
+            total_cpu = self.cpu * num_hosts
+            total_mem = self.mem * num_hosts
+            total_net = self.num_mappers * self.graph.get_bandwidth()
+            total_rsrc = Resource(total_net, total_cpu, total_mem)
+
+            print "Jobs in DRF:", jobs_to_consider
+            self.drf = DRF(total_rsrc, jobs_to_consider)
+            self.drf.run()
+
+    def run_new_jobs(self, jobs):
         for job in jobs:
             job_config = self.execute_job(job)
 
@@ -103,8 +133,6 @@ class Manager:
 
                 self.print_jobs_utilization()
 
-        self.update_jobs_progress()
-
     def accelerate(self):
         jobs = self.dequeue_job()
 
@@ -119,7 +147,12 @@ class Manager:
         # While there are jobs that are being executed in the system
         while not self.jobs_finished():
             start = time.clock()
-            self.loop()
+
+            new_jobs = self.dequeue_job()
+            if self.with_drf:
+                self.run_drf(new_jobs)
+            self.run_new_jobs(new_jobs)
+            self.update_jobs_progress()
             diff = time.clock() - start
 
             self._write("Algorithm: %f\n" % diff)

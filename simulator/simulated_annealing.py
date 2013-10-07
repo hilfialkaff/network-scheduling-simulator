@@ -4,12 +4,14 @@ from math import exp
 from time import clock
 
 class SimulatedAnnealing:
-    def __init__(self, max_util, max_step, init_state, generate_neighbor, compute_util):
+    def __init__(self, max_util, max_step, init_state, generate_neighbor, compute_util, \
+        check_constraint=None):
         self.max_util = max_util
         self.max_step = max_step
         self.init_state = init_state
         self.generate_neighbor = generate_neighbor
         self.compute_util = compute_util
+        self.check_constraint = None
 
     def transition(self, old_util, new_util, temperature):
         ret = 1
@@ -31,9 +33,17 @@ class SimulatedAnnealing:
         state = self.init_state()
         best_state = None
 
+        if self.check_constraint:
+            while self.check_constraint(state):
+                state = self.init_state()
+
         while step < self.max_step and util.get_util() < self.max_util:
             temperature = self.find_temperature(float(step)/self.max_step)
             new_state = self.generate_neighbor(state)
+
+            if self.check_constraint:
+                while self.check_constraint(new_state):
+                    new_state = self.generate_neighbor(new_state)
             new_util = self.compute_util(new_state, self.max_util)
 
             if self.transition(util, new_util, temperature) > random():

@@ -6,7 +6,7 @@ class Job:
     EXECUTING = 1
 
     def __init__(self, job_id, submit_time, inter_job_diff, map_size, shuffle_size,
-        reduce_size, cpu_usage=0, mem_usage=0):
+        reduce_size, cpu_usage=0, mem_usage=0, net_usage=0):
         self.state = Job.NOT_EXECUTED
         self.job_id = job_id
         self.submit_time = submit_time
@@ -16,6 +16,7 @@ class Job:
         self.reduce_size = reduce_size
         self.cpu_usage = cpu_usage
         self.mem_usage = mem_usage
+        self.net_usage = net_usage
         self.data_left = self.shuffle_size
         self.last_update = 0
 
@@ -70,3 +71,9 @@ class Job:
 
     def set_mem_usage(self, mem_usage):
         self.mem_usage = mem_usage
+
+    def get_net_usage(self):
+        return self.net_usage
+
+    def set_net_usage(self, net_usage):
+        self.net_usage = net_usage

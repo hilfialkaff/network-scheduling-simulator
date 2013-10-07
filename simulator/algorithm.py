@@ -453,7 +453,7 @@ class AnnealingAlgorithm(Algorithm):
 
     @staticmethod
     def get_name():
-        return "AR"
+        return "AA"
 
     def placement_init_state(self):
         available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
@@ -661,64 +661,12 @@ class AnnealingAlgorithm(Algorithm):
         self.graph.reset()
 
 """
-Simulated annealing algorithm combined with Domain Resource Fairness (DRF)
-"""
-class AnnealingAlgorithmDRF(AnnealingAlgorithm):
-    def __init__(self, *args):
-        super(AnnealingAlgorithmDRF, self).__init__(*args)
-
-    def execute_job(self, job):
-        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
-
-        util = JobConfig()
-
-        # There are enough nodes to run the job
-        if len(available_hosts) > (self.num_mappers + self.num_reducers):
-            max_util = job.max_util
-            max_step = self.max_step
-
-            # Executing simulated annealing for map-reduce placement
-            simulated_annealing = SimulatedAnnealing(max_util, \
-                                                     max_step, \
-                                                     self.placement_init_state, \
-                                                     self.placement_generate_neighbor, \
-                                                     self.placement_compute_util)
-
-            util = simulated_annealing.run()
-
-        return util
-    def placement_compute_util(self, state, max_util):
-        self.set_placement(state)
-        util = self.compute_route(max_util)
-        util.set_placements(state[:])
-        self.clean_up()
-
-        return util
-
-    def compute_route(self, max_util):
-        util = JobConfig()
-        max_step = self.max_step
-
-        if self.build_paths():
-            # Executing simulated annealing for map-reduce routing
-            simulated_annealing = SimulatedAnnealing(max_util, \
-                                                     max_step, \
-                                                     self.routing_init_state, \
-                                                     self.routing_generate_neighbor, \
-                                                     self.routing_compute_util)
-
-            util = simulated_annealing.run()
-
-        # print "util: ", util.get_util()
-        return util
-
-"""
 Simulated annealing algorithm using simulated annealing for only routing
 """
 class HalfAnnealingAlgorithm(AnnealingAlgorithm):
     @staticmethod
     def get_name():
-        return "HAR"
+        return "HAA"
 
     def execute_job(self, job):
         available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
@@ -744,7 +692,7 @@ Simulated annealing algorithm using simulated annealing for only placement
 class HalfAnnealingAlgorithm2(AnnealingAlgorithm):
     @staticmethod
     def get_name():
-        return "HAR2"
+        return "HAA2"
 
     def compute_route(self, max_util=0):
         util = JobConfig()
@@ -766,6 +714,143 @@ class RandomAlgorithm(HalfAnnealingAlgorithm):
         return "RR"
 
     def compute_route(self, max_util=0):
+        util = JobConfig()
+        chosen_paths = []
+
+        if self.build_paths():
+            for path in self.valid_paths.values():
+                chosen_paths.append(choice(path))
+            util = self.routing_compute_util(chosen_paths)
+
+        return util
+
+"""
+Simulated annealing algorithm combined with DRF
+"""
+class AnnealingAlgorithmDRF(AnnealingAlgorithm):
+    @staticmethod
+    def get_name():
+        return "AA-DRF"
+
+    def check_constraint(self, state):
+        ret = True
+
+        for host in state:
+            if host.get_cpu() < self.demand.get_cpu() or \
+                host.get_mem() < self.demand.get_mem():
+                ret = False
+                break
+
+        return ret
+
+    def _execute_job(self):
+        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+
+        util = JobConfig()
+
+        # There are enough nodes to run the job
+        if len(available_hosts) > (self.num_mappers + self.num_reducers):
+            max_step = self.max_step
+            max_util = self.demand.get_net()
+
+            # Executing simulated annealing for map-reduce placement
+            simulated_annealing = SimulatedAnnealing(max_util, \
+                                                     max_step, \
+                                                     self.placement_init_state, \
+                                                     self.placement_generate_neighbor, \
+                                                     self.placement_compute_util, \
+                                                     self.check_constraint)
+
+            util = simulated_annealing.run()
+
+        return util
+
+    def execute_job(self, job, rsrc):
+        self.cur_job = job
+        self.demand = rsrc
+
+        return self._execute_job()
+
+    def placement_compute_util(self, state, max_util):
+        self.set_placement(state)
+        util = self.compute_route(max_util)
+        util.set_placements(state[:])
+        self.clean_up()
+
+        return util
+
+    def compute_route(self, max_util):
+        util = JobConfig()
+        max_step = self.max_step
+
+        if self.build_paths():
+            # Executing simulated annealing for map-reduce routing
+            simulated_annealing = SimulatedAnnealing(max_util, \
+                                                     max_step, \
+                                                     self.routing_init_state, \
+                                                     self.routing_generate_neighbor, \
+                                                     self.routing_compute_util, \
+                                                     self.check_constraint)
+
+            util = simulated_annealing.run()
+
+        # print "util: ", util.get_util()
+        return util
+
+"""
+Simulated annealing algorithm using simulated annealing for only routing with DRF
+"""
+class HalfAnnealingAlgorithmDRF(AnnealingAlgorithmDRF):
+    @staticmethod
+    def get_name():
+        return "HAA-DRF"
+
+    def execute_job(self, job):
+        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+        hosts = []
+        util = JobConfig()
+
+        # There are enough nodes to run the job
+        if len(available_hosts) > (self.num_mappers + self.num_reducers):
+            for i in range(self.num_mappers + self.num_reducers):
+                host_to_add = choice(available_hosts)
+
+                while host_to_add in hosts:
+                    host_to_add = choice(available_hosts)
+                hosts.append(host_to_add)
+
+            util = self.placement_compute_util(hosts)
+
+        return util
+
+"""
+Simulated annealing algorithm using simulated annealing for only placement with DRF
+"""
+class HalfAnnealingAlgorithm2DRF(AnnealingAlgorithmDRF):
+    @staticmethod
+    def get_name():
+        return "HAA2-DRF"
+
+    def compute_route(self, max_util):
+        util = JobConfig()
+        chosen_paths = []
+
+        if self.build_paths():
+            for path in self.valid_paths.values():
+                chosen_paths.append(choice(path))
+            util = self.routing_compute_util(chosen_paths)
+
+        return util
+
+"""
+Simulated annealing algorithm with random placement and routing
+"""
+class RandomAlgorithmDRF(HalfAnnealingAlgorithmDRF):
+    @staticmethod
+    def get_name():
+        return "RR-DRF"
+
+    def compute_route(self, max_util):
         util = JobConfig()
         chosen_paths = []
 

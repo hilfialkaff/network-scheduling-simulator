@@ -7,10 +7,10 @@ TODO:
 - Node may execute multiple mappers/reducers
 """
 class Node:
-    def __init__(self, node_id, cpu=0, memory=0):
+    def __init__(self, node_id, cpu=0, mem=0):
         self.node_id = node_id
         self.cpu = cpu
-        self.memory = memory
+        self.mem = mem
         self.links = []
         self.job_id_executed = -1 # Not executing any job
 
@@ -20,14 +20,20 @@ class Node:
     def is_free(self):
         return self.job_id_executed == -1
 
-    def get_job_id_executed(self):
-        return self.job_id_executed
-
-    def set_job_id_executed(self, job_id):
-        self.job_id_executed = job_id
-
     def get_id(self):
         return self.node_id
+
+    def get_cpu(self):
+        return self.cpu
+
+    def set_cpu(self, cpu):
+        self.cpu = cpu
+
+    def get_mem(self):
+        return self.mem
+
+    def set_mem(self, mem):
+        self.mem = mem
 
     def get_type(self):
         _type = ""
@@ -55,3 +61,9 @@ class Node:
 
     def add_link(self, link):
         self.links.append(link)
+
+    def get_job_id_executed(self):
+        return self.job_id_executed
+
+    def set_job_id_executed(self, job_id):
+        self.job_id_executed = job_id
