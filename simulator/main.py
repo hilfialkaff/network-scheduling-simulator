@@ -139,4 +139,4 @@ def main():
 if __name__ == "__main__":
     set_logging()
     read_config()
-    sys.exit(main())
+    main()
