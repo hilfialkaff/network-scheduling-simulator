@@ -24,7 +24,7 @@ TODO:
 class Manager:
     LOG_NAME = "./logs/simulator.log"
 
-    def __init__(self, topo, algorithm, routing_algo, num_host, jobs, \
+    def __init__(self, topo, algorithm, routing_algo, jobs, \
         num_mappers, num_reducers, cpu=0, mem=0, with_drf=0):
         self.seed = randrange(100)
         self.graph = topo.generate_graph()
@@ -39,7 +39,8 @@ class Manager:
         self.f = open(Manager.LOG_NAME, 'a')
         self.t = float(0) # Virtual time in the datacenter
 
-        self._write("%s %s %d %d\n" % (topo.get_name(), algorithm.get_name(), num_host, num_mappers))
+        self._write("%s %s %d %d\n" % (topo.get_name(), algorithm.get_name(), \
+                    len(self.graph.get_hosts()), num_mappers))
 
         if self.with_drf == DRF.INC_DRF:
             self.drf = DRF([net, cpu, mem])
@@ -58,7 +59,7 @@ class Manager:
         for job in self.jobs:
             if job.get_submit_time() <= self.t and job.get_state() == Job.NOT_EXECUTED:
                 dequeued_jobs.append(job)
-                break # XXX: Need to be able to schedule multiple jobs at once
+                break # TODO: Need to be able to schedule multiple jobs at once
 
             if job.get_submit_time() > self.t: # This job and the following jobs are for future time
                 break
@@ -70,7 +71,6 @@ class Manager:
 
         if self.with_drf:
             rsrc = self.drf.get_resource_alloc(job.get_id())
-            print rsrc
             ret = self.algorithm.execute_job(job, rsrc)
         else:
             ret = self.algorithm.execute_job(job)
@@ -137,7 +137,7 @@ class Manager:
     def accelerate(self):
         jobs = self.dequeue_job()
 
-        # XXX: If all machines are used up or there is no new job, keep looping
+        # TODO: If all machines are used up or there is no new job, keep looping
         # Might need to be modified on adaptive machine.
         while len(self.jobs) and (not len(jobs) or self.algorithm.is_full()):
             self.update_jobs_progress()
@@ -157,7 +157,7 @@ class Manager:
             diff = time.clock() - start
 
             self._write("Algorithm: %f\n" % diff)
-            # XXX
+            # TODO
             # if diff < 1:
             #     time.sleep(1 - diff)
             #     t += (1 - diff)
