@@ -66,7 +66,7 @@ def run_placement():
     # Jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
+            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j)
                 mgr.graph.plot("jf_" + str(num_port))
@@ -76,9 +76,9 @@ def run_placement():
     # Modified jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
+            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, jobs, j, j)
+                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j)
                 mgr.graph.plot("jf2_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
@@ -88,7 +88,7 @@ def run_placement():
         for j in num_mr:
             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = FatTreeTopology(BANDWIDTH, i)
-                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, jobs, j, j)
+                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j)
                 mgr.graph.plot("ft_" + str(i))
                 mgr.run()
                 mgr.clean_up()
@@ -101,9 +101,9 @@ def run_drf():
     # Jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF]:
+            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, jobs, j, j, \
+                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, \
                     cpu[0], mem[0], DRF.STATIC_DRF)
                 mgr.graph.plot("jf_" + str(num_port))
                 mgr.run()
@@ -112,9 +112,9 @@ def run_drf():
     # Modified jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF]:
+            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
                 topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, jobs, j, j, \
+                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, \
                     cpu[0], mem[0], DRF.STATIC_DRF)
                 mgr.graph.plot("jf2_" + str(num_port))
                 mgr.run()
@@ -123,10 +123,9 @@ def run_drf():
     # Fat-Tree
     for i, num_host in zip(num_ports, ft_num_hosts):
         for j in num_mr:
-            for algorithm in [HalfAnnealingAlgorithm2DRF, \
-                HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
+            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
                 topo = FatTreeTopology(BANDWIDTH, i)
-                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, jobs, j, j, \
+                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j, \
                     cpu[0], mem[0], DRF.STATIC_DRF)
                 mgr.graph.plot("ft_" + str(i))
                 mgr.run()
