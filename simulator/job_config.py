@@ -9,7 +9,7 @@ TODO:
 class JobConfig:
     def __init__(self, util=0, total_util=0, links=None, used_paths=None):
         self.util = util
-        self.total_util = total_util # XXX: Represents utilization of whole cluster
+        self.total_util = total_util # TODO: Hacky -> represents utilization of whole cluster
         self.links = links
         self.used_paths = used_paths
 

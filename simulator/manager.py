@@ -1,15 +1,13 @@
-from random import randrange
-from algorithm import *
-from job import Job
-from drf import DRF
-from node import *
-from topology import *
-from utils import *
-from resource import Resource
-
-import logging
 import time
 import os
+
+from algorithm import * # pyflakes_bypass
+from topology import * # pyflakes_bypass
+from utils import * # pyflakes_bypass
+from random import randrange
+from job import Job
+from drf import DRF
+from resource import Resource
 
 """
 Manager knows everything about the topology (available mappers, reducers)

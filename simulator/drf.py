@@ -107,3 +107,6 @@ class DRF:
 
     def get_resource_alloc(self, job_id):
         return self.U[job_id]
+
+    def get_consumed_rsrc(self):
+        return self.C

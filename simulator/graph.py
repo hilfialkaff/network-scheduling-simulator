@@ -27,7 +27,7 @@ class Graph:
         self.reset_links()
 
     def merge_paths(self, used_paths):
-        # XXX: Need to rethink if apps have min. bandwidth requirement
+        # TODO: Need to rethink if apps have min. bandwidth requirement
         for paths in used_paths:
             path = paths[1]
             for i in range(len(path) - 1):

@@ -5,7 +5,7 @@ from time import clock
 from simulated_annealing import SimulatedAnnealing
 from job_config import JobConfig
 from flow import Flow
-from utils import *
+from utils import * # pyflakes_bypass
 
 """
 Computes optimal routing for the given flows in the datacenters
@@ -86,7 +86,7 @@ class Algorithm(object):
                 if dst in self.k_paths and src in self.k_paths[dst]:
                     self.k_paths[src][dst] = self.k_paths[dst][src] # Symmetry
                 else:
-                    self.k_paths[src][dst] = self.k_path(src, dst, self.bandwidth/10) # XXX
+                    self.k_paths[src][dst] = self.k_path(src, dst, self.bandwidth/10) # TODO
 
         diff = clock() - start
         print "K-paths construction:", diff
@@ -306,7 +306,7 @@ class OptimalAlgorithm(Algorithm):
             max_util = max(max_util, self.compute_route())
 
             ########################################################
-            # XXX
+            # TODO
             if max_util != 0:
                 i += 1
 
@@ -417,7 +417,7 @@ class OptimalAlgorithm(Algorithm):
                 self.used_paths.append(paths_used)
                 i+=1
 
-            # XXX
+            # TODO
             if i > self.num_alt_paths:
                 break
 
@@ -445,7 +445,7 @@ Simulated annealing algorithm using simulated annealing for both placement and r
 class AnnealingAlgorithm(Algorithm):
     def __init__(self, *args):
         super(AnnealingAlgorithm, self).__init__(*args)
-        self.max_step = 100 # XXX
+        self.max_step = 100 # TODO
 
     @staticmethod
     def get_name():
@@ -534,7 +534,7 @@ class AnnealingAlgorithm(Algorithm):
     def routing_generate_neighbor(self, state):
         state_length = len(state)
 
-        # XXX: Will infinite loop if there is only one state
+        # TODO: Will infinite loop if there is only one state
         path_to_change = choice(range(state_length))
         possible_paths = self.valid_paths.values()[path_to_change]
         while len(possible_paths) == 1:
