@@ -549,7 +549,7 @@ class AnnealingAlgorithm(Algorithm):
 
         return state
 
-    def routing_compute_util(self, state, max_util=0):
+    def routing_compute_util(self, state):
         self.add_previous_jobs()
         cloned_links = self.graph.clone_links()
         valid = True
@@ -764,14 +764,6 @@ class AnnealingAlgorithmDRF(AnnealingAlgorithm):
         self.cur_demand = rsrc
 
         return self._execute_job()
-
-    def placement_compute_util(self, state):
-        self.set_placement(state)
-        util = self.compute_route()
-        util.set_placements(state[:])
-        self.clean_up()
-
-        return util
 
     def compute_route(self):
         util = JobConfig()
