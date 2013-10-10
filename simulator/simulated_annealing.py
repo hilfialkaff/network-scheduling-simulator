@@ -2,6 +2,12 @@ from random import random
 from job_config import JobConfig
 from math import exp
 
+"""
+Wrapper for simulated annealing algorithm.
+
+TODO:
+- May cause infinite loop if check_constraint can not find solution
+"""
 class SimulatedAnnealing:
     def __init__(self, max_util, max_step, init_state, generate_neighbor, compute_util, \
         check_constraint=None):
@@ -42,7 +48,7 @@ class SimulatedAnnealing:
             if self.check_constraint:
                 while self.check_constraint(new_state):
                     new_state = self.generate_neighbor(new_state)
-            new_util = self.compute_util(new_state, self.max_util)
+            new_util = self.compute_util(new_state)
 
             if self.transition(util, new_util, temperature) > random():
                 state = new_state

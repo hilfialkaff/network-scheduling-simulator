@@ -109,7 +109,6 @@ class Manager:
             total_net = self.num_mappers * self.graph.get_bandwidth()
             total_rsrc = Resource(total_net, total_cpu, total_mem)
 
-            print "Jobs in DRF:", jobs_to_consider
             self.drf = DRF(total_rsrc, jobs_to_consider)
             self.drf.run()
 
