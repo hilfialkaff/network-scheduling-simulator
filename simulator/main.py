@@ -1,5 +1,4 @@
 from copy import deepcopy
-import sys
 import logging
 import optparse
 

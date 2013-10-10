@@ -1,4 +1,4 @@
-from random import randrange, choice, seed, random
+from random import randrange, choice, seed
 from graph import Graph
 from node import Node
 
@@ -200,17 +200,18 @@ class Jellyfish2Topology(Topology):
 
         # Modified jellyfish: add "supernodes"
         for i in range(num_hosts):
-            add_switch = 0
+            add_switch = 1
             added_switch = 0
 
-            if random() > 0.75:
-                add_switch = 0
-            elif random() > 0.50:
-                add_switch = 1
-            elif random() > 0.25:
-                add_switch = 2
-            else:
-                add_switch = 3
+            # TODO: Probability-based switch additions
+            # if random() > 0.75:
+            #     add_switch = 0
+            # elif random() > 0.50:
+            #     add_switch = 1
+            # elif random() > 0.25:
+            #     add_switch = 2
+            # else:
+            #     add_switch = 3
 
             while added_switch != add_switch:
                 switch_id = randrange(num_switches)
