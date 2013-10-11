@@ -48,6 +48,9 @@ class Manager:
         self.f.flush()
         os.fsync(self.f.fileno())
 
+    def count_running_jobs(self):
+        return len([job for job in self.jobs if job.get_state() == Job.EXECUTING])
+
     def jobs_finished(self):
         return len(self.jobs) == 0
 
@@ -67,11 +70,12 @@ class Manager:
     def execute_job(self, job):
         ret = None
 
-        if self.with_drf:
-            rsrc = self.drf.get_resource_alloc(job.get_id())
-            ret = self.algorithm.execute_job(job, rsrc)
-        else:
-            ret = self.algorithm.execute_job(job)
+        # if self.with_drf:
+        #     rsrc = self.drf.get_resource_alloc(job.get_id())
+        #     ret = self.algorithm.execute_job(job, rsrc)
+        # else:
+        #     ret = self.algorithm.execute_job(job)
+        ret = self.algorithm.execute_job(job)
 
         return ret
 
@@ -111,14 +115,18 @@ class Manager:
                 jobs_to_consider.append(job)
 
         if len(jobs_to_consider) > 0:
-            num_hosts = len(self.graph.get_nodes())
+            num_hosts = len(self.graph.get_hosts())
             total_cpu = self.cpu * num_hosts
             total_mem = self.mem * num_hosts
-            total_net = self.num_mappers * self.graph.get_bandwidth()
+            total_net = (num_hosts/2) * self.graph.get_bandwidth()
             total_rsrc = Resource(total_net, total_cpu, total_mem)
 
             self.drf = DRF(total_rsrc, jobs_to_consider)
             self.drf.run()
+
+            for job in jobs_to_consider:
+                job_id = job.get_id()
+                self._write("Job %d allocation: %s\n" % (job_id, self.drf.get_resource_alloc(job_id)))
 
     """
     This function runs jobs that are available.
@@ -152,16 +160,16 @@ class Manager:
     def accelerate(self, is_run):
         jobs = self.dequeue_job()
 
+        # TODO: Doesn't work with random algorithm and fat-tree?
         if not is_run:
-            jobs_run = 0
-            logging.debug("not is run")
-            while jobs_run == 0:
-                jobs_run = self.update_jobs_progress()
+            jobs_done = 0
+            while jobs_done == 0 and self.count_running_jobs() != 0:
+                jobs_done = self.update_jobs_progress()
                 self.t += 1
 
-        # TODO: If all machines are used up or there is no new job, keep looping
-        # Might need to be modified on adaptive machine.
-        while len(self.jobs) and (not len(jobs) or self.algorithm.is_full()):
+        # If all machines are used up or there is no new job, keep looping to
+        # speed up
+        while not self.jobs_finished() and (not len(jobs) or self.algorithm.is_full()):
             self.update_jobs_progress()
             self.t += 1
             jobs = self.dequeue_job()
@@ -171,27 +179,27 @@ class Manager:
         while not self.jobs_finished():
             start = time.clock()
             is_run = True
-
             new_jobs = self.dequeue_job()
-            if self.with_drf:
-                self.run_drf(new_jobs)
 
             if new_jobs:
+                if self.with_drf:
+                    self.run_drf(new_jobs)
+
                 is_run = self.run_new_jobs(new_jobs)
 
-            num_finished_jobs = self.update_jobs_progress()
-            if num_finished_jobs > 0:
-                is_run = True
-
             diff = time.clock() - start
-
             self._write("Algorithm: %f\n" % diff)
+
             # TODO
             # if diff < 1:
             #     time.sleep(1 - diff)
             #     t += (1 - diff)
             # t += diff
             self.t += 1
+
+            num_finished_jobs = self.update_jobs_progress()
+            if num_finished_jobs > 0:
+                is_run = True
 
             self.accelerate(is_run)
 

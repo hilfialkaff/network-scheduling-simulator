@@ -16,7 +16,7 @@ LOGGING_LEVELS = {'critical': logging.CRITICAL,
                   'debug': logging.DEBUG}
 
 CONFIG_NAME = 'config'
-BANDWIDTH = 10000000 # 100 MBps link
+BANDWIDTH = 100000 # 100 MBps link
 
 num_jobs = [] # Number of jobs to run in the cluster from the traces
 num_ports = [] # Number of ports in the topology
@@ -68,7 +68,6 @@ def run_placement():
             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j)
-                mgr.graph.plot("jf_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
 
@@ -78,7 +77,6 @@ def run_placement():
             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j)
-                mgr.graph.plot("jf2_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
 
@@ -88,7 +86,6 @@ def run_placement():
             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
                 topo = FatTreeTopology(BANDWIDTH, i)
                 mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j)
-                mgr.graph.plot("ft_" + str(i))
                 mgr.run()
                 mgr.clean_up()
 
@@ -100,33 +97,30 @@ def run_drf():
     # Jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
+            for algorithm in [RandomAlgorithm]:
                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, \
                     cpu[0], mem[0], DRF.STATIC_DRF)
-                mgr.graph.plot("jf_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
 
     # Modified jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
+            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
                 topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, \
                     cpu[0], mem[0], DRF.STATIC_DRF)
-                mgr.graph.plot("jf2_" + str(num_port))
                 mgr.run()
                 mgr.clean_up()
 
     # Fat-Tree
     for i, num_host in zip(num_ports, ft_num_hosts):
         for j in num_mr:
-            for algorithm in [HalfAnnealingAlgorithm2DRF, HalfAnnealingAlgorithmDRF, RandomAlgorithmDRF]:
+            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
                 topo = FatTreeTopology(BANDWIDTH, i)
                 mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j, \
                     cpu[0], mem[0], DRF.STATIC_DRF)
-                mgr.graph.plot("ft_" + str(i))
                 mgr.run()
                 mgr.clean_up()
 

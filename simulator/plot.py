@@ -11,13 +11,20 @@ PLOT_DIR="./figs/"
 jobs = {}
 algo = {}
 
+NET = 0
+CPU = 1
+rsrc_name = {NET: "network", CPU: "cpu"}
+
 class Job:
-    def __init__(self, submitted, start):
-        self.submitted = submitted
-        self.start = start
+    def __init__(self):
+        self.submitted = 0
+        self.start = 0
         self.end = 0
         self.util = float(0)
         self.util_helper = 1
+        self.net_usage = []
+        self.cpu_usage = []
+        self.mem_usage = []
 
 def parse(log_name):
     f = open(log_name)
@@ -50,8 +57,8 @@ def parse(log_name):
             submitted = int(l[-3])
             start = int(l[-1])
 
-            job = Job(submitted, start)
-            jobs[topo][routing][num_mr][num_host][job_id] = job
+            jobs[topo][routing][num_mr][num_host][job_id].submitted = submitted
+            jobs[topo][routing][num_mr][num_host][job_id].start = start
 
         if "utilization" in line:
             job_id = int(l[1])
@@ -68,6 +75,16 @@ def parse(log_name):
         if "Algorithm" in line:
             algo[topo][routing][num_mr][num_host].append(float(l[-1]))
 
+        if "allocation" in line:
+            job_id = int(line.split(' ')[1])
+            tmp = line.split(',')
+
+            if job_id not in jobs[topo][routing][num_mr][num_host]:
+                jobs[topo][routing][num_mr][num_host][job_id] = Job()
+
+            jobs[topo][routing][num_mr][num_host][job_id].net_usage.append(float(tmp[0].split('->')[1]))
+            jobs[topo][routing][num_mr][num_host][job_id].cpu_usage.append(float(tmp[1].split('->')[1]))
+            jobs[topo][routing][num_mr][num_host][job_id].mem_usage.append(float(tmp[2].split('->')[1]))
     f.close()
 
 """ Same topology, varied routing """
@@ -233,6 +250,63 @@ def plot_completion_time():
     plot_routing_ct("JF2")
     plot_routing_ct("FT")
 
+def plot_routing_rsrc_changes(name, rsrc_type, is_incremental):
+    global jobs
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    print "name:", name
+    for topo, _ in jobs.items():
+        if topo != name:
+            continue
+
+        for routing, __ in _.items():
+            for num_mr, ___ in __.items():
+                y = []
+                x = []
+
+                for num_host, _jobs in sorted(___.items()):
+                    x.append(num_host)
+
+                    if is_incremental:
+                        div = 2
+                    else:
+                        div = 1
+
+                    if rsrc_type == NET:
+                        y.append([np.std(job.net_usage[:len(job.net_usage)/div])/div for job in _jobs.values()])
+                    elif rsrc_type == CPU:
+                        y.append([np.std(job.cpu_usage[:len(job.cpu_usage)/div])/div for job in _jobs.values()])
+
+                print routing, num_mr
+                print "x:", x
+                print "y:", [np.average(arr) for arr in y]
+
+                plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
+                             fmt='--o', label=(str(routing) + " " + str(num_mr)))
+
+    # ax.set_title(name + " w/ Varied Routing")
+    ax.legend(loc='center right', bbox_to_anchor=(1.30,0.5))
+    ax.set_xlabel("Number of hosts")
+    ax.set_ylabel("Changes in " + rsrc_name[rsrc_type] + '_' + str(is_incremental))
+
+    plt.savefig(PLOT_DIR + name.lower() + "_" + rsrc_name[rsrc_type] + "_changes.png", \
+        format="png", bbox_inches='tight')
+    plt.clf()
+
+def plot_rsrc_changes():
+    print "Plotting resource changes..."
+    plot_routing_rsrc_changes("JF", CPU, 0)
+    plot_routing_rsrc_changes("JF", NET, 0)
+    plot_routing_rsrc_changes("JF2", CPU, 0)
+    plot_routing_rsrc_changes("JF2", NET, 0)
+
+    plot_routing_rsrc_changes("JF", CPU, 1)
+    plot_routing_rsrc_changes("JF", NET, 1)
+    plot_routing_rsrc_changes("JF2", CPU, 1)
+    plot_routing_rsrc_changes("JF2", NET, 1)
+
 if __name__ == '__main__':
     log_name = sys.argv[1]
 
@@ -240,4 +314,5 @@ if __name__ == '__main__':
     plot_throughput()
     # plot_algorithm()
     # plot_delay()
-    plot_completion_time()
+    # plot_completion_time()
+    plot_rsrc_changes()

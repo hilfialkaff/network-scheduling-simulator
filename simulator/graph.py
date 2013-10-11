@@ -1,7 +1,5 @@
 from flow import Flow
 from link import Link
-import matplotlib.pyplot as plt
-import networkx as nx
 
 """
 Represents a graph of nodes currently working in the cluster
@@ -187,6 +185,10 @@ class Graph:
         return util
 
     def plot(self, graph_type):
+        # pypy doesn't support matplotlib and networkx, :(
+        import matplotlib.pyplot as plt
+        import networkx as nx
+
         nx_graph = nx.Graph()
 
         for node in self.get_nodes().values():
@@ -207,7 +209,6 @@ class Graph:
         nx.draw_networkx_nodes(nx_graph, pos, nodelist=switches, node_size=100, label="x")
         nx.draw_networkx_nodes(nx_graph, pos, nodelist=hosts, node_size=50, node_color='b')
         nx.draw_networkx_edges(nx_graph, pos)
-        # nx.draw(nx_graph, pos)
 
         plt.savefig("graphs/" + graph_type + '.png')
         plt.clf()
