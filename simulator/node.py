@@ -12,6 +12,9 @@ class Node:
         self.links = []
         self.job_id_executed = -1 # Not executing any job
 
+    def __repr__(self):
+        return "Node: %s" % (self.node_id)
+
     def set_free(self):
         self.job_id_executed = -1
 

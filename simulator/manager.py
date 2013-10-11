@@ -75,7 +75,12 @@ class Manager:
 
         return ret
 
+    """
+    Return: # of jobs finished
+    """
     def update_jobs_progress(self):
+        ret = 0
+
         for job in self.jobs:
             last_update = job.get_last_update()
             if job.get_state() == Job.EXECUTING and self.t >= (last_update + 1):
@@ -95,6 +100,9 @@ class Manager:
                             host.set_free()
 
                     self.algorithm.update_jobs_utilization()
+                    ret += 1
+
+        return ret
 
     def run_drf(self, new_jobs):
         jobs_to_consider = new_jobs
@@ -112,12 +120,20 @@ class Manager:
             self.drf = DRF(total_rsrc, jobs_to_consider)
             self.drf.run()
 
+    """
+    This function runs jobs that are available.
+
+    Return: True if new jobs can be run, false if none of them can be run.
+    """
     def run_new_jobs(self, jobs):
+        ret = False
+
         for job in jobs:
             job_config = self.execute_job(job)
 
             # The job is actually executed
             if job_config.get_util() > 0:
+                ret = True
                 job_id = job.get_id()
 
                 self._write("Executing job %d submitted at %d at %d\n" \
@@ -131,8 +147,17 @@ class Manager:
 
                 self.print_jobs_utilization()
 
-    def accelerate(self):
+        return ret
+
+    def accelerate(self, is_run):
         jobs = self.dequeue_job()
+
+        if not is_run:
+            jobs_run = 0
+            logging.debug("not is run")
+            while jobs_run == 0:
+                jobs_run = self.update_jobs_progress()
+                self.t += 1
 
         # TODO: If all machines are used up or there is no new job, keep looping
         # Might need to be modified on adaptive machine.
@@ -142,15 +167,22 @@ class Manager:
             jobs = self.dequeue_job()
 
     def run(self):
-        # While there are jobs that are being executed in the system
+        # TODO: CLEANUP!!!!
         while not self.jobs_finished():
             start = time.clock()
+            is_run = True
 
             new_jobs = self.dequeue_job()
             if self.with_drf:
                 self.run_drf(new_jobs)
-            self.run_new_jobs(new_jobs)
-            self.update_jobs_progress()
+
+            if new_jobs:
+                is_run = self.run_new_jobs(new_jobs)
+
+            num_finished_jobs = self.update_jobs_progress()
+            if num_finished_jobs > 0:
+                is_run = True
+
             diff = time.clock() - start
 
             self._write("Algorithm: %f\n" % diff)
@@ -161,7 +193,7 @@ class Manager:
             # t += diff
             self.t += 1
 
-            self.accelerate()
+            self.accelerate(is_run)
 
     def clean_up(self):
         self._write("\n")
