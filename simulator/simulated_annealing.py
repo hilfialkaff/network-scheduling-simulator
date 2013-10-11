@@ -1,6 +1,8 @@
 from random import random
-from job_config import JobConfig
 from math import exp
+import logging # pyflakes_bypass
+
+from job_config import JobConfig
 
 """
 Wrapper for simulated annealing algorithm.
@@ -50,7 +52,10 @@ class SimulatedAnnealing:
                     new_state = self.generate_neighbor(new_state)
             new_util = self.compute_util(new_state)
 
-            if self.transition(util, new_util, temperature) > random():
+            # Utilization = 0 -> very undesirable state
+            if new_util.get_util() == 0:
+                state = self.init_state()
+            elif self.transition(util, new_util, temperature) > random():
                 state = new_state
                 util = new_util
 

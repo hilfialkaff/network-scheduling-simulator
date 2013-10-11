@@ -1,6 +1,7 @@
 from random import choice, random
 from copy import deepcopy
 from time import clock
+import logging # pyflakes_bypass
 
 from simulated_annealing import SimulatedAnnealing
 from job_config import JobConfig
@@ -452,9 +453,16 @@ class AnnealingAlgorithm(Algorithm):
         return "AA"
 
     def placement_init_state(self):
-        available_hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+        hosts = [h for h in self.graph.get_hosts() if h.is_free()]
+        hosts_index = range(len(hosts))
+        state = []
 
-        return available_hosts[:self.num_mappers + self.num_reducers]
+        for i in range(self.num_mappers + self.num_reducers):
+            index = choice(hosts_index)
+            state.append(hosts[index])
+            hosts_index.remove(index)
+
+        return state
 
     def placement_generate_neighbor(self, state):
         hosts = self.graph.get_hosts()
@@ -529,7 +537,12 @@ class AnnealingAlgorithm(Algorithm):
         return util
 
     def routing_init_state(self):
-        return [path[0] for path in self.valid_paths.values()]
+        state = []
+
+        for path in self.valid_paths.values():
+            state.append(choice(path))
+
+        return state
 
     def routing_generate_neighbor(self, state):
         state_length = len(state)
@@ -571,6 +584,7 @@ class AnnealingAlgorithm(Algorithm):
                 link.set_bandwidth(link_bandwidth - bw)
 
             if not valid:
+                # logging.debug(str(state) + " cannot be built")
                 break
             else:
                 paths_used.append(p)

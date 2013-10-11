@@ -132,7 +132,7 @@ def run_drf():
 
 def main():
     run_placement()
-    run_drf()
+    # run_drf()
 
 if __name__ == "__main__":
     set_logging()

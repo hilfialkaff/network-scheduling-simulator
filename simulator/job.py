@@ -20,6 +20,9 @@ class Job:
         self.data_left = self.shuffle_size
         self.last_update = 0
 
+    def __repr__(self):
+        return "Job %s" % (self.job_id)
+
     def get_state(self):
         return self.state
 
