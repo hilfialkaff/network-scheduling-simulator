@@ -4,8 +4,7 @@ import optparse
 
 from manager import Manager
 from topology import JellyfishTopology, Jellyfish2Topology, FatTreeTopology
-from drf import DRF
-from parse import ParsePlacementWorkload, ParseDRFWorkload
+from parse import ParsePlacementWorkload
 from algorithm import * # pyflakes_bypass
 
 
@@ -89,44 +88,8 @@ def run_placement():
                 mgr.run()
                 mgr.clean_up()
 
-def run_drf():
-    workload = "workload/facebook.tsv"
-    parser = ParseDRFWorkload(workload, num_jobs[0], BANDWIDTH/10) # TODO
-    jobs = parser.parse()
-
-    # Jellyfish
-    for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
-        for j in num_mr: # Number of maps/reducers
-            for algorithm in [RandomAlgorithm]:
-                topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, \
-                    cpu[0], mem[0], DRF.STATIC_DRF)
-                mgr.run()
-                mgr.clean_up()
-
-    # Modified jellyfish
-    for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
-        for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
-                topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, \
-                    cpu[0], mem[0], DRF.STATIC_DRF)
-                mgr.run()
-                mgr.clean_up()
-
-    # Fat-Tree
-    for i, num_host in zip(num_ports, ft_num_hosts):
-        for j in num_mr:
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm]:
-                topo = FatTreeTopology(BANDWIDTH, i)
-                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j, \
-                    cpu[0], mem[0], DRF.STATIC_DRF)
-                mgr.run()
-                mgr.clean_up()
-
 def main():
     run_placement()
-    # run_drf()
 
 if __name__ == "__main__":
     set_logging()
