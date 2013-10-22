@@ -1,0 +1,5 @@
+FB-2010_samples_24_times_1hr_0.tsv
+new_unique_job_id submit_time_seconds inter_job_submit_gap_seconds map_input_bytes shuffle_bytes reduce_output_bytes
+
+facebook.tsv
+new_unique_job_id submit_time_seconds inter_job_submit_gap_seconds map_input_bytes shuffle_bytes reduce_output_bytes cpu_percent memory_percent
