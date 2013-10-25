@@ -6,7 +6,6 @@ from topology import * # pyflakes_bypass
 from utils import * # pyflakes_bypass
 from random import randrange
 from job import Job
-from resource import Resource
 
 """
 Manager knows everything about the topology (available mappers, reducers)

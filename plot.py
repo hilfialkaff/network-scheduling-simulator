@@ -57,6 +57,9 @@ def parse(log_name):
             submitted = int(l[-3])
             start = int(l[-1])
 
+            if job_id not in jobs[topo][routing][num_mr][num_host]:
+                jobs[topo][routing][num_mr][num_host][job_id] = Job()
+
             jobs[topo][routing][num_mr][num_host][job_id].submitted = submitted
             jobs[topo][routing][num_mr][num_host][job_id].start = start
 
@@ -94,7 +97,6 @@ def plot_routing_throughput(name):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    print "name:", name
     for topo, _ in jobs.items():
         if topo != name:
             continue
@@ -107,10 +109,6 @@ def plot_routing_throughput(name):
                 for num_host, _jobs in sorted(___.items()):
                     x.append(num_host)
                     y.append([job.util for job in _jobs.values()])
-
-                print routing, num_mr
-                print "x:", x
-                print "y:", [np.average(arr) for arr in y]
 
                 plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
                              fmt='--o', label=(str(routing) + " " + str(num_mr)))
@@ -149,6 +147,8 @@ def plot_routing_delay(name):
                 x = []
 
                 for num_host, _jobs in sorted(___.items()):
+                    if num_host != 45:
+                        continue
                     sample = [(job.end - job.start) for job in _jobs.values()]
                     ecdf = sm.distributions.ECDF(sample)
 
@@ -166,6 +166,8 @@ def plot_routing_delay(name):
 
 """ Plot all delay graphs """
 def plot_delay():
+    print "Plotting delay..."
+
     plot_routing_delay("JF")
     plot_routing_delay("JF2")
     plot_routing_delay("FT")
@@ -203,6 +205,8 @@ def plot_routing_algo(name):
 
 """ Plot all algorithm graphs """
 def plot_algorithm():
+    print "Plotting algorithm..."
+
     plot_routing_algo("JF")
     plot_routing_algo("JF2")
     plot_routing_algo("FT")
@@ -214,7 +218,6 @@ def plot_routing_ct(name):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    print "name:", name
     for topo, _ in jobs.items():
         if topo != name:
             continue
@@ -227,10 +230,6 @@ def plot_routing_ct(name):
                 for num_host, _jobs in sorted(___.items()):
                     x.append(num_host)
                     y.append([(job.end - job.start) for job in _jobs.values()])
-
-                print routing, num_mr
-                print "x:", x
-                print "y:", [np.average(arr) for arr in y]
 
                 plt.errorbar(x, [np.average(arr) for arr in y],  \
                              fmt='--o', label=(str(routing) + " " + str(num_mr)))
@@ -311,8 +310,8 @@ if __name__ == '__main__':
     log_name = sys.argv[1]
 
     parse(log_name)
-    plot_throughput()
+    # plot_throughput()
     # plot_algorithm()
-    # plot_delay()
+    plot_delay()
     # plot_completion_time()
-    plot_rsrc_changes()
+    # plot_rsrc_changes()
