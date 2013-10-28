@@ -31,12 +31,12 @@ class SimulatedAnnealing:
         return ret
 
     def find_temperature(self, step):
-        return 1/(step * 0.01)
+        return (10000000 * (self.max_step - float(step))/self.max_step)
 
     def run(self):
         step = 1
-        util = JobConfig(0, None, None)
-        best_util = JobConfig(0, None, None)
+        util = JobConfig(0, 0, None, None)
+        best_util = JobConfig(0, 0, None, None)
         state = self.init_state()
 
         if self.check_constraint:
@@ -44,7 +44,7 @@ class SimulatedAnnealing:
                 state = self.init_state()
 
         while step < self.max_step and util.get_util() < self.max_util:
-            temperature = self.find_temperature(float(step)/self.max_step)
+            temperature = self.find_temperature(step)
             new_state = self.generate_neighbor(state)
 
             if self.check_constraint:
@@ -52,10 +52,10 @@ class SimulatedAnnealing:
                     new_state = self.generate_neighbor(new_state)
             new_util = self.compute_util(new_state)
 
-            # Utilization = 0 -> very undesirable state
+            # Utilization = 0 -> very undesirable -> reset
             if new_util.get_util() == 0:
                 state = self.init_state()
-            elif self.transition(util, new_util, temperature) > random():
+            elif self.transition(util, new_util, temperature) >= random():
                 state = new_state
                 util = new_util
 
