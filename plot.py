@@ -310,8 +310,8 @@ if __name__ == '__main__':
     log_name = sys.argv[1]
 
     parse(log_name)
-    # plot_throughput()
-    # plot_algorithm()
+    plot_throughput()
+    plot_algorithm()
     plot_delay()
     # plot_completion_time()
     # plot_rsrc_changes()

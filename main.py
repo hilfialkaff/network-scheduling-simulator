@@ -15,7 +15,7 @@ LOGGING_LEVELS = {'critical': logging.CRITICAL,
                   'debug': logging.DEBUG}
 
 CONFIG_NAME = 'config'
-BANDWIDTH = 100000 # 100 MBps link
+BANDWIDTH = 10000000 # 100000 # 100 MBps link
 
 num_jobs = [] # Number of jobs to run in the cluster from the traces
 num_ports = [] # Number of ports in the topology
@@ -79,14 +79,14 @@ def run_placement():
                 mgr.run()
                 mgr.clean_up()
 
-    # Fat-Tree
-    for i, num_host in zip(num_ports, ft_num_hosts):
-        for j in num_mr:
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-                topo = FatTreeTopology(BANDWIDTH, i)
-                mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j)
-                mgr.run()
-                mgr.clean_up()
+    # # Fat-Tree
+    # for i, num_host in zip(num_ports, ft_num_hosts):
+    #     for j in num_mr:
+    #         for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
+    #             topo = FatTreeTopology(BANDWIDTH, i)
+    #             mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j)
+    #             mgr.run()
+    #             mgr.clean_up()
 
 def main():
     run_placement()
