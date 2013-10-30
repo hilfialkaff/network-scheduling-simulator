@@ -1,4 +1,3 @@
-from manager import Manager
 from topology import JellyfishTopology, Jellyfish2Topology, FatTreeTopology
 from algorithm import * # pyflakes_bypass
 
@@ -39,23 +38,20 @@ def plot_topo():
     # Jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
-        mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), 1, 1)
-        mgr.graph.plot("jf_" + str(num_port))
-        mgr.clean_up()
+        graph = topo.generate_graph()
+        graph.plot("jf_" + str(num_port))
 
     # Modified jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
-        mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), 1, 1)
-        mgr.graph.plot("jf2_" + str(num_port))
-        mgr.clean_up()
+        graph = topo.generate_graph()
+        graph.plot("jf2_" + str(num_port))
 
     # Fat-Tree
     for i, num_host in zip(num_ports, ft_num_hosts):
         topo = FatTreeTopology(BANDWIDTH, i)
-        mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), 1, 1)
-        mgr.graph.plot("ft_" + str(i))
-        mgr.clean_up()
+        graph = topo.generate_graph()
+        graph.plot("ft_" + str(i))
 
 if __name__ == '__main__':
     read_config()
