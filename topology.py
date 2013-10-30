@@ -85,17 +85,18 @@ class JellyfishTopology(Topology):
         consec_fails = 0
 
         while switches_left > 1 and consec_fails < 10:
-            s1 = randrange(num_switches)
+            s1 = randrange(len(open_ports))
             while open_ports[s1] == 0:
-                s1 = randrange(num_switches)
+                s1 = randrange(len(open_ports))
 
-            s2 = randrange(num_switches)
+            s2 = randrange(len(open_ports))
             while open_ports[s2] == 0 or s1 == s2:
-                s2 = randrange(num_switches)
+                s2 = randrange(len(open_ports))
 
             if (s1, s2) in links:
                 consec_fails += 1
             else:
+                flag = False
                 consec_fails = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
@@ -104,13 +105,19 @@ class JellyfishTopology(Topology):
                 open_ports[s2] -= 1
 
                 if open_ports[s1] == 0:
+                    flag = True
                     switches_left -= 1
 
                 if open_ports[s2] == 0:
+                    flag = True
                     switches_left -= 1
 
+                # Remove switches with 0 free outgoing link
+                if flag:
+                    open_ports.remove(0)
+
         if switches_left > 0:
-            for i in range(num_switches):
+            for i in range(len(open_ports)):
                 while open_ports[i] > 1:
                     while True:
                         rLink = choice(list(links))
@@ -206,7 +213,7 @@ class Jellyfish2Topology(Topology):
             added_switch = 0
 
             while added_switch != add_switch:
-                switch_id = randrange(num_switches)
+                switch_id = randrange(len(open_ports))
 
                 if graph.get_link(hosts[i], switches[switch_id]):
                     continue
@@ -215,22 +222,26 @@ class Jellyfish2Topology(Topology):
                 open_ports[switch_id] -= 1
                 added_switch += 1
 
+                if open_ports[switch_id] == 0:
+                    open_ports.remove(0)
+
         links = set()
         switches_left = num_switches
         consec_fails = 0
 
         while switches_left > 1 and consec_fails < 10:
-            s1 = randrange(num_switches)
+            s1 = randrange(len(open_ports))
             while open_ports[s1] == 0:
-                s1 = randrange(num_switches)
+                s1 = randrange(len(open_ports))
 
-            s2 = randrange(num_switches)
+            s2 = randrange(len(open_ports))
             while open_ports[s2] == 0 or s1 == s2:
-                s2 = randrange(num_switches)
+                s2 = randrange(len(open_ports))
 
             if (s1, s2) in links:
                 consec_fails += 1
             else:
+                flag = False
                 consec_fails = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
@@ -239,13 +250,19 @@ class Jellyfish2Topology(Topology):
                 open_ports[s2] -= 1
 
                 if open_ports[s1] == 0:
+                    flag = True
                     switches_left -= 1
 
                 if open_ports[s2] == 0:
+                    flag = True
                     switches_left -= 1
 
+                # Remove switches with 0 free outgoing link
+                if flag:
+                    open_ports.remove(0)
+
         if switches_left > 0:
-            for i in range(num_switches):
+            for i in range(len(open_ports)):
                 while open_ports[i] > 1:
                     while True:
                         rLink = choice(list(links))
