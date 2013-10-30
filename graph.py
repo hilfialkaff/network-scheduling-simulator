@@ -1,5 +1,6 @@
 from flow import Flow
 from link import Link
+from utils import * # pyflakes_bypass
 
 """
 Represents a graph of nodes currently working in the cluster
@@ -78,22 +79,12 @@ class Graph:
 
         self.links[end_point] = link
 
-    def clone_links(self):
-        new_links = {}
-
-        for link in self.links.values():
-            bandwidth = link.get_bandwidth()
-            [node1_id, node2_id] = link.get_end_points()
-            new_link = Link(node1_id, node2_id, bandwidth)
-
-            new_links[(node1_id, node2_id)] = new_link
-
-        return new_links
+    def copy_links(self):
+        return copy_links(self.links)
 
     def reset_links(self):
         for link in self.links.values():
-            link.set_bandwidth(self.bandwidth)
-            link.set_flows({})
+            link.reset()
 
     def set_nodes(self, nodes):
         self.nodes = nodes

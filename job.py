@@ -1,3 +1,5 @@
+import logging
+
 """
 Represents a job in map-reduce like environment.
 """
@@ -46,10 +48,14 @@ class Job:
 
     def get_reduce_size(self):
         return self.reduce_size
+
     def get_data_left(self):
         return self.data_left
 
     def update_data_left(self, util):
+        if self.data_left == 0:
+            logging.warning("! Data left is zero")
+
         if self.data_left > util:
             self.data_left -= util
         else:

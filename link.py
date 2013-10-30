@@ -2,9 +2,13 @@
 A link between switches/hosts
 """
 class Link:
-    def __init__(self, node1_id, node2_id, bandwidth):
+    def __init__(self, node1_id, node2_id, bandwidth, orig_bandwidth=0):
         self.end_points = Link.get_id(node1_id, node2_id)
         self.bandwidth = bandwidth
+        if not orig_bandwidth:
+            self.orig_bandwidth = bandwidth
+        else:
+            self.orig_bandwidth = orig_bandwidth
         self.flows = {}
 
     @staticmethod
@@ -46,6 +50,12 @@ class Link:
 
     def get_bandwidth(self):
         return self.bandwidth
+
+    def set_orig_bandwidth(self, orig_bandwidth):
+        self.orig_bandwidth = orig_bandwidth
+
+    def get_orig_bandwidth(self):
+        return self.orig_bandwidth
 
     def get_flow_bandwidth(self, fl):
         if self.has_flow(fl):
@@ -98,3 +108,7 @@ class Link:
 
         self.flows = allocation
         # print self.flows
+
+    def reset(self):
+        self.set_flows({})
+        self.set_bandwidth(self.orig_bandwidth)

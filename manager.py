@@ -21,10 +21,10 @@ class Manager:
     LOG_NAME = "./logs/simulator.log"
 
     def __init__(self, topo, algorithm, routing_algo, jobs, \
-        num_mappers, num_reducers, cpu=0, mem=0):
+        num_mappers, num_reducers, num_path=2, cpu=0, mem=0):
         self.seed = randrange(100)
         self.graph = topo.generate_graph()
-        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, 2, 10, 0.5)
+        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, num_path, 10, 0.5)
         self.jobs = jobs
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
@@ -34,7 +34,7 @@ class Manager:
         self.f = open(Manager.LOG_NAME, 'a')
         self.t = float(0) # Virtual time in the datacenter
 
-        self._write("%s %s %d %d\n" % (topo.get_name(), algorithm.get_name(), \
+        self._write("%s %s %d %d\n" % (topo.get_name() + '_' + str(num_path), algorithm.get_name(), \
                     len(self.graph.get_hosts()), num_mappers))
 
     def _write(self, s):
@@ -68,6 +68,20 @@ class Manager:
 
         return ret
 
+    def mark_job_done(self, job):
+        job_id = job.get_id()
+
+        self._write("Job %d done at %d\n" % (job_id, self.t))
+        self.algorithm.delete_job_config(job_id)
+        self.jobs.remove(job)
+
+        for host in self.graph.get_hosts():
+            if host.get_job_id_executed() == job_id:
+                host.set_free()
+
+        self.algorithm.update_jobs_utilization()
+
+
     """
     Return: # of jobs finished
     """
@@ -80,19 +94,12 @@ class Manager:
                 job_id = job.get_id()
                 util = self.algorithm.jobs_config[job_id].get_util()
 
-                job.update_data_left(util * (self.t - last_update))
+                if job.get_shuffle_size() > 0:
+                    job.update_data_left(util * (self.t - last_update))
                 job.set_last_update(self.t)
 
                 if job.get_data_left() <= 0:
-                    self._write("Job %d done at %d\n" % (job_id, self.t))
-                    self.algorithm.delete_job_config(job_id)
-                    self.jobs.remove(job)
-
-                    for host in self.graph.get_hosts():
-                        if host.get_job_id_executed() == job_id:
-                            host.set_free()
-
-                    self.algorithm.update_jobs_utilization()
+                    self.mark_job_done(job)
                     ret += 1
 
         return ret
@@ -129,7 +136,6 @@ class Manager:
     def accelerate(self, is_run):
         jobs = self.dequeue_job()
 
-        # TODO: Doesn't work with random algorithm and fat-tree?
         if not is_run:
             jobs_done = 0
             while jobs_done == 0 and self.count_running_jobs() != 0:

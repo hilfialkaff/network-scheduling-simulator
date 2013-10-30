@@ -23,6 +23,7 @@ num_hosts = [] # Number of host nodes in the topology
 ft_num_hosts = [] # Number of host nodes in fat-tree topology
 num_switches = [] # Number of switches in the topology
 num_mr = [] # Number of maps/reducers
+num_path = [] # Number of paths
 cpu = [] # Number of CPU cores/machine
 mem = [] # GB of RAM/machine
 
@@ -37,7 +38,7 @@ def set_logging():
 
 def read_config():
     global num_jobs, num_ports, num_hosts, ft_num_hosts, num_switches, \
-        num_mr, cpu, mem
+        num_mr, num_path, cpu, mem
 
     def _read_config():
         line = f.readline()
@@ -51,6 +52,7 @@ def read_config():
     ft_num_hosts = _read_config()
     num_switches = _read_config()
     num_mr = _read_config()
+    num_path = _read_config()
     cpu = _read_config()
     mem = _read_config()
 
@@ -61,23 +63,25 @@ def run_placement():
     parser = ParsePlacementWorkload(workload, num_jobs[0])
     jobs = parser.parse()
 
-    # Jellyfish
-    for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
-        for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-                topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j)
-                mgr.run()
-                mgr.clean_up()
+    # # Jellyfish
+    # for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
+    #     for j in num_mr: # Number of maps/reducers
+    #         for k in num_path: # Number of paths
+    #             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
+    #                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port, k)
+    #                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, k)
+    #                 mgr.run()
+    #                 mgr.clean_up()
 
     # Modified jellyfish
     for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
         for j in num_mr: # Number of maps/reducers
-            for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-                topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port)
-                mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j)
-                mgr.run()
-                mgr.clean_up()
+            for k in num_path:
+                for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
+                    topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port, k)
+                    mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, k)
+                    mgr.run()
+                    mgr.clean_up()
 
     # # Fat-Tree
     # for i, num_host in zip(num_ports, ft_num_hosts):

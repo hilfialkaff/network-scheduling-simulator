@@ -20,6 +20,7 @@ class Node:
     def set_free(self):
         if self.is_free():
             logging.warning('! Node is free')
+
         self.job_id_executed = -1
 
     def is_free(self):
@@ -63,6 +64,9 @@ class Node:
                 ret = link
                 break
 
+        if not ret:
+            logging.warning("! No link exists for node:" + node.get_id())
+
         return ret
 
     def get_links(self):
@@ -75,4 +79,8 @@ class Node:
         return self.job_id_executed
 
     def set_job_id_executed(self, job_id):
+        if not self.is_free():
+            logging.warning("! Node " + self.node_id + " is not free, currently executing job " + \
+                str(self.job_id_executed))
+
         self.job_id_executed = job_id

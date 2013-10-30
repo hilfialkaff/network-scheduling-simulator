@@ -15,6 +15,7 @@ TODO:
 - Might need to reschedule the algorithm again?
 - Multiple jobs
 - Algorithm utilization should be based on all jobs, not just one
+- Job with minimum bandwidth requirement
 """
 class Algorithm(object):
     K_PATH = 1
@@ -262,184 +263,6 @@ class Algorithm(object):
     def get_name():
         raise NotImplementedError("Method unimplemented in abstract class...")
 
-class OptimalAlgorithm(Algorithm):
-    @staticmethod
-    def get_name():
-        return "OR"
-
-    def _permute(self, index, num_chosen, hosts, num_mr):
-        ret = []
-
-        if index == len(hosts) or num_chosen == num_mr:
-            return ret
-
-        ret.append([hosts[index]])
-
-        _ret1 = self._permute(index + 1, num_chosen + 1, hosts, num_mr)
-        _ret2 = self._permute(index + 1, num_chosen, hosts, num_mr)
-
-        for _ in _ret1:
-            if type(_) == list:
-                ret.append([hosts[index]] + _)
-            else:
-                ret.append([hosts[index], _])
-        for _ in _ret2:
-            ret.append(_)
-
-        return ret
-
-    def _generate_permutations(self, hosts, num_mr):
-        p = self._permute(0, 0, hosts, num_mr)
-        p = filter(lambda x: len(x) == num_mr, p)
-        # print "_permutations: ", p
-        return p
-
-    def execute_job(self, job):
-        flows = []
-        hosts = self.graph.get_hosts()
-        max_util = 0
-        i = 0
-
-        for p in self._generate_permutations(hosts, self.num_mappers + self.num_reducers):
-            flows = self.construct_flows(p)
-            self.comm_pattern = flows
-            self.graph.set_comm_pattern(flows)
-            max_util = max(max_util, self.compute_route())
-
-            ########################################################
-            # TODO
-            if max_util != 0:
-                i += 1
-
-            if i == 10:
-                break
-            ########################################################
-
-            self.clean_up()
-
-        return max_util
-
-    def compute_route(self):
-        ret = 0
-        if self.build_paths():
-            permutations = self.generate_permutations()
-            permutations = self.prune_permutations(permutations)
-            self.generate_graphs(permutations)
-            ret = self.select_optimal_graph()
-
-        return ret
-
-    def permute(self, index):
-        ret = []
-        if index == len(self.valid_paths.items()):
-            return []
-
-        # Recursively call permute, advancing the items to look at every call.
-        for v in self.valid_paths.values()[index]:
-            h = self.permute(index + 1)
-            if len(h) == 0:
-                ret.append(v)
-            else:
-                for w in h:
-                    if type(w) == list:
-                        ret.append([v] + w)
-                    else:
-                        ret.append([v, w])
-
-        return ret
-
-    def generate_permutations(self):
-        permutations = self.permute(0)
-        # print "permutations: ", permutations
-        return permutations
-
-    def prune_permutations(self, permutations):
-        new_permutations = []
-
-        for permute in permutations:
-            intersections = []
-            num_intersections = 0
-            total_path_lengths = sum([len(p[1]) for p in permute])
-            valid = True
-
-            for p in permute:
-                links = p[1]
-                for l in range(len(links) - 1):
-                    if (links[l], links[l + 1]) not in intersections:
-                        intersections.append((links[l], links[l + 1]))
-                    else:
-                        num_intersections += 1
-
-                    if num_intersections > (total_path_lengths * self.max_intersections):
-                        valid = False
-                        break
-
-                if not valid:
-                    break
-
-            if valid:
-                new_permutations.append(permute)
-
-        return new_permutations
-
-    def generate_graphs(self, permutations):
-        # print "permutations: ", permutations
-
-        i = 0
-        for permute in permutations:
-            cloned_links = self.graph.clone_links()
-            valid = True
-            paths_used = []
-
-            for p in permute:
-                bw, links = p[0], p[1]
-                for l in range(len(links) - 1):
-                    node1 = self.graph.get_node(links[l])
-                    node2 = self.graph.get_node(links[l + 1])
-                    link_id = self.graph.get_link(node1, node2).get_end_points()
-                    link = cloned_links[link_id]
-                    link_bandwidth = link.get_bandwidth()
-
-                    # print "link bandwidth: ", link_bandwidth
-
-                    if link_bandwidth < bw:
-                        valid = False
-                        break
-
-                    link.set_bandwidth(link_bandwidth - bw)
-
-                if not valid:
-                    break
-                else:
-                    paths_used.append(p)
-
-            if valid:
-                self.used_links.append(cloned_links)
-                self.used_paths.append(paths_used)
-                i+=1
-
-            # TODO
-            if i > self.num_alt_paths:
-                break
-
-    def select_optimal_graph(self):
-        max_util = 0
-
-        for links, path in zip(self.used_links, self.used_paths):
-            self.graph.set_links(links)
-            self.graph.set_flow(path)
-
-            util = self.graph.compute_utilization()
-            if util > max_util:
-                max_util = util
-
-            # self.graph.print_links()
-            self.reset()
-
-        # print "max_util: ", max_util
-        # return bestGraph
-        return max_util
-
 """
 Simulated annealing algorithm using simulated annealing for both placement and routing
 """
@@ -469,6 +292,7 @@ class AnnealingAlgorithm(Algorithm):
         state_length = len(state)
 
         if random() > 0.5:
+            # Swap placement of one mapper and one reducer
             host1 = choice(range(state_length/2))
             host2 = choice(range(state_length/2, state_length))
             hosts[host1], hosts[host2] = hosts[host2], hosts[host1]
@@ -564,7 +388,7 @@ class AnnealingAlgorithm(Algorithm):
 
     def routing_compute_util(self, state):
         self.add_previous_jobs()
-        cloned_links = self.graph.clone_links()
+        cloned_links = self.graph.copy_links()
         valid = True
         paths_used = []
         util = 0
@@ -639,11 +463,19 @@ class AnnealingAlgorithm(Algorithm):
 
     # Mark nodes executing the job as busy
     def update_nodes_status(self, i, job_config):
+        nodes = []
+
         for p in job_config.get_used_paths():
-            host1 = self.graph.get_node(p[1][0])
-            host2 = self.graph.get_node(p[1][-1])
-            host1.set_job_id_executed(i)
-            host2.set_job_id_executed(i)
+            node = self.graph.get_node(p[1][0])
+            if node not in nodes:
+                nodes.append(node)
+
+            node = self.graph.get_node(p[1][-1])
+            if node not in nodes:
+                nodes.append(node)
+
+        for node in nodes:
+            node.set_job_id_executed(i)
 
     # Update per job utilization
     def update_jobs_utilization(self):

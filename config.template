@@ -3,3 +3,6 @@ num_hosts 45 61 80 101 125 151
 ft_num_hosts 54 63 128 144 250 275
 num_switches 45 61 80 101 125 151
 num_mr 2 4
+num_path 2 4
+cpu 8
+mem 8

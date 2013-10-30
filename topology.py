@@ -22,12 +22,13 @@ class Topology(object):
     def get_name():
         raise NotImplementedError("Method unimplemented in abstract class...")
 class JellyfishTopology(Topology):
-    def __init__(self, bandwidth, num_hosts, num_switches, num_ports):
+    def __init__(self, bandwidth, num_hosts, num_switches, num_ports, num_path=1):
         super(JellyfishTopology, self).__init__()
         self.bandwidth = bandwidth
         self.num_hosts = num_hosts
         self.num_switches = num_switches
         self.num_ports = num_ports
+        self.num_path = num_path
 
     @staticmethod
     def get_name():
@@ -76,7 +77,7 @@ class JellyfishTopology(Topology):
 
         # connect each server with a switch
         for i in range(num_hosts):
-            graph.add_link(hosts[i], switches[i], bandwidth)
+            graph.add_link(hosts[i], switches[i], bandwidth * self.num_path)
             open_ports[i] -= 1
 
         links = set()
@@ -141,12 +142,13 @@ class JellyfishTopology(Topology):
         return graph
 
 class Jellyfish2Topology(Topology):
-    def __init__(self, bandwidth, num_hosts, num_switches, num_ports):
+    def __init__(self, bandwidth, num_hosts, num_switches, num_ports, num_path=1):
         super(Jellyfish2Topology, self).__init__()
         self.bandwidth = bandwidth
         self.num_hosts = num_hosts
         self.num_switches = num_switches
         self.num_ports = num_ports
+        self.num_path = num_path
 
     @staticmethod
     def get_name():
@@ -200,18 +202,8 @@ class Jellyfish2Topology(Topology):
 
         # Modified jellyfish: add "supernodes"
         for i in range(num_hosts):
-            add_switch = 1
+            add_switch = self.num_path - 1
             added_switch = 0
-
-            # TODO: Probability-based switch additions
-            # if random() > 0.75:
-            #     add_switch = 0
-            # elif random() > 0.50:
-            #     add_switch = 1
-            # elif random() > 0.25:
-            #     add_switch = 2
-            # else:
-            #     add_switch = 3
 
             while added_switch != add_switch:
                 switch_id = randrange(num_switches)
