@@ -1,3 +1,5 @@
+import logging
+
 """
 Represents a node in the cluster.
 
@@ -16,6 +18,8 @@ class Node:
         return "Node: %s" % (self.node_id)
 
     def set_free(self):
+        if self.is_free():
+            logging.warning('! Node is free')
         self.job_id_executed = -1
 
     def is_free(self):
@@ -28,12 +32,14 @@ class Node:
         return self.cpu
 
     def set_cpu(self, cpu):
+        assert(cpu > 0)
         self.cpu = cpu
 
     def get_mem(self):
         return self.mem
 
     def set_mem(self, mem):
+        assert(mem > 0)
         self.mem = mem
 
     def get_type(self):
@@ -42,6 +48,8 @@ class Node:
             _type = "host"
         elif self.node_id.startswith("s"):
             _type = "switch"
+        else:
+            logging.warning("! Node has invalid id:" + self.node_id)
 
         return _type
 
