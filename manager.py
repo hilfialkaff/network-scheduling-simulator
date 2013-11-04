@@ -2,7 +2,6 @@ import time
 import os
 
 from algorithm import * # pyflakes_bypass
-from topology import * # pyflakes_bypass
 from utils import * # pyflakes_bypass
 from random import randrange
 from job import Job
@@ -20,10 +19,10 @@ TODO:
 class Manager:
     LOG_NAME = "./logs/simulator.log"
 
-    def __init__(self, topo, algorithm, routing_algo, jobs, \
+    def __init__(self, graph, algorithm, routing_algo, jobs, \
         num_mappers, num_reducers, num_path=2, cpu=0, mem=0):
         self.seed = randrange(100)
-        self.graph = topo.generate_graph()
+        self.graph = graph
         self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, num_path, 10, 0.5)
         self.jobs = jobs
         self.num_mappers = num_mappers
@@ -34,7 +33,7 @@ class Manager:
         self.f = open(Manager.LOG_NAME, 'a')
         self.t = float(0) # Virtual time in the datacenter
 
-        self._write("%s %s %d %d\n" % (topo.get_name() + '_' + str(num_path), algorithm.get_name(), \
+        self._write("%s %s %d %d\n" % (graph.get_name() + '_' + str(num_path), algorithm.get_name(), \
                     len(self.graph.get_hosts()), num_mappers))
 
     def _write(self, s):

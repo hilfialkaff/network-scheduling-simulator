@@ -65,32 +65,39 @@ def run_placement():
 
     # # Jellyfish
     # for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
-    #     for j in num_mr: # Number of maps/reducers
-    #         for k in num_path: # Number of paths
+    #     for j in num_path: # Number of paths taken
+    #         topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port, j)
+    #         graph = topo.generate_graph()
+    #         for k in num_mr: # Number of maps/reducers
     #             for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-    #                 topo = JellyfishTopology(BANDWIDTH, num_host, num_switch, num_port, k)
-    #                 mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, k)
+    #                 mgr = Manager(graph, algorithm, Algorithm.K_PATH, deepcopy(jobs), k, k, j)
     #                 mgr.run()
     #                 mgr.clean_up()
+    #                 graph.reset()
 
-    # Modified jellyfish
-    for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
-        for j in num_mr: # Number of maps/reducers
-            for k in num_path:
-                for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-                    topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port, k)
-                    mgr = Manager(topo, algorithm, Algorithm.K_PATH, deepcopy(jobs), j, j, k)
+    # # Modified jellyfish
+    # for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
+    #     for j in num_path: # Number of paths taken
+    #         topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port, j)
+    #         graph = topo.generate_graph()
+    #         for k in num_mr: # Number of maps/reducers
+    #             for algorithm in [AnnealingAlgorithm, HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
+    #                 mgr = Manager(graph, algorithm, Algorithm.K_PATH, deepcopy(jobs), k, k, j)
+    #                 mgr.run()
+    #                 mgr.clean_up()
+    #                 graph.reset()
+
+    # Fat-Tree
+    for i, num_host in zip(num_ports, ft_num_hosts):
+        for j in num_path: # Number of paths taken
+            topo = FatTreeTopology(BANDWIDTH, i, j)
+            graph = topo.generate_graph()
+            for k in num_mr:
+                for algorithm in [AnnealingAlgorithm, HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
+                    mgr = Manager(graph, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), k, k, j)
                     mgr.run()
                     mgr.clean_up()
-
-    # # Fat-Tree
-    # for i, num_host in zip(num_ports, ft_num_hosts):
-    #     for j in num_mr:
-    #         for algorithm in [HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-    #             topo = FatTreeTopology(BANDWIDTH, i)
-    #             mgr = Manager(topo, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), j, j)
-    #             mgr.run()
-    #             mgr.clean_up()
+                    graph.reset()
 
 def main():
     run_placement()

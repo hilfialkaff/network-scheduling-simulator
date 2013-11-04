@@ -6,14 +6,14 @@ from utils import * # pyflakes_bypass
 Represents a graph of nodes currently working in the cluster
 """
 class Graph:
-    def __init__(self, bandwidth, comm_pattern=[]):
+    def __init__(self, name, bandwidth, comm_pattern=[]):
+        self.name = name
         self.bandwidth = bandwidth
         self.comm_pattern = comm_pattern # tuples of (src, dst, bandwidth desired)
         self.nodes = {}
         self.flows = {}
         self.links = {}
         self.k_path_validity = None # Heuristic for path validation in k-path
-        self.jobs_config = {}
 
     def __del__(self):
         del self.comm_pattern
@@ -38,6 +38,9 @@ class Graph:
 
     def set_k_path_heuristic(self, f):
         self.k_path_heuristic = f
+
+    def get_name(self):
+        return self.name
 
     def get_bandwidth(self):
         return self.bandwidth
@@ -67,7 +70,7 @@ class Graph:
                 print "flow bandwidth: ", link.get_flow_bandwidth(flow)
 
     def add_link(self, node1, node2, bandwidth):
-        link = Link(node1.get_id(), node2.get_id(), bandwidth)
+        link = Link(node1.get_id(), node2.get_id(), bandwidth, bandwidth)
         end_point = link.get_end_points()
 
         if link in self.links:

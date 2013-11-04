@@ -18,9 +18,6 @@ class Topology(object):
     def get_bandwidth(self):
         return self.bandwidth
 
-    @staticmethod
-    def get_name():
-        raise NotImplementedError("Method unimplemented in abstract class...")
 class JellyfishTopology(Topology):
     def __init__(self, bandwidth, num_hosts, num_switches, num_ports, num_path=1):
         super(JellyfishTopology, self).__init__()
@@ -29,10 +26,6 @@ class JellyfishTopology(Topology):
         self.num_switches = num_switches
         self.num_ports = num_ports
         self.num_path = num_path
-
-    @staticmethod
-    def get_name():
-        return "JF"
 
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
@@ -55,7 +48,7 @@ class JellyfishTopology(Topology):
         assert(num_switches >= num_hosts)
         assert(num_ports > 1)
 
-        graph = Graph(bandwidth)
+        graph = Graph("JF", bandwidth)
 
         # add hosts
         for i in range(1, num_hosts + 1):
@@ -81,10 +74,9 @@ class JellyfishTopology(Topology):
             open_ports[i] -= 1
 
         links = set()
-        switches_left = num_switches
         consec_fails = 0
 
-        while switches_left > 1 and consec_fails < 10:
+        while len(open_ports) > 1 and consec_fails < 10:
             s1 = randrange(len(open_ports))
             while open_ports[s1] == 0:
                 s1 = randrange(len(open_ports))
@@ -96,27 +88,25 @@ class JellyfishTopology(Topology):
             if (s1, s2) in links:
                 consec_fails += 1
             else:
-                flag = False
                 consec_fails = 0
+                to_remove = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
 
                 open_ports[s1] -= 1
                 open_ports[s2] -= 1
 
+                # Remove switches with 0 free outgoing link from consideration
                 if open_ports[s1] == 0:
-                    flag = True
-                    switches_left -= 1
+                    to_remove += 1
 
                 if open_ports[s2] == 0:
-                    flag = True
-                    switches_left -= 1
+                    to_remove += 1
 
-                # Remove switches with 0 free outgoing link
-                if flag:
+                for i in range(to_remove):
                     open_ports.remove(0)
 
-        if switches_left > 0:
+        if len(open_ports) > 0:
             for i in range(len(open_ports)):
                 while open_ports[i] > 1:
                     while True:
@@ -157,10 +147,6 @@ class Jellyfish2Topology(Topology):
         self.num_ports = num_ports
         self.num_path = num_path
 
-    @staticmethod
-    def get_name():
-        return "JF2"
-
     def generate_graph(self):
         ''' Generate a Jellyfish topology-like graph
         @param num_hosts number of hosts
@@ -182,7 +168,7 @@ class Jellyfish2Topology(Topology):
         assert(num_switches >= num_hosts)
         assert(num_ports > 1)
 
-        graph = Graph(bandwidth)
+        graph = Graph("JF2", bandwidth)
 
         # add hosts
         for i in range(1, num_hosts + 1):
@@ -226,10 +212,9 @@ class Jellyfish2Topology(Topology):
                     open_ports.remove(0)
 
         links = set()
-        switches_left = num_switches
         consec_fails = 0
 
-        while switches_left > 1 and consec_fails < 10:
+        while len(open_ports) > 1 and consec_fails < 10:
             s1 = randrange(len(open_ports))
             while open_ports[s1] == 0:
                 s1 = randrange(len(open_ports))
@@ -241,27 +226,25 @@ class Jellyfish2Topology(Topology):
             if (s1, s2) in links:
                 consec_fails += 1
             else:
-                flag = False
                 consec_fails = 0
+                to_remove = 0
                 links.add((s1, s2))
                 links.add((s2, s1))
 
                 open_ports[s1] -= 1
                 open_ports[s2] -= 1
 
+                # Remove switches with 0 free outgoing link from consideration
                 if open_ports[s1] == 0:
-                    flag = True
-                    switches_left -= 1
+                    to_remove += 1
 
                 if open_ports[s2] == 0:
-                    flag = True
-                    switches_left -= 1
+                    to_remove += 1
 
-                # Remove switches with 0 free outgoing link
-                if flag:
+                for i in range(to_remove):
                     open_ports.remove(0)
 
-        if switches_left > 0:
+        if len(open_ports) > 0:
             for i in range(len(open_ports)):
                 while open_ports[i] > 1:
                     while True:
@@ -294,14 +277,11 @@ class Jellyfish2Topology(Topology):
         return graph
 
 class FatTreeTopology(Topology):
-    def __init__(self, bandwidth, num_ports):
+    def __init__(self, bandwidth, num_ports, num_path):
         super(FatTreeTopology, self).__init__()
         self.bandwidth = bandwidth
         self.num_ports = num_ports
-
-    @staticmethod
-    def get_name():
-        return "FT"
+        self.num_path = num_path - 1
 
     def k_path_validity(self, path):
         se_count = 0
@@ -367,7 +347,7 @@ class FatTreeTopology(Topology):
         edge_sws = range(0, num_ports/2)
         hosts = range(2, num_ports/2 + 2)
 
-        graph = Graph(bandwidth)
+        graph = Graph("FT", bandwidth)
 
         for p in pods:
             for e in edge_sws:
@@ -385,7 +365,7 @@ class FatTreeTopology(Topology):
                     if not host:
                         host = Node(host_id)
                         graph.add_node(host)
-                    graph.add_link(edge_switch, host, bandwidth)
+                    graph.add_link(edge_switch, host, bandwidth * self.num_path)
 
                 for a in agg_sws:
                     agg_id = "sa_%i_%i_%i" %(p, a, 1)
