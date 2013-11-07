@@ -91,18 +91,30 @@ def parse(log_name):
     f.close()
 
 """ Same topology, varied routing """
-def plot_routing_throughput(name):
+def plot_routing_throughput(name, routings=[], num_mrs=[]):
     global jobs
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
+    width = 0.2
+    i = 0
+    bars = []
+    labels = []
+    ind = []
+    hatches = [' ', 'x', '+', 'o', '.', '*', '/']
 
     for topo, _ in jobs.items():
         if topo != name:
             continue
 
-        for routing, __ in _.items():
+        for routing, __ in reversed(sorted(_.items())):
+            if routings and routing not in routings:
+                continue
+
             for num_mr, ___ in __.items():
+                if num_mrs and num_mr not in num_mrs:
+                    continue
+
                 y = []
                 x = []
 
@@ -110,11 +122,23 @@ def plot_routing_throughput(name):
                     x.append(num_host)
                     y.append([job.util for job in _jobs.values()])
 
-                plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
-                             fmt='--o', label=(str(routing) + " " + str(num_mr)))
+                ind = np.arange(len(x))
+                means = [np.average(arr) for arr in y]
+                std = [np.std(arr) for arr in y]
+                bar = ax.bar(ind + width * i, means, width, yerr=std, color='w', ecolor='r', \
+                    hatch=hatches[i])
+                bars.append(bar[0])
+                labels.append(str(routing) + " " + str(num_mr))
+
+                i += 1
 
     # ax.set_title(name + " w/ Varied Routing")
-    ax.legend(loc='center right', bbox_to_anchor=(1.30,0.5))
+    plt.ylim(ymin=0)
+    ax.set_xticks(ind + (width * i)/2)
+    ax.set_xticklabels(x)
+    # ax.legend(loc='center right', bbox_to_anchor=(1.30,0.5))
+    ax.legend(bars, labels, bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+       ncol=2, mode="expand", borderaxespad=0.)
     ax.set_xlabel("Number of hosts")
     ax.set_ylabel("Throughput (MBps)")
 
@@ -125,11 +149,12 @@ def plot_routing_throughput(name):
 def plot_throughput():
     print "Plotting throughput..."
 
-    plot_routing_throughput("JF")
-    plot_routing_throughput("JF2")
-    plot_routing_throughput("FT")
+    # plot_routing_throughput("FT_2", ["RR", "HAA"], [4])
+    plot_routing_throughput("FT_4", ["RR", "HAA2"], [4])
+    # plot_routing_throughput("JF2_2")
+    plot_routing_throughput("JF2_4", ["RR", "HAA2"], [4])
 
-def plot_routing_delay(name):
+def plot_routing_delay(name, routings=[], num_mrs=[]):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
@@ -142,24 +167,32 @@ def plot_routing_delay(name):
             continue
 
         for routing, __ in _.items():
+            if routings and routing not in routings:
+                continue
+
             for num_mr, ___ in [__.items()[1]]:
+                if num_mrs and num_mr not in num_mrs:
+                    continue
+
                 y = []
                 x = []
 
                 for num_host, _jobs in sorted(___.items()):
-                    if num_host != 45:
+                    if num_host != 63:
                         continue
-                    sample = [(job.end - job.start) for job in _jobs.values()]
+
+                    sample = [(job.end - job.submitted) for job in _jobs.values()]
                     ecdf = sm.distributions.ECDF(sample)
 
-                    x = np.linspace(min(sample), max(sample))
+                    x = np.linspace(min(sample), max(sample), num=1000)
                     y = ecdf(x)
                     plt.plot(x, y, label=(str(routing) + " " + str(num_mr) + " " + str(num_host)))
 
     # ax.set_title(name + "w/ Varied Routing")
     ax.set_ylabel("Probability")
     ax.set_xlabel("Delay (s)")
-    ax.legend(loc='center right', bbox_to_anchor=(1.30,0.5))
+    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+       ncol=2, mode="expand", borderaxespad=0.)
 
     plt.savefig(PLOT_DIR + name.lower() + "_delay.png", format="png", bbox_inches='tight')
     plt.clf()
@@ -168,23 +201,36 @@ def plot_routing_delay(name):
 def plot_delay():
     print "Plotting delay..."
 
-    plot_routing_delay("JF")
-    plot_routing_delay("JF2")
-    plot_routing_delay("FT")
+    # plot_routing_delay("JF")
+    # plot_routing_delay("JF2")
+    # plot_routing_delay("FT")
+
+    # plot_routing_delay("JF2_2")
+    plot_routing_delay("JF2_4", ["RR", "HAA2"], [4])
+    # plot_routing_delay("FT_2")
+    plot_routing_delay("FT_4", ["RR", "HAA2"], [4])
 
 """ Same topology, varied routing """
-def plot_routing_algo(name):
+def plot_routing_algo(name, routings=[], num_mrs=[]):
     global algo
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
+    width = 0.35
+    i = 0.5
 
     for topo, _ in algo.items():
         if topo != name:
             continue
 
-        for routing, __ in _.items():
+        for routing, __ in reversed(sorted(_.items())):
+            if routings and routing not in routings:
+                continue
+
             for num_mr, ___ in __.items():
+                if num_mrs and num_mr not in num_mrs:
+                    continue
+
                 y = []
                 x = []
 
@@ -192,13 +238,18 @@ def plot_routing_algo(name):
                     x.append(num_host)
                     y.append(times)
 
-                plt.errorbar(x, [np.average(arr) for arr in y], yerr=[np.std(arr) for arr in y], \
-                             fmt='--o', label=(str(routing) + " " + str(num_mr)))
+                ind = np.arange(len(x))
+                means = [np.average(arr) for arr in y]
+                std = [np.std(arr) for arr in y]
+                ax.set_xticks(ind + width)
+                ax.set_xticklabels(x)
+                ax.bar(ind + width * i, means, width, yerr=std, color='0.75', ecolor='r')
+                plt.ylim(ymin=0)
+            i += 1
 
     # ax.set_title(name + " w/ Varied Routing")
     ax.set_xlabel("Number of hosts")
     ax.set_ylabel("Computation time (s)")
-    ax.legend(loc='center right', bbox_to_anchor=(1.30,0.5))
 
     plt.savefig(PLOT_DIR + name.lower() + "_algo.png", format="png", bbox_inches='tight')
     plt.clf()
@@ -207,9 +258,14 @@ def plot_routing_algo(name):
 def plot_algorithm():
     print "Plotting algorithm..."
 
-    plot_routing_algo("JF")
-    plot_routing_algo("JF2")
-    plot_routing_algo("FT")
+    # plot_routing_algo("JF")
+    # plot_routing_algo("JF2")
+    # plot_routing_algo("FT")
+
+    # plot_routing_algo("FT_2")
+    plot_routing_algo("FT_4", ["HAA2"], [4])
+    # plot_routing_algo("JF2_2")
+    plot_routing_algo("JF2_4", ["HAA2"], [4])
 
 """ Same topology, varied routing """
 def plot_routing_ct(name):
@@ -245,9 +301,14 @@ def plot_routing_ct(name):
 """ Same topology, varied routing """
 def plot_completion_time():
     print "Plotting completion time..."
-    plot_routing_ct("JF")
-    plot_routing_ct("JF2")
-    plot_routing_ct("FT")
+    # plot_routing_ct("JF")
+    # plot_routing_ct("JF2")
+    # plot_routing_ct("FT")
+
+    plot_routing_ct("FT_2")
+    plot_routing_ct("FT_4")
+    # plot_routing_ct("JF2_2")
+    # plot_routing_ct("JF2_4")
 
 def plot_routing_rsrc_changes(name, rsrc_type, is_incremental):
     global jobs
@@ -310,8 +371,8 @@ if __name__ == '__main__':
     log_name = sys.argv[1]
 
     parse(log_name)
-    plot_throughput()
-    plot_algorithm()
+    # plot_throughput()
+    # plot_algorithm()
     plot_delay()
     # plot_completion_time()
     # plot_rsrc_changes()
