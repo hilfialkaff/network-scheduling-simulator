@@ -1,0 +1,8 @@
+- Scale # of mapper/reducers with the shuffle size
+- Measure fairness metric
+- Priority?
+- SLA?
+- Latency measure for real datacenters?
+- Modify simulated annealing to use http://mathworld.wolfram.com/SimulatedAnnealing.html
+- Take into account number of path hops for heuristic
+- Optimize link search algorithm. Add more hashtables?
