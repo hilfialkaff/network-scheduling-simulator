@@ -1,6 +1,5 @@
 from random import choice, random
 from copy import deepcopy
-from time import clock
 import logging # pyflakes_bypass
 
 from simulated_annealing import SimulatedAnnealing
@@ -21,16 +20,13 @@ class Algorithm(object):
     K_PATH = 1
     FLOYD_WARSHALL = 2
 
-    def __init__(self, graph, algo, num_mappers, num_reducers, *args):
+    def __init__(self, graph, algo, num_mappers, num_reducers, paths):
         self.tmp = 1
         self.graph = graph
         self.bandwidth = self.graph.get_bandwidth()
         self.comm_pattern = None
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers
-        self.k = args[0] # For k-shortest path algorithm
-        self.num_alt_paths = args[1] # Number of alternative paths to cache
-        self.max_intersections = args[2] # Fraction of intersections tolerable between the paths
 
         self.valid_paths = {}
         self.used_paths = []
@@ -39,13 +35,11 @@ class Algorithm(object):
         self.jobs_config = {}
 
         if algo == Algorithm.K_PATH:
-            self.k_paths = {}
-            self.build_k_paths()
+            self.k_paths = paths.get_k_paths()
             self.build_paths = self.k_build_paths
         elif algo == Algorithm.FLOYD_WARSHALL:
-            self.distances = {}
-            self.next_nodes = {}
-            self.build_fw()
+            self.distances = paths.get_distances()
+            self.next_nodes = paths.get_next_nodes()
             self.build_paths = self.fw_build_paths
 
     def is_full(self):
@@ -69,68 +63,6 @@ class Algorithm(object):
         self.valid_paths = {}
         self.used_paths = []
         self.used_links = []
-
-    def build_k_paths(self):
-        hosts_id = [node.get_id() for node in self.graph.get_hosts()]
-
-        start = clock()
-
-        for src in hosts_id:
-            for dst in hosts_id:
-                if src == dst:
-                    continue
-
-                if src not in self.k_paths:
-                    self.k_paths[src] = {}
-                if dst not in self.k_paths[src]:
-                    self.k_paths[src][dst] = []
-
-                if dst in self.k_paths and src in self.k_paths[dst]:
-                    self.k_paths[src][dst] = self.k_paths[dst][src] # Symmetry
-                else:
-                    self.k_paths[src][dst] = self.k_path(src, dst, self.bandwidth/10) # TODO
-
-        diff = clock() - start
-        print "K-paths construction:", diff
-
-    def k_path(self, src, dst, desired_bw):
-        # Find k shortest paths between src and dst which have sufficient bandwidth
-        paths_found = []
-        path = [src]
-        q = PriorityQueue()
-        q.push(0, path, desired_bw)
-
-        # Uniform Cost Search
-        while (q.is_empty() == False) and (len(paths_found) < self.k):
-            path_len, path, bw = q.pop()
-
-            # If last node on path is the destination
-            if path[-1] == dst:
-                paths_found.append((bw, path))
-                continue
-
-            node = self.graph.get_node(path[-1])
-
-            # Add next neighbors to paths to explore
-            for link in node.get_links():
-                end_point = link.get_end_points()
-                neighbor = end_point[0] if node.get_id() != end_point[0] else end_point[1]
-                neighbor_bw = link.get_bandwidth()
-
-                # If the path is valid according to heuristic per network topology
-                # if self.graph.k_path_validity(path + [neighbor]):
-                if neighbor not in path and bw >= desired_bw:
-                    new_bw = min(bw, neighbor_bw)
-                    new_path = path + [neighbor]
-                    new_length = path_len + 1
-                    q.push(new_length, new_path, new_bw)
-                    # q.push(new_length + self.graph.k_path_heuristic(new_path), new_path, new_bw)
-
-            if len(paths_found) > self.num_alt_paths:
-                break
-
-        # print "paths: ", paths_found
-        return paths_found
 
     def k_build_paths(self):
         ret = True
@@ -199,50 +131,6 @@ class Algorithm(object):
             paths_found.append((bandwidth, p))
 
         return paths_found
-
-    """ Modified floyd-warshall algorithm to find top k-paths instead of only the shortest path """
-    def build_fw(self):
-        start = clock()
-        nodes_id = [node.get_id() for node in self.graph.get_nodes().values()]
-        links = self.graph.get_links().keys()
-
-        for src in nodes_id:
-            for dst in nodes_id:
-                if src not in self.distances:
-                    self.distances[src] = {}
-                    self.next_nodes[src] = {}
-                if dst not in self.next_nodes[src]:
-                    self.next_nodes[src][dst] = []
-
-                if src == dst:
-                    self.distances[src][dst] = 0
-                else:
-                    self.distances[src][dst] = float("inf")
-
-        for link in links:
-            [v1, v2] = link
-            self.distances[v1][v2] = 1
-            self.distances[v2][v1] = 1
-            self.next_nodes[v1][v2] = [v2]
-            self.next_nodes[v2][v1] = [v1]
-
-        for i in nodes_id:
-            for j in nodes_id:
-                for k in nodes_id:
-                    if i == j or i == k or j == k:
-                        continue
-
-                    if self.distances[j][k] == float("inf") or \
-                        self.distances[j][i] + self.distances[i][k] < self.distances[j][k]:
-
-                        self.distances[j][k] = self.distances[j][i] + self.distances[i][k]
-                        self.next_nodes[j][k] = []
-                        self.next_nodes[j][k].append(i)
-                    elif self.distances[j][i] + self.distances[i][k] == self.distances[j][k]:
-                        self.next_nodes[j][k].append(i)
-
-        diff = clock() - start
-        print "Floyd-Warshall construction:", diff
 
     def construct_flows(self, nodes):
         ids = [node.get_id() for node in nodes]

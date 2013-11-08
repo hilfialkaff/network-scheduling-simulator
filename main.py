@@ -3,10 +3,10 @@ import logging
 import optparse
 
 from manager import Manager
-from topology import JellyfishTopology, Jellyfish2Topology, FatTreeTopology
+from topology import Jellyfish2Topology, FatTreeTopology
 from parse import ParsePlacementWorkload
+from path import KPath, FWPath
 from algorithm import * # pyflakes_bypass
-
 
 LOGGING_LEVELS = {'critical': logging.CRITICAL,
                   'error': logging.ERROR,
@@ -75,26 +75,32 @@ def run_placement():
     #                 mgr.clean_up()
     #                 graph.reset()
 
-    # # Modified jellyfish
-    # for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
-    #     for j in num_path: # Number of paths taken
-    #         topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port, j)
-    #         graph = topo.generate_graph()
-    #         for k in num_mr: # Number of maps/reducers
-    #             for algorithm in [AnnealingAlgorithm, HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-    #                 mgr = Manager(graph, algorithm, Algorithm.K_PATH, deepcopy(jobs), k, k, j)
-    #                 mgr.run()
-    #                 mgr.clean_up()
-    #                 graph.reset()
+    # Modified jellyfish
+    for num_port, num_host, num_switch in zip(num_ports, num_hosts, num_switches):
+        for j in num_path: # Number of paths taken
+            topo = Jellyfish2Topology(BANDWIDTH, num_host, num_switch, num_port, j)
+            graph = topo.generate_graph()
+            paths = KPath(graph, j, 10)
+
+            for k in num_mr: # Number of maps/reducers
+                for algorithm in [HalfAnnealingAlgorithm2, RandomAlgorithm]:
+                    mgr = Manager(graph, algorithm, Algorithm.K_PATH, deepcopy(jobs), k, k, j, \
+                        paths)
+                    mgr.run()
+                    mgr.clean_up()
+                    graph.reset()
 
     # Fat-Tree
     for i, num_host in zip(num_ports, ft_num_hosts):
         for j in num_path: # Number of paths taken
             topo = FatTreeTopology(BANDWIDTH, i, j)
             graph = topo.generate_graph()
+            paths = FWPath(graph, j, 10)
+
             for k in num_mr:
-                for algorithm in [AnnealingAlgorithm, HalfAnnealingAlgorithm2, HalfAnnealingAlgorithm, RandomAlgorithm]:
-                    mgr = Manager(graph, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), k, k, j)
+                for algorithm in [HalfAnnealingAlgorithm2, RandomAlgorithm]:
+                    mgr = Manager(graph, algorithm, Algorithm.FLOYD_WARSHALL, deepcopy(jobs), k, k, j, \
+                        paths)
                     mgr.run()
                     mgr.clean_up()
                     graph.reset()

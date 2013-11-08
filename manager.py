@@ -20,10 +20,10 @@ class Manager:
     LOG_NAME = "./logs/simulator.log"
 
     def __init__(self, graph, algorithm, routing_algo, jobs, \
-        num_mappers, num_reducers, num_path=2, cpu=0, mem=0):
+        num_mappers, num_reducers, num_path, paths, cpu=0, mem=0):
         self.seed = randrange(100)
         self.graph = graph
-        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, num_path, 10, 0.5)
+        self.algorithm = algorithm(self.graph, routing_algo, num_mappers, num_reducers, paths)
         self.jobs = jobs
         self.num_mappers = num_mappers
         self.num_reducers = num_reducers

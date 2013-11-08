@@ -104,6 +104,16 @@ class Graph:
     def get_hosts(self):
         return filter(lambda node: node.get_type() == "host", self.nodes.values())
 
+    """
+    Set the bandwidth of outgoing links from hosts
+    """
+    def set_hosts_bandwidth(self, bandwidth):
+        hosts = self.get_hosts()
+        for h in hosts:
+            for link in h.get_links():
+                link.set_orig_bandwidth(bandwidth)
+                link.set_bandwidth(bandwidth)
+
     def get_switches(self):
         return filter(lambda node: node.get_type() == "switch", self.nodes.values())
 
