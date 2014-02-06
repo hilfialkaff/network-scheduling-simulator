@@ -178,10 +178,13 @@ def plot_routing_delay(name, routings=[], num_mrs=[]):
                 x = []
 
                 for num_host, _jobs in sorted(___.items()):
-                    if num_host != 63:
+                    if not(num_host == 60 or num_host == 63):
                         continue
 
-                    sample = [(job.end - job.submitted) for job in _jobs.values()]
+                    sample = [(job.start - job.submitted) for job in _jobs.values()]
+                    print "routing:", routing
+                    print sample
+
                     ecdf = sm.distributions.ECDF(sample)
 
                     x = np.linspace(min(sample), max(sample), num=1000)
@@ -206,9 +209,11 @@ def plot_delay():
     # plot_routing_delay("FT")
 
     # plot_routing_delay("JF2_2")
-    plot_routing_delay("JF2_4", ["RR", "HAA2"], [4])
+    plot_routing_delay("JF2_4", ["RR", "HAA2"], [2, 4, 6, 8])
+    plot_routing_delay("JF2_6", ["RR", "HAA2"], [2, 4, 6, 8])
+    plot_routing_delay("JF2_2", ["RR", "HAA2"], [2, 4, 6, 8])
     # plot_routing_delay("FT_2")
-    plot_routing_delay("FT_4", ["RR", "HAA2"], [4])
+    plot_routing_delay("FT_4", ["RR", "HAA2"], [2, 4, 6, 8])
 
 """ Same topology, varied routing """
 def plot_routing_algo(name, routings=[], num_mrs=[]):

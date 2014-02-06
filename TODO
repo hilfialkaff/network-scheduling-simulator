@@ -6,3 +6,4 @@
 - Modify simulated annealing to use http://mathworld.wolfram.com/SimulatedAnnealing.html
 - Take into account number of path hops for heuristic
 - Optimize link search algorithm. Add more hashtables?
+- 4000 nodes experiment?
