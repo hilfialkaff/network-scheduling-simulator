@@ -5,3 +5,4 @@ conf/slaves
 *.png
 *.log
 config
+.ropeproject
