@@ -6,11 +6,11 @@ underlying network topology.
 
 ## Direction
 
-To run the simulator:
-+ python main.py
+Running the simulator:
++ python run.py
 
-To run it in debug mode:
-+ python main.py --logging-level=debug --logging-file=./logs/debug.log
+Running the simulator in debug mode:
++ python run.py --logging-level=debug --logging-file=./logs/debug.log
 
-Run unit-tests:
+Running unit-tests:
 + python run_tests.py

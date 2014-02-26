@@ -1,7 +1,7 @@
 from topology import JellyfishTopology, Jellyfish2Topology, FatTreeTopology
 from algorithm import * # pyflakes_bypass
 
-CONFIG_NAME = 'config'
+CONFIG_NAME = '../config'
 BANDWIDTH = 100000 # 100 MBps link
 
 num_jobs = [] # Number of jobs to run in the cluster from the traces

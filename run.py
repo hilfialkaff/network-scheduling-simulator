@@ -1,6 +1,9 @@
 from copy import deepcopy
 import logging
 import optparse
+import sys
+
+sys.path.append("./src")
 
 from manager import Manager
 from topology import Jellyfish2Topology, FatTreeTopology
